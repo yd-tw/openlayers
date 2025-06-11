@@ -19,17 +19,13 @@ export default function OLMap() {
   useEffect(() => {
     if (!mapRef.current) return
 
-    // 設定台灣範圍
     const lonMin = 120.0
     const latMin = 20.0
     const lonMax = 122.5
     const latMax = 25.5
-
-    const gridSize = 0.01 // 每格 1 km，這裡經緯度對應大約1公里
+    const gridSize = 0.01
 
     const features = []
-
-    // 切分台灣範圍並產生格子
     for (let lon = lonMin; lon < lonMax; lon += gridSize) {
       for (let lat = latMin; lat < latMax; lat += gridSize) {
         const coordinates = [
@@ -47,15 +43,18 @@ export default function OLMap() {
       }
     }
 
-    // 向量圖層顯示格子
     const vectorLayer = new VectorLayer({
-      source: new VectorSource({
-        features: features
-      }),
+      source: new VectorSource({ features }),
       style: new Style({
         stroke: new Stroke({ color: 'red', width: 1 }),
         fill: new Fill({ color: 'rgba(255, 0, 0, 0.1)' })
-      })
+      }),
+      visible: false // 初始隱藏
+    })
+
+    const view = new View({
+      center: fromLonLat([121.0, 23.5]),
+      zoom: 8
     })
 
     const map = new Map({
@@ -64,13 +63,23 @@ export default function OLMap() {
         new TileLayer({ source: new OSM() }),
         vectorLayer
       ],
-      view: new View({
-        center: fromLonLat([121.0, 23.5]), // 中心點台灣
-        zoom: 8
-      })
+      view: view
     })
 
-    return () => map.setTarget(null)
+    const updateGridVisibility = () => {
+      const zoom = view.getZoom()
+      vectorLayer.setVisible(zoom >= 12)
+    }
+
+    // 初始執行一次
+    updateGridVisibility()
+
+    // 當縮放時檢查 zoom
+    view.on('change:resolution', updateGridVisibility)
+
+    return () => {
+      map.setTarget(null)
+    }
   }, [])
 
   return <div ref={mapRef} className="w-full h-screen" />
