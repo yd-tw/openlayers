@@ -1,9 +1,7 @@
-import Map from "@/components/home/Map";
+import TaipeiMap from "@/components/TaipeiMap";
 
 export default function Home() {
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
-      <Map />
-    </div>
+    <TaipeiMap />
   );
 }
