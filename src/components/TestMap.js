@@ -10,8 +10,9 @@ import VectorLayer from 'ol/layer/Vector'
 import VectorSource from 'ol/source/Vector'
 import Feature from 'ol/Feature'
 import Polygon from 'ol/geom/Polygon'
+import Point from 'ol/geom/Point'
 import { fromLonLat } from 'ol/proj'
-import { Fill, Stroke, Style } from 'ol/style'
+import { Fill, Stroke, Style, Text } from 'ol/style'
 
 export default function OLMap() {
   const mapRef = useRef(null)
@@ -37,19 +38,38 @@ export default function OLMap() {
             [lon, lat]
           ].map(coord => fromLonLat(coord))
         ]
+
         const polygon = new Polygon(coordinates)
-        const feature = new Feature(polygon)
+        const centerLon = lon + gridSize / 2
+        const centerLat = lat + gridSize / 2
+        const centerCoord = fromLonLat([centerLon, centerLat])
+
+        const feature = new Feature({
+          geometry: polygon,
+          label: `${centerLon.toFixed(3)}, ${centerLat.toFixed(3)}`
+        })
+
         features.push(feature)
       }
     }
 
     const vectorLayer = new VectorLayer({
       source: new VectorSource({ features }),
-      style: new Style({
-        stroke: new Stroke({ color: 'red', width: 1 }),
-        fill: new Fill({ color: 'rgba(255, 0, 0, 0.1)' })
-      }),
-      visible: false // 初始隱藏
+      style: (feature) =>
+        new Style({
+          stroke: new Stroke({ color: 'red', width: 1 }),
+          fill: new Fill({ color: 'rgba(255, 0, 0, 0.1)' }),
+          text: new Text({
+            text: feature.get('label'),
+            fill: new Fill({ color: 'black' }),
+            stroke: new Stroke({ color: 'white', width: 2 }),
+            font: '12px sans-serif',
+            overflow: true,
+            placement: 'point',
+            textAlign: 'center'
+          })
+        }),
+      visible: false
     })
 
     const view = new View({
@@ -68,13 +88,10 @@ export default function OLMap() {
 
     const updateGridVisibility = () => {
       const zoom = view.getZoom()
-      vectorLayer.setVisible(zoom >= 12)
+      vectorLayer.setVisible(zoom >= 14)
     }
 
-    // 初始執行一次
     updateGridVisibility()
-
-    // 當縮放時檢查 zoom
     view.on('change:resolution', updateGridVisibility)
 
     return () => {
