@@ -11,6 +11,7 @@ import OSM from 'ol/source/OSM'
 import GeoJSON from 'ol/format/GeoJSON'
 import { fromLonLat } from 'ol/proj'
 import { Style, Stroke, Fill, Circle as CircleStyle } from 'ol/style'
+import { LineString, Polygon } from 'ol/geom'
 
 export default function MapComponent() {
   const mapRef = useRef(null)
@@ -29,15 +30,30 @@ export default function MapComponent() {
       })
     })
 
-    // 載入本地 GeoJSON 檔案
     fetch('/data.geojson')
       .then(res => res.json())
       .then(data => {
-        const vectorSource = new VectorSource({
-          features: new GeoJSON().readFeatures(data, {
-            featureProjection: 'EPSG:3857'
-          })
+        const features = new GeoJSON().readFeatures(data, {
+          featureProjection: 'EPSG:3857'
         })
+
+        features.forEach(f => {
+          const geom = f.getGeometry()
+          if (geom instanceof LineString) {
+            const coords = geom.getCoordinates()
+
+            const first = coords[0]
+            const last = coords[coords.length - 1]
+            const isClosed = first.length === last.length && first.every((v, i) => v === last[i])
+            if (!isClosed) {
+              coords.push(first)
+            }
+
+            f.setGeometry(new Polygon([coords]))
+          }
+        })
+
+        const vectorSource = new VectorSource({ features })
 
         const vectorLayer = new VectorLayer({
           source: vectorSource,
