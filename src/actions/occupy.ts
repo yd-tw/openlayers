@@ -1,6 +1,6 @@
-import { doc, setDoc, Timestamp } from "firebase/firestore";
-import { collection, getDocs } from "firebase/firestore";
-import db from "@/lib/firebase";
+"use server"
+
+import { db } from "@/lib/firebase-admin";
 
 export async function occupyGrid({
   id,
@@ -11,13 +11,13 @@ export async function occupyGrid({
   label: string;
   owner?: string;
 }) {
-  const ref = doc(db, "grids", id);
+  const ref = db.collection("grids").doc(id);
 
-  await setDoc(ref, {
+  await ref.set({
     id,
     label,
     owner,
-    timestamp: Timestamp.now(),
+    timestamp: new Date(),
   });
 
   console.log(`Grid ${id} has been occupied by ${owner}.`);
@@ -26,7 +26,7 @@ export async function occupyGrid({
 export async function getOccupiedGrids(): Promise<
   Record<string, { owner: string; label: string }>
 > {
-  const snapshot = await getDocs(collection(db, "grids"));
+  const snapshot = await db.collection("grids").get();
   const result: Record<string, { owner: string; label: string }> = {};
 
   snapshot.forEach((doc) => {

@@ -14,7 +14,7 @@ import { fromLonLat } from "ol/proj";
 import { Fill, Stroke, Style, Text } from "ol/style";
 import { click } from "ol/events/condition";
 import Select from "ol/interaction/Select";
-import { occupyGrid, getOccupiedGrids } from "@/action/occupy";
+import { occupyGrid, getOccupiedGrids } from "@/actions/occupy";
 
 export default function OLMap() {
   const mapRef = useRef(null);
