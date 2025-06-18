@@ -10,7 +10,6 @@ import VectorLayer from 'ol/layer/Vector'
 import VectorSource from 'ol/source/Vector'
 import Feature from 'ol/Feature'
 import Polygon from 'ol/geom/Polygon'
-import Point from 'ol/geom/Point'
 import { fromLonLat } from 'ol/proj'
 import { Fill, Stroke, Style, Text } from 'ol/style'
 
@@ -42,7 +41,6 @@ export default function OLMap() {
         const polygon = new Polygon(coordinates)
         const centerLon = lon + gridSize / 2
         const centerLat = lat + gridSize / 2
-        const centerCoord = fromLonLat([centerLon, centerLat])
 
         const feature = new Feature({
           geometry: polygon,
