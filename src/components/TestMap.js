@@ -10,8 +10,11 @@ import VectorLayer from 'ol/layer/Vector'
 import VectorSource from 'ol/source/Vector'
 import Feature from 'ol/Feature'
 import Polygon from 'ol/geom/Polygon'
-import { fromLonLat } from 'ol/proj'
+import { fromLonLat, toLonLat } from 'ol/proj'
 import { Fill, Stroke, Style, Text } from 'ol/style'
+import { click } from 'ol/events/condition'
+import Select from 'ol/interaction/Select'
+import { occupyGrid } from '@/action/occupy'
 
 export default function OLMap() {
   const mapRef = useRef(null)
@@ -41,18 +44,23 @@ export default function OLMap() {
         const polygon = new Polygon(coordinates)
         const centerLon = lon + gridSize / 2
         const centerLat = lat + gridSize / 2
+        const id = `grid_${(centerLon * 1000).toFixed(0)}_${(centerLat * 1000).toFixed(0)}`
+        const label = `${centerLon.toFixed(3)}, ${centerLat.toFixed(3)}`
 
         const feature = new Feature({
           geometry: polygon,
-          label: `${centerLon.toFixed(3)}, ${centerLat.toFixed(3)}`
+          label,
+          id
         })
 
         features.push(feature)
       }
     }
 
+    const vectorSource = new VectorSource({ features })
+
     const vectorLayer = new VectorLayer({
-      source: new VectorSource({ features }),
+      source: vectorSource,
       style: (feature) =>
         new Style({
           stroke: new Stroke({ color: 'red', width: 1 }),
@@ -91,6 +99,27 @@ export default function OLMap() {
 
     updateGridVisibility()
     view.on('change:resolution', updateGridVisibility)
+
+    // ✅ 點擊地塊觸發 Firestore 寫入
+    const selectClick = new Select({ condition: click })
+    map.addInteraction(selectClick)
+
+    selectClick.on('select', async (e) => {
+      const selected = e.selected[0]
+      if (!selected) return
+
+      const id = selected.get('id')
+      const label = selected.get('label')
+
+      try {
+        await occupyGrid({ id, label }) // ✅ 寫入 Firestore
+        alert(`你佔領了格子 ${id}`)
+        // 🚀 你可以在這裡進一步更新地圖樣式
+      } catch (err) {
+        console.error('佔領失敗', err)
+        alert('佔領失敗，請稍後再試')
+      }
+    })
 
     return () => {
       map.setTarget(null)
