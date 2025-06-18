@@ -10,11 +10,11 @@ import VectorLayer from 'ol/layer/Vector'
 import VectorSource from 'ol/source/Vector'
 import Feature from 'ol/Feature'
 import Polygon from 'ol/geom/Polygon'
-import { fromLonLat, toLonLat } from 'ol/proj'
+import { fromLonLat } from 'ol/proj'
 import { Fill, Stroke, Style, Text } from 'ol/style'
 import { click } from 'ol/events/condition'
 import Select from 'ol/interaction/Select'
-import { occupyGrid } from '@/action/occupy'
+import { occupyGrid, getOccupiedGrids } from '@/action/occupy'
 
 export default function OLMap() {
   const mapRef = useRef(null)
@@ -29,6 +29,8 @@ export default function OLMap() {
     const gridSize = 0.01
 
     const features = []
+    const featureMap = new Map()
+
     for (let lon = lonMin; lon < lonMax; lon += gridSize) {
       for (let lat = latMin; lat < latMax; lat += gridSize) {
         const coordinates = [
@@ -49,11 +51,13 @@ export default function OLMap() {
 
         const feature = new Feature({
           geometry: polygon,
+          id,
           label,
-          id
+          owner: null
         })
 
         features.push(feature)
+        featureMap.set(id, feature)
       }
     }
 
@@ -61,12 +65,29 @@ export default function OLMap() {
 
     const vectorLayer = new VectorLayer({
       source: vectorSource,
-      style: (feature) =>
-        new Style({
-          stroke: new Stroke({ color: 'red', width: 1 }),
-          fill: new Fill({ color: 'rgba(255, 0, 0, 0.1)' }),
+      style: (feature) => {
+        const owner = feature.get('owner')
+        const label = feature.get('label')
+
+        let strokeColor = 'red'
+        let fillColor = 'rgba(255, 0, 0, 0.1)'
+        let displayLabel = label
+
+        if (owner === 'anonymous') {
+          strokeColor = 'blue'
+          fillColor = 'rgba(0, 0, 255, 0.1)'
+          displayLabel = `${label}\n你已佔領`
+        } else if (owner) {
+          strokeColor = 'gray'
+          fillColor = 'rgba(0, 0, 0, 0.1)'
+          displayLabel = `${label}\n已被佔領`
+        }
+
+        return new Style({
+          stroke: new Stroke({ color: strokeColor, width: 1 }),
+          fill: new Fill({ color: fillColor }),
           text: new Text({
-            text: feature.get('label'),
+            text: displayLabel,
             fill: new Fill({ color: 'black' }),
             stroke: new Stroke({ color: 'white', width: 2 }),
             font: '12px sans-serif',
@@ -74,7 +95,8 @@ export default function OLMap() {
             placement: 'point',
             textAlign: 'center'
           })
-        }),
+        })
+      },
       visible: false
     })
 
@@ -100,7 +122,18 @@ export default function OLMap() {
     updateGridVisibility()
     view.on('change:resolution', updateGridVisibility)
 
-    // ✅ 點擊地塊觸發 Firestore 寫入
+    // ✅ 載入佔領資料
+    getOccupiedGrids().then((occupiedMap) => {
+      Object.entries(occupiedMap).forEach(([id, data]) => {
+        const feature = featureMap.get(id)
+        if (feature) {
+          feature.set('owner', data.owner)
+        }
+      })
+      vectorLayer.changed() // 重新觸發樣式渲染
+    })
+
+    // ✅ 點擊地塊觸發佔領
     const selectClick = new Select({ condition: click })
     map.addInteraction(selectClick)
 
@@ -112,9 +145,10 @@ export default function OLMap() {
       const label = selected.get('label')
 
       try {
-        await occupyGrid({ id, label }) // ✅ 寫入 Firestore
+        await occupyGrid({ id, label })
+        selected.set('owner', 'anonymous') // 立即更新畫面
+        vectorLayer.changed()
         alert(`你佔領了格子 ${id}`)
-        // 🚀 你可以在這裡進一步更新地圖樣式
       } catch (err) {
         console.error('佔領失敗', err)
         alert('佔領失敗，請稍後再試')
