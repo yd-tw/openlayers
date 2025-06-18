@@ -1,37 +1,5 @@
-這是 [Next.js](https://nextjs.org) 專案的模板，依照 YD 開發專案累積的經驗所構建，比預設的 `create-next-app` 添加更多常用的套件，詳細添加的內容可以參考下方列表。
+# OpenLayers
 
-## Getting Started
+此專案目的為學習地圖程式 `OpenLayers` 而建立，初期以學習觀念為主，並嘗試復現於2025台北程式儀表板黑客松所建立的網頁。
 
-執行下方指令，透過 `create-next-app` 直接安裝。
-
-```bash
-npx create-next-app@latest --example https://github.com/yd-tw/next-template
-```
-
-接著運行開發伺服器即可。
-
-```bash
-npm run dev
-```
-
-## 配置內容
-
-### 格式化
-
-- `prettier`
-- `prettier-plugin-tailwindcss`
-
-### 常用套件
-
-- `@next/third-parties`
-- `next-auth`
-- `lucide-react`
-- `motion`
-- `react-type-animation`
-
-### 預設組件
-
-- `HeroSection`
-- `Navbar`
-- `Footer`
-- `SessionProvider`
+第二階段將嘗試建立台灣佔地遊戲，參考部分過去遊玩的佔地遊戲模式運作並進行架構效能等全方位的更改。
