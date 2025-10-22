@@ -3,17 +3,15 @@
 import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { signIn, useSession } from "next-auth/react";
 import { Menu, X } from "lucide-react";
 
 const navigation = [{ name: "", href: "/" }];
 
 export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const { data: session } = useSession();
 
   return (
-    <nav className="sticky top-0 z-50 w-full mx-auto border-b border-gray-300 dark:border-gray-700 backdrop-blur bg-background/95">
+    <nav className="bg-background/95 sticky top-0 z-50 mx-auto w-full border-b border-gray-300 backdrop-blur dark:border-gray-700">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 justify-between">
           <div className="flex items-center lg:hidden">
@@ -54,41 +52,24 @@ export default function Navbar() {
               ))}
             </div>
           </div>
-          {session ? (
-            <div className="flex items-center space-x-4">
-              <Link href={`/`} passHref>
-                <div className="flex cursor-pointer items-center space-x-4">
-                  <Image
-                    className="rounded-full"
-                    src={session?.user?.image || "/default-avatar.png"}
-                    alt={session?.user?.name || "User Avatar"}
-                    width={32}
-                    height={32}
-                  />
-                  <span className="hidden font-medium text-gray-900 md:block">
-                    {session?.user?.name}
-                  </span>
-                </div>
-              </Link>
-            </div>
-          ) : (
-            <button
-              onClick={() => signIn("google")}
-              className="text-sm font-semibold text-gray-900 hover:text-gray-700"
-            >
-              登入
-            </button>
-          )}
+          <button
+            onClick={() => {
+              /* 在此處添加登入邏輯 */
+            }}
+            className="text-sm font-semibold text-gray-900 hover:text-gray-700"
+          >
+            登入
+          </button>
         </div>
       </div>
 
       {mobileMenuOpen && (
         <div className="text-center lg:hidden">
-          <div className="space-y-1 pb-3 pt-2">
+          <div className="space-y-1 pt-2 pb-3">
             {navigation.map((item) => (
               <Link key={item.name} href={item.href} passHref>
                 <span
-                  className="block cursor-pointer border-l-4 border-transparent py-2 pl-3 pr-4 text-base font-medium text-gray-700 hover:border-gray-300 hover:bg-gray-50"
+                  className="block cursor-pointer border-l-4 border-transparent py-2 pr-4 pl-3 text-base font-medium text-gray-700 hover:border-gray-300 hover:bg-gray-50"
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   {item.name}

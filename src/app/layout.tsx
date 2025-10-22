@@ -4,7 +4,6 @@ import "./globals.css";
 import { GoogleAnalytics } from "@next/third-parties/google";
 import Navbar from "@/components/layout/Navbar";
 // import Footer from "@/components/layout/Footer";
-import SessionProvider from "@/components/layout/SessionProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -31,14 +30,12 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <GoogleAnalytics gaId="G-519W63S3NG" />
-        <SessionProvider>
-          <div>
-            <Navbar />
-            {children}
-            {/* <Footer /> */}
-          </div>
-        </SessionProvider>
+        <GoogleAnalytics gaId="" />
+        <div>
+          <Navbar />
+          {children}
+          {/* <Footer /> */}
+        </div>
       </body>
     </html>
   );

@@ -73,5 +73,5 @@ export default function MapComponent() {
     return () => map.setTarget(null);
   }, []);
 
-  return <div ref={mapRef} className="w-full h-screen"></div>;
+  return <div ref={mapRef} className="h-screen w-full"></div>;
 }
