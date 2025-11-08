@@ -1,6 +1,7 @@
 "use client";
 
 interface Layer {
+  get: (key: string) => any;
   getVisible: () => boolean;
   setVisible: (visible: boolean) => void;
 }
@@ -28,7 +29,7 @@ export default function LayerSwitcher({ layers, toggleLayer }: LayerSwitcherProp
               htmlFor={`layer-${layerName}`}
               className="text-sm cursor-pointer select-none"
             >
-              {layerName}
+              {layers[layerName]?.get('displayName') || layerName}
             </label>
           </div>
         ))}

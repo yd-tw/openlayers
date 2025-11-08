@@ -22,6 +22,7 @@ import LayerSwitcher from "./LayerSwitcher";
 const LAYER_CONFIGS = [
   {
     name: "highway",
+    displayName: "公路",
     url: "/highway.geojson",
     style: new Style({
       stroke: new Stroke({ color: "#ff6600", width: 2 }),
@@ -30,6 +31,7 @@ const LAYER_CONFIGS = [
   },
   {
     name: "walk",
+    displayName: "人行道",
     url: "/osm-walk.geojson",
     style: new Style({
       stroke: new Stroke({ color: "rgba(0, 255, 38, 0.74)", width: 5 }),
@@ -38,6 +40,7 @@ const LAYER_CONFIGS = [
   },
   {
     name: "bike",
+    displayName: "自行車道",
     url: "/bike.geojson",
     style: new Style({
       stroke: new Stroke({ color: "rgba(255, 0, 255, 0.74)", width: 5 }),
@@ -235,6 +238,7 @@ export default function MapComponent() {
       
       map.addLayer(linesLayer);
       setLayers((prev) => ({ ...prev, apiLines: linesLayer }));
+      linesLayer.set('displayName', '路況');
     } catch (error) {
       console.error('載入 API 線段圖層失敗:', error);
     }
@@ -255,6 +259,7 @@ export default function MapComponent() {
         source: vectorSource,
         style: config.style,
       });
+      vectorLayer.set('displayName', config.displayName);
       map.addLayer(vectorLayer);
       setLayers((prev) => ({ ...prev, [config.name]: vectorLayer }));
     } catch (error) {
