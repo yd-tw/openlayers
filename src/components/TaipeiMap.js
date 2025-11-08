@@ -16,6 +16,7 @@ import LineString from "ol/geom/LineString";
 import Heatmap from "ol/layer/Heatmap";
 import { fromLonLat, toLonLat } from "ol/proj";
 import { Style, Stroke, Fill, Circle as CircleStyle } from "ol/style";
+import { defaults as defaultControls } from "ol/control";
 
 // Components
 import LayerSwitcher from "./LayerSwitcher";
@@ -59,6 +60,7 @@ export default function MapComponent() {
       target: mapRef.current,
       layers: [baseLayer],
       view: initialView,
+      controls: defaultControls({ zoom: false }),
     });
 
     mapInstanceRef.current = mapObj;
@@ -439,9 +441,7 @@ export default function MapComponent() {
   useEffect(() => {
     const handleOrientation = (event) => {
       const alpha = event.alpha ?? 0;
-      const corrected = (alpha + 90) % 360;
-
-      setOrientation(corrected);
+      setOrientation(alpha);
     };
 
     if (window.DeviceOrientationEvent) {
@@ -476,7 +476,7 @@ export default function MapComponent() {
 
     const [x, y] = position;
     const radius = 40; // 扇形半徑
-    const spread = 40; // 夾角（度）
+    const spread = 90; // 夾角（度）
     const steps = 20; // 圓弧細分數量
     const rad = (orientation * Math.PI) / 180;
     const half = (spread * Math.PI) / 360;
