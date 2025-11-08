@@ -6,6 +6,7 @@ import type {
   SyncMessage,
   SyncRequest,
   SyncResponse,
+  LocationUpdate,
 } from "@/types/townpass";
 
 declare global {
@@ -268,6 +269,30 @@ export class TownPassClient {
 
     return () => {
       window.removeEventListener("townpass_state_update", handler);
+    };
+  }
+
+  /**
+   * 監聽位置更新（從 Flutter 獲取）
+   */
+  onLocationUpdate(callback: (location: LocationUpdate) => void): () => void {
+    if (typeof window === "undefined") return () => {};
+
+    const handler = (event: Event) => {
+      try {
+        const customEvent = event as CustomEvent;
+        if (customEvent.detail) {
+          callback(customEvent.detail);
+        }
+      } catch (e) {
+        console.error("TownPass: Error in onLocationUpdate handler:", e);
+      }
+    };
+
+    window.addEventListener("townpass_location_update", handler);
+
+    return () => {
+      window.removeEventListener("townpass_location_update", handler);
     };
   }
 }

@@ -8,7 +8,6 @@ import TileLayer from "ol/layer/Tile";
 import VectorLayer from "ol/layer/Vector";
 import VectorSource from "ol/source/Vector";
 import OSM from "ol/source/OSM";
-import Geolocation from "ol/Geolocation";
 import GeoJSON from "ol/format/GeoJSON";
 import Feature from "ol/Feature";
 import Point from "ol/geom/Point";
@@ -18,6 +17,7 @@ import { fromLonLat, toLonLat } from "ol/proj";
 import { Style, Stroke, Fill, Circle as CircleStyle } from "ol/style";
 import LayerSwitcher from "./LayerSwitcher";
 import MapModeSelector from "./MapModeSelector";
+import { getTownPassClient } from "@/lib/townpass/client";
 
 // GeoJSON 圖層配置
 const LAYER_CONFIGS = [
@@ -117,6 +117,7 @@ export default function MapComponent() {
   const mapRef = useRef(null);
   const mapInstanceRef = useRef(null);
   const heatmapLayerRef = useRef(null);
+  const positionFeatureRef = useRef(null);
   const [layers, setLayers] = useState({});
   const [layerVisibility, setLayerVisibility] = useState({});
   const [a1AccidentDatas, setA1AccidentDatas] = useState([]);
@@ -150,13 +151,7 @@ export default function MapComponent() {
 
     mapInstanceRef.current = map;
 
-    // 定位功能
-    const geolocation = new Geolocation({
-      tracking: true,
-      projection: map.getView().getProjection(),
-    });
-
-    // 使用者位置圓點
+    // 使用者位置圓點（由 Flutter 提供位置）
     const positionFeature = new Feature();
     positionFeature.setStyle(
       new Style({
@@ -168,22 +163,15 @@ export default function MapComponent() {
       }),
     );
 
+    // 保存 positionFeature 引用供 Flutter 位置更新使用
+    positionFeatureRef.current = positionFeature;
+
     // 建立位置圖層
     const vectorSource = new VectorSource({
       features: [positionFeature],
     });
     const positionLayer = new VectorLayer({ source: vectorSource });
     map.addLayer(positionLayer);
-
-    // 位置變化監聽
-    geolocation.on("change:position", () => {
-      const coords = geolocation.getPosition();
-      if (coords) {
-        positionFeature.setGeometry(new Point(coords));
-        // 地圖視角跟隨使用者位置
-        map.getView().animate({ center: coords, duration: 800 });
-      }
-    });
 
     // === 載入其他圖層 ===
     LAYER_CONFIGS.forEach((config) => loadGeoJSONLayer(map, config));
@@ -251,8 +239,33 @@ export default function MapComponent() {
       }, 2000);
     });
 
+    // === 監聽 Flutter 位置更新 ===
+    const townpassClient = getTownPassClient();
+
+    const unsubscribeLocation = townpassClient.onLocationUpdate((location) => {
+      console.log(
+        `📍 位置更新: ${location.latitude.toFixed(6)}, ${location.longitude.toFixed(6)} ${location.isManual ? "(手動)" : "(GPS)"}`,
+      );
+
+      // 轉換為 OpenLayers 座標
+      const coords = fromLonLat([location.longitude, location.latitude]);
+
+      // 更新位置標記
+      if (positionFeatureRef.current) {
+        positionFeatureRef.current.setGeometry(new Point(coords));
+      }
+
+      // 更新地圖視角
+      if (mapInstanceRef.current) {
+        mapInstanceRef.current.getView().animate({
+          center: coords,
+          duration: 800,
+        });
+      }
+    });
+
     return () => {
-      geolocation.setTracking(false);
+      unsubscribeLocation();
       map.setTarget(null);
     };
   }, []);

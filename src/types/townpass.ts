@@ -50,6 +50,14 @@ export interface SyncResponse {
   timestamp: string;
 }
 
+// Location 更新資料
+export interface LocationUpdate {
+  latitude: number;
+  longitude: number;
+  isManual: boolean;
+  timestamp: string;
+}
+
 // Flutter 訊息格式
 export interface FlutterMessage {
   name: string;
