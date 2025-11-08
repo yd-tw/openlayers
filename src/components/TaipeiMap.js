@@ -33,6 +33,7 @@ export default function MapComponent() {
   const mapInstanceRef = useRef(null);
   const positionFeatureRef = useRef(null);
   const directionFeatureRef = useRef(null);
+  const copyNotificationTimeoutRef = useRef(null);
   const [layers, setLayers] = useState({});
   const [layerVisibility, setLayerVisibility] = useState({});
   const [copyNotification, setCopyNotification] = useState(null);
@@ -115,33 +116,21 @@ export default function MapComponent() {
 
     mapObj.on("singleclick", (evt) => {
       const coords = evt.coordinate;
-      const lonLat = toLonLat(coords);
-      const [lon, lat] = lonLat;
-
-      // 格式化經緯度（6位小數）
+      const [lon, lat] = toLonLat(coords);
       const coordText = `${lat.toFixed(6)}, ${lon.toFixed(6)}`;
 
-      // 複製到剪貼簿
       navigator.clipboard
         .writeText(coordText)
-        .then(() => {
-          setCopyNotification(coordText);
-          setTimeout(() => setCopyNotification(null), 2000);
-        })
-        .catch((err) => {
-          setCopyNotification(coordText);
-          setTimeout(() => setCopyNotification(null), 2000);
-        });
+        .then(() => setCopyNotification(coordText))
+        .catch(() => setCopyNotification(coordText));
 
-      // 清除舊標記
       clickMarkerSource.clear();
 
-      // 添加新標記
-      const marker = new Feature({
+      const markerFeature = new Feature({
         geometry: new Point(coords),
       });
 
-      marker.setStyle(
+      markerFeature.setStyle(
         new Style({
           image: new CircleStyle({
             radius: 8,
@@ -151,11 +140,14 @@ export default function MapComponent() {
         }),
       );
 
-      clickMarkerSource.addFeature(marker);
+      clickMarkerSource.addFeature(markerFeature);
 
-      // 2秒後移除標記
-      setTimeout(() => {
+      if (copyNotificationTimeoutRef.current) {
+        clearTimeout(copyNotificationTimeoutRef.current);
+      }
+      copyNotificationTimeoutRef.current = setTimeout(() => {
         clickMarkerSource.clear();
+        setCopyNotification(null);
       }, 2000);
     });
 
@@ -378,7 +370,7 @@ export default function MapComponent() {
         new Style({
           image: new CircleStyle({
             radius: 8,
-            fill: new Fill({ color: "#71c5d5" }),
+            fill: new Fill({ color: "#5ab4c5" }),
             stroke: new Stroke({ color: "#fff", width: 2 }),
           }),
         }),
