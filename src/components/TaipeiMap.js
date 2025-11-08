@@ -127,6 +127,7 @@ export default function MapComponent() {
       });
     });
 
+<<<<<<< HEAD
     // === 建立路徑規劃標記圖層（用於顯示起點和終點）===
     const markersSource = new VectorSource();
     const markersLayer = new VectorLayer({
@@ -202,21 +203,22 @@ export default function MapComponent() {
           return newPoints;
         });
       }
+=======
+    // === 載入地圖複製經緯度功能 ===
+    loadClickMarkerLayer().then((clickMarkerLayer) => {
+      mapObj.addLayer(clickMarkerLayer);
+>>>>>>> 72abd84fc1e6cc0be960701d6103a667a8ee7452
     });
 
     // === 監聽 Flutter 位置更新 ===
     const townpassClient = getTownPassClient();
-
     const unsubscribeLocation = townpassClient.onLocationUpdate((location) => {
-      // 轉換為 OpenLayers 座標
       const coords = fromLonLat([location.longitude, location.latitude]);
 
-      // 更新位置標記
       if (positionFeatureRef.current) {
         positionFeatureRef.current.setGeometry(new Point(coords));
       }
 
-      // 更新地圖視角
       if (mapInstanceRef.current) {
         mapInstanceRef.current.getView().animate({
           center: coords,
@@ -456,6 +458,57 @@ export default function MapComponent() {
     }
   };
 
+  const loadClickMarkerLayer = async () => {
+    try {
+      // 建立 Vector Source
+      const clickMarkerSource = new VectorSource();
+
+      // 建立 Vector Layer
+      const clickMarkerLayer = new VectorLayer({ source: clickMarkerSource });
+
+      mapInstanceRef.current?.on("singleclick", (evt) => {
+        const coords = evt.coordinate;
+        const [lon, lat] = toLonLat(coords);
+        const coordText = `${lat.toFixed(6)}, ${lon.toFixed(6)}`;
+
+        navigator.clipboard
+          .writeText(coordText)
+          .then(() => setCopyNotification(coordText))
+          .catch(() => setCopyNotification(coordText));
+
+        clickMarkerSource.clear();
+
+        const markerFeature = new Feature({
+          geometry: new Point(coords),
+        });
+
+        markerFeature.setStyle(
+          new Style({
+            image: new CircleStyle({
+              radius: 8,
+              fill: new Fill({ color: "#f5ba4b" }),
+              stroke: new Stroke({ color: "#fff", width: 2 }),
+            }),
+          }),
+        );
+
+        clickMarkerSource.addFeature(markerFeature);
+
+        if (copyNotificationTimeoutRef.current) {
+          clearTimeout(copyNotificationTimeoutRef.current);
+        }
+        copyNotificationTimeoutRef.current = setTimeout(() => {
+          clickMarkerSource.clear();
+          setCopyNotification(null);
+        }, 2000);
+      });
+
+      return clickMarkerLayer;
+    } catch (error) {
+      console.error("載入點擊標記圖層失敗: ", error);
+    }
+  };
+
   /**
    * 切換圖層顯示/隱藏
    */
@@ -627,22 +680,13 @@ export default function MapComponent() {
   }, [layers]);
 
   return (
-    <div className="relative h-screen w-full">
-      {/* 地圖 */}
-      <div ref={mapRef} className="h-screen w-full" />
-
-      {/* 圖層切換器 */}
-      <LayerSwitcher
-        layers={layers}
-        layerVisibility={layerVisibility}
-        toggleLayer={toggleLayer}
-      />
-
-      {/* 模式選擇器 - 置於地圖左下方 */}
-      <div className="absolute bottom-2.5 left-2.5 z-[1000]">
+    <div className="relative flex h-screen w-full flex-col">
+      {/* 模式選擇器 - 置於地圖上方 */}
+      <div className="">
         <MapModeSelector />
       </div>
 
+<<<<<<< HEAD
       {/* 路徑規劃控制面板 - 僅在行人或自行車模式下顯示 */}
       {(currentMode === "pedestrian" || currentMode === "bicycle") && (
         <div className="absolute bottom-8 left-1/2 z-[1000] -translate-x-1/2 rounded-lg bg-white p-4 shadow-lg">
@@ -654,6 +698,44 @@ export default function MapComponent() {
                 ? "cursor-not-allowed bg-gray-300 text-gray-500"
                 : "bg-blue-500 text-white hover:bg-blue-600"
             }`}
+=======
+      <div className="relative flex-1">
+        {/* 地圖 */}
+        <div ref={mapRef} className="w-full h-full" />
+
+        {/* 圖層切換器 */}
+        <LayerSwitcher
+          layers={layers}
+          layerVisibility={layerVisibility}
+          toggleLayer={toggleLayer}
+        />
+      </div>
+
+      {copyNotification && (
+        <div
+          style={{
+            position: "fixed",
+            top: "20px",
+            left: "50%",
+            transform: "translateX(-50%)",
+            backgroundColor: "#76a732",
+            color: "white",
+            padding: "12px 24px",
+            borderRadius: "8px",
+            boxShadow: "0 4px 6px rgba(0,0,0,0.3)",
+            zIndex: 10000,
+            display: "flex",
+            alignItems: "center",
+            gap: "10px",
+            fontSize: "14px",
+          }}
+        >
+          <svg
+            style={{ width: "20px", height: "20px", flexShrink: 0 }}
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+>>>>>>> 72abd84fc1e6cc0be960701d6103a667a8ee7452
           >
             {isSelectingPath ? "選擇中..." : "路徑規劃"}
           </button>
