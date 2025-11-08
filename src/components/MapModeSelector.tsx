@@ -1,16 +1,16 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { useTownPass } from '@/lib/townpass/hooks/useTownPass';
-import type { UserMode } from '@/types/townpass';
+import { useState, useEffect } from "react";
+import { useTownPass } from "@/lib/townpass/hooks/useTownPass";
+import type { UserMode } from "@/types/townpass";
 
 interface ModeSelectorProps {
   className?: string;
 }
 
-export default function MapModeSelector({ className = '' }: ModeSelectorProps) {
+export default function MapModeSelector({ className = "" }: ModeSelectorProps) {
   const { isFlutter, state, setMode, loading } = useTownPass();
-  const [currentMode, setCurrentMode] = useState<UserMode>('pedestrian');
+  const [currentMode, setCurrentMode] = useState<UserMode>("pedestrian");
 
   // 同步 Flutter 狀態
   useEffect(() => {
@@ -26,22 +26,22 @@ export default function MapModeSelector({ className = '' }: ModeSelectorProps) {
     color: string;
   }> = [
     {
-      value: 'pedestrian',
-      label: '行人',
-      icon: '🚶',
-      color: 'bg-green-500 hover:bg-green-600',
+      value: "pedestrian",
+      label: "行人",
+      icon: "🚶",
+      color: "bg-green-500 hover:bg-green-600",
     },
     {
-      value: 'bicycle',
-      label: '自行車',
-      icon: '🚴',
-      color: 'bg-blue-500 hover:bg-blue-600',
+      value: "bicycle",
+      label: "自行車",
+      icon: "🚴",
+      color: "bg-blue-500 hover:bg-blue-600",
     },
     {
-      value: 'vehicle',
-      label: '車輛',
-      icon: '🚗',
-      color: 'bg-purple-500 hover:bg-purple-600',
+      value: "vehicle",
+      label: "車輛",
+      icon: "🚗",
+      color: "bg-purple-500 hover:bg-purple-600",
     },
   ];
 
@@ -55,7 +55,7 @@ export default function MapModeSelector({ className = '' }: ModeSelectorProps) {
     try {
       await setMode(mode);
     } catch (error) {
-      console.error('Failed to change mode:', error);
+      console.error("Failed to change mode:", error);
     }
   };
 
@@ -80,8 +80,8 @@ export default function MapModeSelector({ className = '' }: ModeSelectorProps) {
               />
               <label
                 htmlFor={`mode-${mode.value}`}
-                className={`cursor-pointer text-sm select-none flex items-center gap-1.5 ${
-                  isDisabled ? 'opacity-50 cursor-not-allowed' : ''
+                className={`flex cursor-pointer items-center gap-1.5 text-sm select-none ${
+                  isDisabled ? "cursor-not-allowed opacity-50" : ""
                 }`}
               >
                 <span>{mode.icon}</span>
@@ -92,7 +92,7 @@ export default function MapModeSelector({ className = '' }: ModeSelectorProps) {
         })}
 
         {!isFlutter && (
-          <div className="mt-2 pt-2 border-t border-gray-200 text-xs text-yellow-700 flex items-center gap-1">
+          <div className="mt-2 flex items-center gap-1 border-t border-gray-200 pt-2 text-xs text-yellow-700">
             <span>⚠️</span>
             <span>離線模式</span>
           </div>

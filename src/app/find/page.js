@@ -205,13 +205,13 @@ export default function MapComponent() {
       <div ref={mapRef} className="h-full w-full"></div>
 
       {/* 控制面板 */}
-      <div className="absolute top-4 left-4 bg-white rounded-lg shadow-lg p-4 z-10">
+      <div className="absolute top-4 left-4 z-10 rounded-lg bg-white p-4 shadow-lg">
         <button
           onClick={startPathSelection}
           disabled={isSelectingPath}
-          className={`px-4 py-2 rounded font-medium ${
+          className={`rounded px-4 py-2 font-medium ${
             isSelectingPath
-              ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+              ? "cursor-not-allowed bg-gray-300 text-gray-500"
               : "bg-blue-500 text-white hover:bg-blue-600"
           }`}
         >
@@ -224,9 +224,16 @@ export default function MapComponent() {
 
         {selectedPoints.length > 0 && (
           <div className="mt-3 text-xs text-gray-600">
-            <div>起點: {selectedPoints[0] && `${selectedPoints[0].lat.toFixed(6)}, ${selectedPoints[0].lng.toFixed(6)}`}</div>
+            <div>
+              起點:{" "}
+              {selectedPoints[0] &&
+                `${selectedPoints[0].lat.toFixed(6)}, ${selectedPoints[0].lng.toFixed(6)}`}
+            </div>
             {selectedPoints[1] && (
-              <div>終點: {selectedPoints[1].lat.toFixed(6)}, {selectedPoints[1].lng.toFixed(6)}</div>
+              <div>
+                終點: {selectedPoints[1].lat.toFixed(6)},{" "}
+                {selectedPoints[1].lng.toFixed(6)}
+              </div>
             )}
           </div>
         )}

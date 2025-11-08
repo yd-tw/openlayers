@@ -108,6 +108,7 @@ SyncTestViewController
 ## 離線模式
 
 當不在 Flutter WebView 環境中時：
+
 - 顯示「離線模式」標籤
 - 按鈕僅更新本地狀態
 - 不會嘗試與 Flutter 通訊
@@ -123,6 +124,7 @@ SyncTestViewController
 ### 熱重載
 
 修改模式選擇器組件後：
+
 ```bash
 # Next.js 會自動熱重載
 # Flutter 需要手動重載
@@ -132,6 +134,7 @@ flutter run
 ### 調試
 
 在瀏覽器 DevTools Console 中可以看到：
+
 ```javascript
 TownPass: Event handlers initialized
 TownPass: Received reply from Flutter (type): string
@@ -141,6 +144,7 @@ TownPass: Parsed successfully: {...}
 ### 構建
 
 生產環境構建：
+
 ```bash
 npm run build
 npm start
@@ -149,6 +153,7 @@ npm start
 ## 相關檔案
 
 ### 網站端
+
 - `src/components/MapModeSelector.tsx`
 - `src/components/TaipeiMap.js`
 - `src/lib/townpass/client.ts`
@@ -156,6 +161,7 @@ npm start
 - `src/types/townpass.ts`
 
 ### Flutter 端
+
 - `lib/util/web_message_handler/sync_test_message_handler.dart`
 - `lib/util/web_message_handler/tp_web_message_listener.dart`
 - `lib/page/sync_test/sync_test_view_controller.dart`

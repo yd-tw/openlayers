@@ -349,7 +349,7 @@ export default function MapComponent() {
   useEffect(() => {
     const handleOrientation = (event) => {
       const alpha = event.alpha ?? 0;
-      const corrected = (360 - alpha + 360) % 360;
+      const corrected = (alpha + 270) % 360;
 
       setOrientation(corrected);
     };
