@@ -151,6 +151,10 @@ export default function OrientationMapPage() {
         {supported ? (
           <div className="space-y-2 text-sm text-gray-700">
             <div className="flex justify-between">
+              <span className="font-medium">啟用 (absolute):</span>
+              <span className="text-indigo-600 font-mono">{orientation.absolute}°</span>
+            </div>
+            <div className="flex justify-between">
               <span className="font-medium">方向 (Alpha):</span>
               <span className="text-indigo-600 font-mono">{orientation.alpha}°</span>
             </div>
