@@ -719,27 +719,62 @@ export default function MapComponent() {
             stroke="currentColor"
             viewBox="0 0 24 24"
           >
-            {isSelectingPath ? "選擇中..." : "路徑規劃"}
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M5 13l4 4L19 7"
+            />
+          </svg>
+          <span>{copyNotification}</span>
+        </div>
+      )}
 
-          {statusMessage && (
-            <div className="mt-3 text-center text-sm text-gray-700">
-              {statusMessage}
-            </div>
-          )}
+      {statusMessage && (
+        <div
+          style={{
+            position: "fixed",
+            bottom: "20px",
+            left: "50%",
+            transform: "translateX(-50%)",
+            backgroundColor: "#ffffff",
+            color: "#333",
+            padding: "12px 24px",
+            borderRadius: "8px",
+            boxShadow: "0 4px 6px rgba(0,0,0,0.3)",
+            zIndex: 10000,
+            fontSize: "14px",
+          }}
+        >
+          {statusMessage}
+        </div>
+      )}
 
-          {selectedPoints.length > 0 && (
-            <div className="mt-3 text-xs text-gray-600">
-              <div>
-                終點:{" "}
-                {selectedPoints[0] &&
-                  `${selectedPoints[0].lat.toFixed(6)}, ${selectedPoints[0].lng.toFixed(6)}`}
-              </div>
-              {selectedPoints[1] && (
-                <div>
-                  起點: {selectedPoints[1].lat.toFixed(6)},{" "}
-                  {selectedPoints[1].lng.toFixed(6)}
-                </div>
-              )}
+      {selectedPoints.length > 0 && (
+        <div
+          style={{
+            position: "fixed",
+            bottom: "80px",
+            left: "50%",
+            transform: "translateX(-50%)",
+            backgroundColor: "#ffffff",
+            color: "#333",
+            padding: "12px 24px",
+            borderRadius: "8px",
+            boxShadow: "0 4px 6px rgba(0,0,0,0.3)",
+            zIndex: 10000,
+            fontSize: "12px",
+          }}
+        >
+          <div>
+            終點:{" "}
+            {selectedPoints[0] &&
+              `${selectedPoints[0].lat.toFixed(6)}, ${selectedPoints[0].lng.toFixed(6)}`}
+          </div>
+          {selectedPoints[1] && (
+            <div>
+              起點: {selectedPoints[1].lat.toFixed(6)},{" "}
+              {selectedPoints[1].lng.toFixed(6)}
             </div>
           )}
         </div>
