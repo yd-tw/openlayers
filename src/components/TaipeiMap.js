@@ -517,15 +517,15 @@ export default function MapComponent() {
   }, [layers]);
 
   return (
-    <div className="relative h-screen w-full">
+    <div className="relative flex h-screen w-full flex-col">
       {/* 模式選擇器 - 置於地圖上方 */}
       <div className="">
         <MapModeSelector />
       </div>
 
-      <div className="h-full w-full relative">
+      <div className="relative flex-1">
         {/* 地圖 */}
-        <div ref={mapRef} className="h-screen w-full" />
+        <div ref={mapRef} className="w-full h-full" />
 
         {/* 圖層切換器 */}
         <LayerSwitcher
