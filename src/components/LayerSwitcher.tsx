@@ -38,8 +38,8 @@ function AccidentIcon() {
     <svg width="16px" height="16px">
       <defs>
         <radialGradient id="red-gradient" cx="50%" cy="50%" r="50%">
-          <stop offset="0%" stop-color="#e23b36" />
-          <stop offset="100%" stop-color="#ffe0da" />
+          <stop offset="0%" stopColor="#e23b36" />
+          <stop offset="100%" stopColor="#ffe0da" />
         </radialGradient>
       </defs>
 
