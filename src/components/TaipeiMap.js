@@ -26,11 +26,6 @@ import { getTownPassClient } from "@/lib/townpass/client";
 // Configs
 import weightConfig from "@/configs/weightConfig.json";
 
-/**
- * 從 API 資料建立線段圖層
- */
-function createLinesLayerFromAPI(data) {}
-
 export default function MapComponent() {
   const mapRef = useRef(null);
   const mapInstanceRef = useRef(null);
