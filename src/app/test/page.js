@@ -113,7 +113,8 @@ export default function MapWithOrientation() {
   useEffect(() => {
     const handleOrientation = (event) => {
       const alpha = event.alpha ?? 0;
-      setOrientation(alpha);
+      const corrected = (alpha + 270) % 360;
+      setOrientation(corrected);
     };
 
     if (window.DeviceOrientationEvent) {
