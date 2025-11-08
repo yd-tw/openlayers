@@ -135,9 +135,14 @@ export default function MapComponent() {
     };
 
     // === DeviceOrientation API ===
+    let lastUpdate = 0;
     const handleOrientation = (event) => {
-      // alpha 是相對於北方的角度（度數）
-      let heading = event.alpha;
+      const now = Date.now();
+      if (now - lastUpdate < 100) return; // 限制更新頻率為 100ms
+      
+      lastUpdate = now;
+
+      let heading = event.webkitCompassHeading ?? event.alpha;
       if (heading != null) {
         const rad = (heading * Math.PI) / 180;
         currentHeadingRef.current = rad;
@@ -147,16 +152,7 @@ export default function MapComponent() {
     };
 
     window.addEventListener("deviceorientationabsolute", handleOrientation);
-    
-    let lastAlpha = 0;
-    let smoothing = 0.1; // 0.0～1.0，越小越穩定但反應越慢
-
-    window.addEventListener("deviceorientation", (event) => {
-      if (event.alpha != null) {
-        lastAlpha = lastAlpha + smoothing * (event.alpha - lastAlpha);
-        updateDirection(lastAlpha); // 在這裡更新地圖方向
-      }
-    });
+    window.addEventListener("deviceorientation", handleOrientation);
 
     // === 載入其他圖層 ===
     LAYER_CONFIGS.forEach((config) => loadGeoJSONLayer(map, config));
