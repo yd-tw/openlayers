@@ -60,9 +60,14 @@ export default function MapComponent() {
     const pathSource = new VectorSource();
     const pathLayer = new VectorLayer({
       source: pathSource,
-      style: new Style({
-        stroke: new Stroke({ color: "#0000ff", width: 4 }),
-      }),
+      style: (feature) => {
+        // 根據是否為腳踏車道設定不同顏色
+        const isBikeLane = feature.get("isBikeLane");
+        const color = isBikeLane ? "#9b59b6" : "#ff8c00"; // 腳踏車道: 紫色, 一般道路: 橘色
+        return new Style({
+          stroke: new Stroke({ color: color, width: 4 }),
+        });
+      },
     });
     map.addLayer(pathLayer);
     pathLayerRef.current = pathLayer;
@@ -151,7 +156,7 @@ export default function MapComponent() {
   // 尋找路徑函數
   const findPath = async (start, end) => {
     try {
-      const response = await fetch("/api/pathfinding", {
+      const response = await fetch("/api/find-bike", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

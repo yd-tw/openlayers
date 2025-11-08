@@ -1,6 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import fs from "fs";
-import path from "path";
 
 interface RoadSegment {
   id: number;
@@ -219,18 +217,19 @@ class Graph {
     return this.edges.get(key) || [];
   }
 
-  // 計算邊的成本，優先選擇 bike=1 的路徑
+  // 計算邊的成本，優先選擇有人行道的路徑
   calculateEdgeCost(segment: RoadSegment): number {
     const distance = calculateDistance(
       { lat: segment.start_lat, lng: segment.start_lng },
       { lat: segment.end_lat, lng: segment.end_lng },
     );
 
-    // 如果 bike=1，成本較低；如果 bike=0，成本增加
+    // 如果有人行道（sidewalk 不為 null），成本較低；如果沒有人行道，成本增加
     // 使用權重因子來調整偏好程度
-    const bikeWeight = segment.bike === 1 ? 1.0 : 3.0; // bike=0 的路徑成本是 3 倍
+    const sidewalkWeight =
+      segment.sidewalk !== null && segment.sidewalk !== "" ? 1.0 : 3.0; // 無人行道的路徑成本是 3 倍
 
-    return distance * bikeWeight;
+    return distance * sidewalkWeight;
   }
 }
 
@@ -374,11 +373,11 @@ export async function POST(request: NextRequest) {
 
     // 計算統計資訊
     let totalDistance = 0;
-    let bikeDistance = 0;
+    let sidewalkDistance = 0;
     const segmentDetails: Array<{
       id: number;
       name: string;
-      bike: number;
+      sidewalk: string | null;
       distance: number;
     }> = [];
 
@@ -392,31 +391,51 @@ export async function POST(request: NextRequest) {
             { lat: segment.end_lat, lng: segment.end_lng },
           );
           totalDistance += distance;
-          if (segment.bike === 1) {
-            bikeDistance += distance;
+          if (segment.sidewalk !== null && segment.sidewalk !== "") {
+            sidewalkDistance += distance;
           }
           segmentDetails.push({
             id: segment.id,
             name: segment.name,
-            bike: segment.bike,
+            sidewalk: segment.sidewalk,
             distance: Math.round(distance * 100) / 100,
           });
         }
       }
     }
 
-    // 建立 GeoJSON 格式的路徑
+    // 建立 GeoJSON 格式的路徑，將每個路段分開以便標記不同顏色
+    const features = [];
+
+    for (let i = 0; i < routePath.length - 1; i++) {
+      const segmentId = routePath[i + 1].segmentId;
+      let hasSidewalk = false;
+
+      if (segmentId) {
+        const segment = segments.find((s) => s.id === segmentId);
+        if (segment && segment.sidewalk !== null && segment.sidewalk !== "") {
+          hasSidewalk = true;
+        }
+      }
+
+      features.push({
+        type: "Feature",
+        properties: {
+          hasSidewalk: hasSidewalk,
+        },
+        geometry: {
+          type: "LineString",
+          coordinates: [
+            [routePath[i].lng, routePath[i].lat],
+            [routePath[i + 1].lng, routePath[i + 1].lat],
+          ],
+        },
+      });
+    }
+
     const geojson = {
       type: "FeatureCollection",
-      features: [
-        {
-          type: "Feature",
-          geometry: {
-            type: "LineString",
-            coordinates: routePath.map((point) => [point.lng, point.lat]),
-          },
-        },
-      ],
+      features: features,
     };
 
     return NextResponse.json(geojson);
