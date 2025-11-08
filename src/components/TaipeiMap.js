@@ -90,6 +90,18 @@ export default function MapComponent() {
       mapObj.addLayer(accidentLayer);
       setLayers((prev) => ({ ...prev, accident: accidentLayer }));
       accidentLayer.set("displayName", "交通事故熱點");
+
+      // 根據 zoom 調整熱力圖細節
+      const view = mapObj.getView();
+      view.on("change:resolution", () => {
+        const zoom = view.getZoom();
+
+        const radius = Math.max(5, (zoom - 10) * 2); // zoom=18 時 ≈16px
+        const blur = radius * 1.5;
+
+        accidentLayer.setRadius(radius);
+        accidentLayer.setBlur(blur);
+      });
     });
 
     // === 點擊地圖複製經緯度功能 ===
@@ -133,7 +145,7 @@ export default function MapComponent() {
         new Style({
           image: new CircleStyle({
             radius: 8,
-            fill: new Fill({ color: "rgba(255, 0, 0, 0.7)" }),
+            fill: new Fill({ color: "#f5ba4b" }),
             stroke: new Stroke({ color: "#fff", width: 2 }),
           }),
         }),
@@ -231,11 +243,13 @@ export default function MapComponent() {
       const bikeVectorLayer = new VectorLayer({
         source: bikeVectorSource,
         visible: false,
-        style: (feature) => {
+        style: () => {
+          const zoom = mapInstanceRef.current?.getView()?.getZoom() ?? 18;
+          const width = Math.max(1, (zoom - 10) * 0.8);
           return new Style({
             stroke: new Stroke({
               color: "#fd853a",
-              width: 4,
+              width,
             }),
           });
         },
@@ -271,11 +285,13 @@ export default function MapComponent() {
       const sidewalkVectorLayer = new VectorLayer({
         source: sidewalkVectorSource,
         visible: false,
-        style: (feature) => {
+        style: () => {
+          const zoom = mapInstanceRef.current?.getView()?.getZoom() ?? 18;
+          const width = Math.max(1, (zoom - 10) * 0.8);
           return new Style({
             stroke: new Stroke({
               color: "#76a732",
-              width: 4,
+              width,
             }),
           });
         },
@@ -362,7 +378,7 @@ export default function MapComponent() {
         new Style({
           image: new CircleStyle({
             radius: 8,
-            fill: new Fill({ color: "#1151ff" }),
+            fill: new Fill({ color: "#71c5d5" }),
             stroke: new Stroke({ color: "#fff", width: 2 }),
           }),
         }),
@@ -372,8 +388,7 @@ export default function MapComponent() {
       const directionFeature = new Feature(new Polygon([[]]));
       directionFeature.setStyle(
         new Style({
-          fill: new Fill({ color: "rgba(17, 81, 255, 0.25)" }),
-          stroke: new Stroke({ color: "#1151ff", width: 2 }),
+          fill: new Fill({ color: "#93d4df" }),
         }),
       );
 
@@ -529,7 +544,7 @@ export default function MapComponent() {
             top: "20px",
             left: "50%",
             transform: "translateX(-50%)",
-            backgroundColor: "#16a34a",
+            backgroundColor: "#76a732",
             color: "white",
             padding: "12px 24px",
             borderRadius: "8px",
