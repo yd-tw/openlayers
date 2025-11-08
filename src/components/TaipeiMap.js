@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import "ol/ol.css";
 import Map from "ol/Map";
 import View from "ol/View";
@@ -10,10 +10,34 @@ import VectorSource from "ol/source/Vector";
 import OSM from "ol/source/OSM";
 import GeoJSON from "ol/format/GeoJSON";
 import { fromLonLat } from "ol/proj";
-import { Style, Stroke, Fill, Circle as CircleStyle } from "ol/style";
+import { Style, Stroke, Fill } from "ol/style";
+import LayerSwitcher from "./LayerSwitcher";
 
 export default function MapComponent() {
   const mapRef = useRef(null);
+  const [layers, setLayers] = useState({});
+  const [layerVisibility, setLayerVisibility] = useState({});
+
+  useEffect(() => {
+    const visibility = {};
+    Object.keys(layers).forEach(layerName => {
+      visibility[layerName] = layers[layerName]?.getVisible() ?? true;
+    });
+    setLayerVisibility(visibility);
+  }, [layers]);
+
+  const toggleLayer = (layerName) => {
+    const layer = layers[layerName];
+    if (layer) {
+      const newVisibility = !layer.getVisible();
+      layer.setVisible(newVisibility);
+      // Force a re-render by updating the layer visibility state
+      setLayerVisibility((prev) => ({
+        ...prev,
+        [layerName]: newVisibility,
+      }));
+    }
+  };
 
   useEffect(() => {
     if (!mapRef.current) return;
@@ -45,6 +69,7 @@ export default function MapComponent() {
         });
 
         map.addLayer(vectorLayer);
+        setLayers((prev) => ({ ...prev, highway: vectorLayer }));
       });
 
     fetch("/osm-walk.geojson")
@@ -65,6 +90,7 @@ export default function MapComponent() {
         });
 
         map.addLayer(vLayer);
+        setLayers((prev) => ({ ...prev, walk: vLayer }));
       });
 
     fetch("/bike.geojson")
@@ -84,10 +110,16 @@ export default function MapComponent() {
         });
 
         map.addLayer(vLayer);
+        setLayers((prev) => ({ ...prev, bike: vLayer }));
       });
 
     return () => map.setTarget(null);
   }, []);
 
-  return <div ref={mapRef} className="h-screen w-full"></div>;
+  return (
+    <>
+      <div ref={mapRef} className="h-screen w-full"></div>
+      <LayerSwitcher layers={layers} toggleLayer={toggleLayer} />
+    </>
+  );
 }

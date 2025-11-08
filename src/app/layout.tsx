@@ -32,7 +32,7 @@ export default function RootLayout({
       >
         <GoogleAnalytics gaId="" />
         <div>
-          <Navbar />
+          {/* <Navbar /> */}
           {children}
           {/* <Footer /> */}
         </div>
