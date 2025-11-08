@@ -1,4 +1,5 @@
 "use client";
+import { useState } from "react";
 
 interface Layer {
   get: (key: string) => any;
@@ -11,31 +12,96 @@ interface LayerSwitcherProps {
   toggleLayer: (layerName: string) => void;
 }
 
+function LayerIcon() {
+  return (
+    <svg
+      stroke="currentColor"
+      fill="none"
+      stroke-width="0"
+      viewBox="0 0 15 15"
+      height="32px"
+      width="32px"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        fill-rule="evenodd"
+        clip-rule="evenodd"
+        d="M7.75432 1.81954C7.59742 1.72682 7.4025 1.72682 7.24559 1.81954L1.74559 5.06954C1.59336 5.15949 1.49996 5.32317 1.49996 5.5C1.49996 5.67683 1.59336 5.84051 1.74559 5.93046L7.24559 9.18046C7.4025 9.27318 7.59742 9.27318 7.75432 9.18046L13.2543 5.93046C13.4066 5.84051 13.5 5.67683 13.5 5.5C13.5 5.32317 13.4066 5.15949 13.2543 5.06954L7.75432 1.81954ZM7.49996 8.16923L2.9828 5.5L7.49996 2.83077L12.0171 5.5L7.49996 8.16923ZM2.25432 8.31954C2.01658 8.17906 1.70998 8.2579 1.56949 8.49564C1.42901 8.73337 1.50785 9.03998 1.74559 9.18046L7.24559 12.4305C7.4025 12.5232 7.59742 12.5232 7.75432 12.4305L13.2543 9.18046C13.4921 9.03998 13.5709 8.73337 13.4304 8.49564C13.2899 8.2579 12.9833 8.17906 12.7456 8.31954L7.49996 11.4192L2.25432 8.31954Z"
+        fill="currentColor"
+      ></path>
+    </svg>
+  );
+}
+
+function LineIcon() {
+  return (
+    <svg
+      stroke="currentColor"
+      fill="currentColor"
+      stroke-width="0"
+      viewBox="0 0 24 24"
+      height="16px"
+      width="16px"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path d="M4.5 12.75a.75.75 0 0 1 .75-.75h13.5a.75.75 0 0 1 0 1.5H5.25a.75.75 0 0 1-.75-.75Z"></path>
+    </svg>
+  );
+}
+
 export default function LayerSwitcher({
   layers,
   toggleLayer,
 }: LayerSwitcherProps) {
+  const [show, setShow] = useState(true);
+
+  function clickHandler() {
+    setShow(!show);
+  }
+
   return (
-    <div className="absolute top-2.5 right-2.5 z-[1000] rounded-md bg-white p-2.5 shadow-lg">
-      <h4 className="mb-2 text-base font-semibold">圖層控制</h4>
+    <div className="absolute top-2.5 right-2.5 z-[1000] rounded-md bg-white p-2.5 shadow-lg transition-all ease-in-out">
+      <div className="mb-2 flex justify-end" onClick={clickHandler}>
+        <LayerIcon />
+      </div>
       <div className="space-y-2">
-        {Object.keys(layers).map((layerName) => (
-          <div key={layerName} className="flex items-center gap-2">
-            <input
-              type="checkbox"
-              id={`layer-${layerName}`}
-              checked={layers[layerName]?.getVisible() ?? false}
-              onChange={() => toggleLayer(layerName)}
-              className="h-4 w-4 cursor-pointer accent-blue-600"
-            />
-            <label
-              htmlFor={`layer-${layerName}`}
-              className="cursor-pointer text-sm select-none"
-            >
-              {layers[layerName]?.get("displayName") || layerName}
-            </label>
-          </div>
-        ))}
+        {show &&
+          Object.keys(layers).map((layerName) => (
+            <div key={layerName} className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                id={`layer-${layerName}`}
+                checked={layers[layerName]?.getVisible() ?? false}
+                onChange={() => toggleLayer(layerName)}
+                className="hidden h-4 w-4 cursor-pointer accent-blue-600"
+              />
+              <label
+                htmlFor={`layer-${layerName}`}
+                className={`cursor-pointer rounded p-2 text-sm transition-shadow duration-150 select-none ${
+                  layers[layerName]?.getVisible()
+                    ? "bg-gray-100 shadow-inner"
+                    : "bg-gray-50"
+                } flex-1`}
+              >
+                <div className="flex justify-between">
+                  {layers[layerName]?.get("displayName") || layerName}
+                  {layers[layerName]?.get("displayName") != "交通事故熱點" ? (
+                    <span
+                      style={{
+                        textDecoration: `solid line-through ${
+                          layers[layerName]?.get("displayName") != "人行道"
+                            ? "#fd853a"
+                            : "#76a732"
+                        } 4px`,
+                      }}
+                    >
+                      　
+                    </span>
+                  ) : null}
+                </div>
+              </label>
+            </div>
+          ))}
       </div>
     </div>
   );
