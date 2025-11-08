@@ -61,9 +61,9 @@ export default function MapComponent() {
     const pathLayer = new VectorLayer({
       source: pathSource,
       style: (feature) => {
-        // 根據是否為腳踏車道設定不同顏色
+        // 根據道路類型設定不同顏色
         const isBikeLane = feature.get("isBikeLane");
-        const color = isBikeLane ? "#9b59b6" : "#ff8c00"; // 腳踏車道: 紫色, 一般道路: 橘色
+        const color = isBikeLane ? "#9b59b6" : "#ff8c00"; // 自行車道: 紫色, 其餘: 橘色
         return new Style({
           stroke: new Stroke({ color: color, width: 4 }),
         });
@@ -156,12 +156,12 @@ export default function MapComponent() {
   // 尋找路徑函數
   const findPath = async (start, end) => {
     try {
-      const response = await fetch("/api/find-bike", {
+      const response = await fetch("/api/find", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ start, end }),
+        body: JSON.stringify({ start, end, type: 'bike' }),
       });
 
       if (!response.ok) {

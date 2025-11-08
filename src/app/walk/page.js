@@ -61,9 +61,9 @@ export default function MapComponent() {
     const pathLayer = new VectorLayer({
       source: pathSource,
       style: (feature) => {
-        // 根據是否有人行道設定不同顏色
+        // 根據道路類型設定不同顏色
         const hasSidewalk = feature.get("hasSidewalk");
-        const color = hasSidewalk ? "#3498db" : "#e74c3c"; // 有人行道: 藍色, 無人行道: 紅色
+        const color = hasSidewalk ? "#2ecc71" : "#ff8c00"; // 行人道: 綠色, 其餘: 橘色
         return new Style({
           stroke: new Stroke({ color: color, width: 4 }),
         });
@@ -156,12 +156,12 @@ export default function MapComponent() {
   // 尋找路徑函數
   const findPath = async (start, end) => {
     try {
-      const response = await fetch("/api/find-walk", {
+      const response = await fetch("/api/find", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ start, end }),
+        body: JSON.stringify({ start, end, type: "walk" }),
       });
 
       if (!response.ok) {
