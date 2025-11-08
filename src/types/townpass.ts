@@ -16,6 +16,8 @@ export interface SyncMessage {
   timestamp: number;
   icon?: string;
   alertMethod?: AlertMethod;
+  vibrationPattern?: string;
+  type?: string;
   targetModes?: UserMode[];
 }
 
@@ -45,6 +47,14 @@ export interface SyncRequest {
 export interface SyncResponse {
   statusCode: number;
   body: string;
+  timestamp: string;
+}
+
+// Location 更新資料
+export interface LocationUpdate {
+  latitude: number;
+  longitude: number;
+  isManual: boolean;
   timestamp: string;
 }
 
