@@ -8,10 +8,10 @@ import TileLayer from "ol/layer/Tile";
 import VectorLayer from "ol/layer/Vector";
 import VectorSource from "ol/source/Vector";
 import OSM from "ol/source/OSM";
-import Geolocation from "ol/Geolocation";
 import GeoJSON from "ol/format/GeoJSON";
 import Feature from "ol/Feature";
 import Point from "ol/geom/Point";
+import { Polygon } from "ol/geom";
 import LineString from "ol/geom/LineString";
 import Heatmap from "ol/layer/Heatmap";
 import { fromLonLat, toLonLat } from "ol/proj";
@@ -116,6 +116,12 @@ export default function MapComponent() {
   const mapRef = useRef(null);
   const mapInstanceRef = useRef(null);
   const heatmapLayerRef = useRef(null);
+  const positionFeature = useRef(null);
+  const directionFeature = useRef(null);
+  const [map, setMap] = useState(null);
+  const [view, setView] = useState(null);
+  const [orientation, setOrientation] = useState(null);
+  const [position, setPosition] = useState(null);
   const [layers, setLayers] = useState({});
   const [layerVisibility, setLayerVisibility] = useState({});
   const [a1AccidentDatas, setA1AccidentDatas] = useState([]);
@@ -138,57 +144,62 @@ export default function MapComponent() {
       });
 
     // 初始化地圖
-    const map = new Map({
+    const initialView = new View({
+      center: fromLonLat([121.534, 25.021]),
+      zoom: 20,
+    });
+
+    const mapObj = new Map({
       target: mapRef.current,
       layers: [new TileLayer({ source: new OSM() })],
-      view: new View({
-        center: fromLonLat([121.534, 25.021]),
-        zoom: 20,
-      }),
+      view: initialView,
     });
 
-    mapInstanceRef.current = map;
+    mapInstanceRef.current = mapObj;
+    setMap(mapObj);
+    setView(initialView);
 
-    // 定位功能
-    const geolocation = new Geolocation({
-      tracking: true,
-      projection: map.getView().getProjection(),
+    const vectorSource = new VectorSource();
+    const vectorLayer = new VectorLayer({
+      source: vectorSource,
     });
+    mapObj.addLayer(vectorLayer);
 
-    // 使用者位置圓點
-    const positionFeature = new Feature();
-    positionFeature.setStyle(
+    // 位置點
+    positionFeature.current = new Feature(new Point(fromLonLat([121.5, 25.05])));
+    positionFeature.current.setStyle(
       new Style({
         image: new CircleStyle({
-          radius: 10,
-          fill: new Fill({ color: "#0f53fe" }),
-          stroke: new Stroke({ color: "#fff", width: 3 }),
+          radius: 8,
+          fill: new Fill({ color: "#1151ff" }),
+          stroke: new Stroke({ color: "#fff", width: 2 }),
         }),
-      }),
+      })
     );
 
-    // 建立位置圖層
-    const vectorSource = new VectorSource({
-      features: [positionFeature],
-    });
-    const positionLayer = new VectorLayer({ source: vectorSource });
-    map.addLayer(positionLayer);
+    // 方向錐形
+    directionFeature.current = new Feature(
+      new Polygon([[]]) // 初始空
+    );
+    directionFeature.current.setStyle(
+      new Style({
+        fill: new Fill({
+          color: "rgba(17, 81, 255, 0.25)",
+        }),
+        stroke: new Stroke({
+          color: "#1151ff",
+          width: 2,
+        }),
+      })
+    );
 
-    // 位置變化監聽
-    geolocation.on("change:position", () => {
-      const coords = geolocation.getPosition();
-      if (coords) {
-        positionFeature.setGeometry(new Point(coords));
-        // 地圖視角跟隨使用者位置
-        map.getView().animate({ center: coords, duration: 800 });
-      }
-    });
+    vectorSource.addFeatures([positionFeature.current, directionFeature.current]);
 
     // === 載入其他圖層 ===
-    LAYER_CONFIGS.forEach((config) => loadGeoJSONLayer(map, config));
+    LAYER_CONFIGS.forEach((config) => loadGeoJSONLayer(mapObj, config));
 
     // === 載入 API 線段資料 ===
-    loadAPILinesLayer(map);
+    loadAPILinesLayer(mapObj);
 
     // === 點擊地圖複製經緯度功能 ===
     const clickMarkerSource = new VectorSource();
@@ -196,10 +207,10 @@ export default function MapComponent() {
       source: clickMarkerSource,
       zIndex: 9999,
     });
-    map.addLayer(clickMarkerLayer);
+    mapObj.addLayer(clickMarkerLayer);
 
     // 地圖點擊事件
-    map.on("singleclick", (evt) => {
+    mapObj.on("singleclick", (evt) => {
       const coords = evt.coordinate;
       const lonLat = toLonLat(coords);
       const [lon, lat] = lonLat;
@@ -251,8 +262,7 @@ export default function MapComponent() {
     });
 
     return () => {
-      geolocation.setTracking(false);
-      map.setTarget(null);
+      mapObj.setTarget(null);
     };
   }, []);
 
@@ -298,6 +308,83 @@ export default function MapComponent() {
       console.error(`載入 ${config.name} 圖層失敗:`, error);
     }
   };
+
+  // 取得定位資訊
+  useEffect(() => {
+    if (!map) return;
+
+    if ("geolocation" in navigator) {
+      const watchId = navigator.geolocation.watchPosition(
+        (pos) => {
+          const coords = fromLonLat([pos.coords.longitude, pos.coords.latitude]);
+          setPosition(coords);
+          positionFeature.current?.getGeometry()?.setCoordinates(coords);
+          view?.setCenter(coords);
+        },
+        (err) => console.error(err),
+        { enableHighAccuracy: true }
+      );
+
+      return () => navigator.geolocation.clearWatch(watchId);
+    }
+  }, [map, view]);
+
+  // 取得方向資訊
+  useEffect(() => {
+    const handleOrientation = (event) => {
+      const alpha = event.alpha ?? 0;
+      setOrientation(alpha);
+    };
+
+    if (window.DeviceOrientationEvent) {
+      if (typeof DeviceOrientationEvent.requestPermission === "function") {
+        // iOS
+        DeviceOrientationEvent.requestPermission()
+          .then((res) => {
+            if (res === "granted") {
+              window.addEventListener("deviceorientationabsolute", handleOrientation);
+            }
+          })
+          .catch(console.error);
+      } else {
+        window.addEventListener("deviceorientationabsolute", handleOrientation);
+      }
+    }
+
+    return () => {
+      window.removeEventListener("deviceorientationabsolute", handleOrientation);
+    };
+  }, []);
+
+  // 更新方向錐形
+  useEffect(() => {
+    if (!position || orientation === null) return;
+
+    const [x, y] = position;
+    const distance = 30; // 錐形長度
+    const rad = (orientation * Math.PI) / 180;
+
+    const frontX = x + Math.sin(rad) * distance;
+    const frontY = y - Math.cos(rad) * distance;
+
+    const leftX = x + Math.sin(rad - 0.3) * distance * 0.8;
+    const leftY = y - Math.cos(rad - 0.3) * distance * 0.8;
+
+    const rightX = x + Math.sin(rad + 0.3) * distance * 0.8;
+    const rightY = y - Math.cos(rad + 0.3) * distance * 0.8;
+
+    const coneCoords = [
+      [
+        [x, y],
+        [leftX, leftY],
+        [frontX, frontY],
+        [rightX, rightY],
+        [x, y],
+      ],
+    ];
+
+    directionFeature.current?.getGeometry()?.setCoordinates(coneCoords);
+  }, [position, orientation]);
 
   // 同步圖層可見性狀態
   useEffect(() => {
