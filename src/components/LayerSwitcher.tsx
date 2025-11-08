@@ -61,7 +61,7 @@ export default function LayerSwitcher({
 
   return (
     <div className="absolute top-2.5 right-2.5 z-[1000] rounded-md bg-white p-2.5 shadow-lg transition-all ease-in-out">
-      <div className="mb-2 flex justify-end" onClick={clickHandler}>
+      <div className={`${show ? "mb-2" : ""} flex justify-end`} onClick={clickHandler}>
         <LayerIcon />
       </div>
       <div className="space-y-2">
