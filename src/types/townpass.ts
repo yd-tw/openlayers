@@ -16,6 +16,8 @@ export interface SyncMessage {
   timestamp: number;
   icon?: string;
   alertMethod?: AlertMethod;
+  vibrationPattern?: string;
+  type?: string;
   targetModes?: UserMode[];
 }
 

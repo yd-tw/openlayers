@@ -17,6 +17,7 @@ import Heatmap from "ol/layer/Heatmap";
 import { fromLonLat, toLonLat } from "ol/proj";
 import { Style, Stroke, Fill, Circle as CircleStyle } from "ol/style";
 import LayerSwitcher from "./LayerSwitcher";
+import MapModeSelector from "./MapModeSelector";
 
 // GeoJSON 圖層配置
 const LAYER_CONFIGS = [
@@ -381,8 +382,16 @@ export default function MapComponent() {
   };
 
   return (
-    <>
+    <div className="relative h-screen w-full">
+      {/* 模式選擇器 - 置於地圖上方 */}
+      <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-10">
+        <MapModeSelector />
+      </div>
+
+      {/* 地圖 */}
       <div ref={mapRef} className="h-screen w-full" />
+
+      {/* 圖層切換器 */}
       <LayerSwitcher
         layers={layers}
         layerVisibility={layerVisibility}
@@ -430,6 +439,6 @@ export default function MapComponent() {
           </div>
         </div>
       )}
-    </>
+    </div>
   );
 }
