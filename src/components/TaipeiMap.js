@@ -11,7 +11,6 @@ import OSM from "ol/source/OSM";
 import GeoJSON from "ol/format/GeoJSON";
 import Feature from "ol/Feature";
 import Point from "ol/geom/Point";
-import { Polygon } from "ol/geom";
 import LineString from "ol/geom/LineString";
 import Heatmap from "ol/layer/Heatmap";
 import { fromLonLat, toLonLat } from "ol/proj";
@@ -119,11 +118,16 @@ export default function MapComponent() {
   const mapInstanceRef = useRef(null);
   const heatmapLayerRef = useRef(null);
   const positionFeatureRef = useRef(null);
+  const directionFeatureRef = useRef(null);
   const [layers, setLayers] = useState({});
   const [layerVisibility, setLayerVisibility] = useState({});
   const [a1AccidentDatas, setA1AccidentDatas] = useState([]);
   const [a2AccidentDatas, setA2AccidentDatas] = useState([]);
   const [copyNotification, setCopyNotification] = useState(null);
+  const [map, setMap] = useState(null);
+  const [view, setView] = useState(null);
+  const [position, setPosition] = useState(null);
+  const [orientation, setOrientation] = useState(null);
 
   useEffect(() => {
     if (!mapRef.current) return;
@@ -330,7 +334,7 @@ export default function MapComponent() {
             pos.coords.latitude,
           ]);
           setPosition(coords);
-          positionFeature.current?.getGeometry()?.setCoordinates(coords);
+          positionFeatureRef.current?.setGeometry(new Point(coords));
           view?.setCenter(coords);
         },
         (err) => console.error(err),
@@ -397,7 +401,7 @@ export default function MapComponent() {
     }
 
     coords.push([x, y]); // 封閉
-    directionFeature.current?.getGeometry()?.setCoordinates([coords]);
+    directionFeatureRef.current?.getGeometry()?.setCoordinates([coords]);
   }, [position, orientation]);
 
   // 同步圖層可見性狀態
