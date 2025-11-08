@@ -8,6 +8,7 @@ import TileLayer from "ol/layer/Tile";
 import VectorLayer from "ol/layer/Vector";
 import VectorSource from "ol/source/Vector";
 import OSM from "ol/source/OSM";
+import XYZ from "ol/source/XYZ";
 import Feature from "ol/Feature";
 import Point from "ol/geom/Point";
 import Polygon from "ol/geom/Polygon";
@@ -47,9 +48,16 @@ export default function MapComponent() {
       zoom: 20,
     });
 
+    const baseLayer = new TileLayer({
+      source: new XYZ({
+        url: "https://basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png",
+        attributions: "© OpenStreetMap © CARTO",
+      }),
+    });
+
     const mapObj = new Map({
       target: mapRef.current,
-      layers: [new TileLayer({ source: new OSM() })],
+      layers: [baseLayer],
       view: initialView,
     });
 
@@ -65,10 +73,16 @@ export default function MapComponent() {
     });
 
     // === 載入 API 線段資料 ===
-    loadLinesLayer().then((linesLayer) => {
-      mapObj.addLayer(linesLayer);
-      setLayers((prev) => ({ ...prev, lines: linesLayer }));
-      linesLayer.set("displayName", "路況");
+    loadLinesLayer().then(([bikeVectorLayer, sidewalkVectorLayer]) => {
+      mapObj.addLayer(bikeVectorLayer);
+      mapObj.addLayer(sidewalkVectorLayer);
+      setLayers((prev) => ({
+        ...prev,
+        bike: bikeVectorLayer,
+        sidewalk: sidewalkVectorLayer,
+      }));
+      bikeVectorLayer.set("displayName", "自行車道");
+      sidewalkVectorLayer.set("displayName", "人行道");
     });
 
     // === 載入事故圖層 ===
@@ -183,58 +197,91 @@ export default function MapComponent() {
    */
   const loadLinesLayer = async () => {
     try {
-      const response = await fetch("https://tmp114514.ricecall.com/lines");
-      const data = await response.json();
+      const data = await fetch("https://tmp114514.ricecall.com/lines").then(
+        (res) => res.json(),
+      );
 
       // 建立 Features
-      const features = data.lines.map((line) => {
-        const startCoord = fromLonLat([line.start_lng, line.start_lat]);
-        const endCoord = fromLonLat([line.end_lng, line.end_lat]);
+      const bikeFeatures = data.lines
+        .filter((line) => line.bike === 1)
+        .map((line) => {
+          const startCoord = fromLonLat([line.start_lng, line.start_lat]);
+          const endCoord = fromLonLat([line.end_lng, line.end_lat]);
 
-        const lineGeometry = new LineString([startCoord, endCoord]);
+          const lineGeometry = new LineString([startCoord, endCoord]);
 
-        const feature = new Feature({
-          geometry: lineGeometry,
-          id: line.id,
-          name: line.name,
-          bike: line.bike,
-          rd_from: line.rd_from,
-          sidewalk: line.sidewalk,
+          const feature = new Feature({
+            geometry: lineGeometry,
+            id: line.id,
+            name: line.name,
+            bike: line.bike,
+            rd_from: line.rd_from,
+            sidewalk: line.sidewalk,
+          });
+
+          return feature;
         });
 
-        return feature;
-      });
-
       // 建立 Vector Source
-      const vectorSource = new VectorSource({
-        features: features,
+      const bikeVectorSource = new VectorSource({
+        features: bikeFeatures,
       });
 
       // 建立 Vector Layer 並設定動態樣式
-      const vectorLayer = new VectorLayer({
-        source: vectorSource,
+      const bikeVectorLayer = new VectorLayer({
+        source: bikeVectorSource,
         visible: false,
         style: (feature) => {
-          const isBike = feature.get("bike") === 1;
-          const hasSidewalk =
-            feature.get("sidewalk") !== null &&
-            feature.get("sidewalk") !== undefined;
-
-          let color = "#3b82f6";
-
-          if (hasSidewalk) color = "#00ff26";
-          else if (isBike) color = "#ff00ff";
-
           return new Style({
             stroke: new Stroke({
-              color: color,
-              width: 2,
+              color: "#fd853a",
+              width: 4,
             }),
           });
         },
       });
 
-      return vectorLayer;
+      // 建立 Features
+      const sidewalkFeatures = data.lines
+        .filter((line) => line.sidewalk !== null && line.sidewalk !== undefined)
+        .map((line) => {
+          const startCoord = fromLonLat([line.start_lng, line.start_lat]);
+          const endCoord = fromLonLat([line.end_lng, line.end_lat]);
+
+          const lineGeometry = new LineString([startCoord, endCoord]);
+
+          const feature = new Feature({
+            geometry: lineGeometry,
+            id: line.id,
+            name: line.name,
+            bike: line.bike,
+            rd_from: line.rd_from,
+            sidewalk: line.sidewalk,
+          });
+
+          return feature;
+        });
+
+      // 建立 Vector Source
+      const sidewalkVectorSource = new VectorSource({
+        features: sidewalkFeatures,
+      });
+
+      // 建立 Vector Layer 並設定動態樣式
+      const sidewalkVectorLayer = new VectorLayer({
+        source: sidewalkVectorSource,
+        visible: false,
+        style: (feature) => {
+          return new Style({
+            stroke: new Stroke({
+              color: "#76a732",
+              width: 4,
+            }),
+          });
+        },
+      });
+
+      return [bikeVectorLayer, sidewalkVectorLayer];
     } catch (error) {
       console.error("載入 API 線段圖層失敗:", error);
     }
@@ -254,20 +301,28 @@ export default function MapComponent() {
    */
   const loadAccidentLayer = async () => {
     try {
-      const datas = await Promise.all([
+      const [a1Data, a2Data] = await Promise.all([
         fetch("/accident_a1.json").then((res) => res.json()),
         fetch("/accident_a2.json").then((res) => res.json()),
-      ]).then(([a1, a2]) => [...a1, ...a2]);
+      ]);
 
       // 建立 Features
-      const features = datas.map((p) => {
-        const feature = new Feature({
-          geometry: new Point(fromLonLat([p.lon + 100, p.lat + 20])),
-        });
-
-        feature.set("weight", weightConfig.a2AccidentWeight);
-
-        return feature;
+      const features = [];
+      a1Data.forEach((p) => {
+        features.push(
+          new Feature({
+            geometry: new Point(fromLonLat([p.lon + 100, p.lat + 20])),
+            weight: weightConfig.a1AccidentWeight,
+          }),
+        );
+      });
+      a2Data.forEach((p) => {
+        features.push(
+          new Feature({
+            geometry: new Point(fromLonLat([p.lon + 100, p.lat + 20])),
+            weight: weightConfig.a2AccidentWeight,
+          }),
+        );
       });
 
       // 建立熱力圖圖層
@@ -276,17 +331,17 @@ export default function MapComponent() {
         blur: 20,
         radius: 10,
         opacity: 0.8,
-        visible: false, // 預設關閉
+        visible: false,
       });
 
       // 設定熱力圖漸層色
       heatLayer.setGradient([
-        "#fff0f5", // very light pink (LavenderBlush)
-        "#ffb6c1", // lightpink
-        "#ff69b4", // hotpink
-        "#ff1493", // deeppink
-        "#c71585", // mediumvioletred
-        "#8b008b", // darkmagenta
+        "#ffe0da",
+        "#fcbcb2",
+        "#f89a90",
+        "#f2786f",
+        "#eb5b56",
+        "#e23b36",
       ]);
 
       return heatLayer;
