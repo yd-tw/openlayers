@@ -312,30 +312,28 @@ export default function MapComponent() {
   useEffect(() => {
     let features = [];
 
-    // A1 事故資料
+    // A1 事故資料 - 使用 concat 避免 stack overflow
     if (a1AccidentDatas.length > 0) {
-      features.push(
-        ...a1AccidentDatas.map((p) => {
-          const f = new Feature({
-            geometry: new Point(fromLonLat([p.lon + 100, p.lat + 20])),
-          });
-          f.set("weight", weightConfig.a1AccidentWeight);
-          return f;
-        }),
-      );
+      const a1Features = a1AccidentDatas.map((p) => {
+        const f = new Feature({
+          geometry: new Point(fromLonLat([p.lon + 100, p.lat + 20])),
+        });
+        f.set("weight", weightConfig.a1AccidentWeight);
+        return f;
+      });
+      features = features.concat(a1Features);
     }
 
-    // A2 事故資料
+    // A2 事故資料 - 使用 concat 避免 stack overflow
     if (a2AccidentDatas.length > 0) {
-      features.push(
-        ...a2AccidentDatas.map((p) => {
-          const f = new Feature({
-            geometry: new Point(fromLonLat([p.lon + 100, p.lat + 20])),
-          });
-          f.set("weight", weightConfig.a2AccidentWeight);
-          return f;
-        }),
-      );
+      const a2Features = a2AccidentDatas.map((p) => {
+        const f = new Feature({
+          geometry: new Point(fromLonLat([p.lon + 100, p.lat + 20])),
+        });
+        f.set("weight", weightConfig.a2AccidentWeight);
+        return f;
+      });
+      features = features.concat(a2Features);
     }
 
     // 建立熱力圖圖層

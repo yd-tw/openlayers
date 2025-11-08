@@ -13,6 +13,9 @@ declare global {
     flutterObject?: {
       postMessage: (message: string) => Promise<string>;
     };
+    flutter_inappwebview?: {
+      callHandler: (handlerName: string, ...args: any[]) => Promise<any>;
+    };
     townpassEventHandlers?: boolean;
   }
 }
@@ -27,6 +30,8 @@ export class TownPassClient {
 
     if (!this.flutter) {
       console.warn("TownPass: flutterObject not found. Running in web mode.");
+    } else {
+      console.log("TownPass: Using JavaScriptHandler bridge");
     }
 
     this.initEventHandlers();
@@ -50,9 +55,26 @@ export class TownPassClient {
   }
 
   /**
-   * 發送訊息到 Flutter
+   * 發送訊息到 Flutter（使用 JavaScriptHandler - 更可靠）
    */
   private async sendMessage(name: string, data: any = null): Promise<any> {
+    // 優先使用 JavaScriptHandler API（更可靠）
+    if (typeof window !== "undefined" && window.flutter_inappwebview) {
+      try {
+        console.log(`TownPass: Calling handler '${name}' with data:`, data);
+        const result = await window.flutter_inappwebview.callHandler(
+          name,
+          data,
+        );
+        console.log(`TownPass: Handler '${name}' returned:`, result);
+        return result?.data ?? result;
+      } catch (e) {
+        console.error(`TownPass: Error calling handler '${name}':`, e);
+        throw e;
+      }
+    }
+
+    // Fallback: 使用舊的 WebMessageListener API
     if (!this.flutter) {
       throw new Error("Not running in Flutter WebView");
     }
