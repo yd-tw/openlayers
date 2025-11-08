@@ -3,7 +3,9 @@
     "allow": [
       "Bash(npm run build:*)",
       "Bash(git add:*)",
-      "Bash(git commit -m \"$(cat <<''EOF''\nfix: 修復 TypeScript 編譯錯誤\n\n- 新增 SyncMessage 介面缺少的 alertMethod 和 targetModes 屬性\n- 修正 sendMessage 方法中 reply 變數作用域問題，使其可在 catch 區塊中存取\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")"
+      "Bash(git commit -m \"$(cat <<''EOF''\nfix: 修復 TypeScript 編譯錯誤\n\n- 新增 SyncMessage 介面缺少的 alertMethod 和 targetModes 屬性\n- 修正 sendMessage 方法中 reply 變數作用域問題，使其可在 catch 區塊中存取\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")",
+      "Bash(npm run dev:*)",
+      "Bash(node -c:*)"
     ],
     "deny": [],
     "ask": []

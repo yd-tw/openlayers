@@ -8,44 +8,90 @@ import TileLayer from "ol/layer/Tile";
 import VectorLayer from "ol/layer/Vector";
 import VectorSource from "ol/source/Vector";
 import OSM from "ol/source/OSM";
-import { fromLonLat } from "ol/proj";
-import { Style, Fill, Stroke, Circle as CircleStyle } from "ol/style";
+import Geolocation from "ol/Geolocation";
+import GeoJSON from "ol/format/GeoJSON";
 import Feature from "ol/Feature";
-import { Point, Polygon } from "ol/geom";
+import Point from "ol/geom/Point";
+import Polygon from "ol/geom/Polygon";
+import CircleGeom from "ol/geom/Circle";
+import { fromLonLat } from "ol/proj";
+import { Style, Stroke, Fill, Circle as CircleStyle, Text } from "ol/style";
+import { toLonLat } from "ol/proj";
+import LayerSwitcher from "../../components/LayerSwitcher";
 
-export default function MapWithOrientation() {
+// === GeoJSON 圖層設定 ===
+const LAYER_CONFIGS = [
+  {
+    name: "highway",
+    url: "/highway.geojson",
+    style: new Style({
+      stroke: new Stroke({ color: "#ff6600", width: 2 }),
+      fill: new Fill({ color: "rgba(255, 165, 0, 0.3)" }),
+    }),
+  },
+  {
+    name: "walk",
+    url: "/osm-walk.geojson",
+    style: new Style({
+      stroke: new Stroke({ color: "rgba(0, 255, 38, 0.74)", width: 5 }),
+    }),
+  },
+  {
+    name: "bike",
+    url: "/bike.geojson",
+    style: new Style({
+      stroke: new Stroke({ color: "rgba(255, 0, 255, 0.74)", width: 5 }),
+    }),
+  },
+];
+
+export default function MapComponent() {
   const mapRef = useRef(null);
-  const [map, setMap] = useState(null);
-  const [view, setView] = useState(null);
-  const positionFeature = useRef(null);
-  const directionFeature = useRef(null);
-  const [orientation, setOrientation] = useState(null); // α方向角
-  const [position, setPosition] = useState(null);
+  const mapInstanceRef = useRef(null);
+  const [layers, setLayers] = useState({});
+  const [layerVisibility, setLayerVisibility] = useState({});
+  const [copyNotification, setCopyNotification] = useState(null);
+  const clickMarkerRef = useRef(null);
 
-  // 初始化地圖
   useEffect(() => {
     if (!mapRef.current) return;
 
-    const initialView = new View({
-      center: fromLonLat([121.5, 25.05]),
-      zoom: 14,
-    });
-
-    const mapObj = new Map({
+    // === 初始化地圖 ===
+    const map = new Map({
       target: mapRef.current,
       layers: [new TileLayer({ source: new OSM() })],
-      view: initialView,
+      view: new View({
+        center: fromLonLat([121.5, 25.05]),
+        zoom: 17,
+      }),
+    });
+    mapInstanceRef.current = map;
+
+    // === 定位功能 ===
+    const geolocation = new Geolocation({
+      tracking: true,
+      projection: map.getView().getProjection(),
     });
 
-    const vectorSource = new VectorSource();
-    const vectorLayer = new VectorLayer({
-      source: vectorSource,
-    });
-    mapObj.addLayer(vectorLayer);
+    // === 三個圖層元素 ===
+    const accuracyFeature = new Feature(); // 定位誤差圈
+    const positionFeature = new Feature(); // 使用者位置圓點
+    const coneFeature = new Feature(); // 面向方向錐形
 
-    // 位置點
-    positionFeature.current = new Feature(new Point(fromLonLat([121.5, 25.05])));
-    positionFeature.current.setStyle(
+    // === 樣式 ===
+    accuracyFeature.setStyle(
+      new Style({
+        fill: new Fill({
+          color: "rgba(17, 81, 255, 0.15)", // 淺藍透明圈
+        }),
+        stroke: new Stroke({
+          color: "rgba(17, 81, 255, 0.4)",
+          width: 1.5,
+        }),
+      })
+    );
+
+    positionFeature.setStyle(
       new Style({
         image: new CircleStyle({
           radius: 8,
@@ -55,14 +101,10 @@ export default function MapWithOrientation() {
       })
     );
 
-    // 方向錐形
-    directionFeature.current = new Feature(
-      new Polygon([[]]) // 初始空
-    );
-    directionFeature.current.setStyle(
+    coneFeature.setStyle(
       new Style({
         fill: new Fill({
-          color: "rgba(17, 81, 255, 0.25)",
+          color: "rgba(17, 81, 255, 0.25)", // 面向錐形半透明
         }),
         stroke: new Stroke({
           color: "#1151ff",
@@ -71,105 +113,267 @@ export default function MapWithOrientation() {
       })
     );
 
-    vectorSource.addFeatures([positionFeature.current, directionFeature.current]);
+    const vectorSource = new VectorSource({
+      features: [accuracyFeature, positionFeature, coneFeature],
+    });
 
-    setMap(mapObj);
-    setView(initialView);
+    const positionLayer = new VectorLayer({
+      source: vectorSource,
+      zIndex: 1000,
+    });
+    map.addLayer(positionLayer);
 
-    return () => {
-      mapObj.setTarget(null);
+    // === 狀態保存 ===
+    const currentHeadingRef = { current: 0 };
+
+    // === 更新面向扇形 ===
+    const updateConeGeometry = (coords, headingRad) => {
+      if (!coords || headingRad == null) return;
+
+      const radius = 30; // 錐形長度
+      const halfAngle = (30 * Math.PI) / 180; // 左右各 30 度
+      const steps = 10;
+      const points = [coords];
+
+      for (let i = -halfAngle; i <= halfAngle; i += (halfAngle * 2) / steps) {
+        const angle = headingRad + i;
+        const dx = radius * Math.sin(angle);
+        const dy = radius * Math.cos(angle);
+        points.push([coords[0] + dx, coords[1] + dy]);
+      }
+
+      points.push(coords);
+      coneFeature.setGeometry(new Polygon([points]));
     };
-  }, []);
 
-  // 取得定位資訊
-  useEffect(() => {
-    if (!map) return;
+    // === 監聽定位 ===
+    geolocation.on("change:position", () => {
+      const coords = geolocation.getPosition();
+      const accuracy = geolocation.getAccuracy() ?? 0;
 
-    if ("geolocation" in navigator) {
-      const watchId = navigator.geolocation.watchPosition(
-        (pos) => {
-          const coords = fromLonLat([pos.coords.longitude, pos.coords.latitude]);
-          setPosition(coords);
-          positionFeature.current?.getGeometry()?.setCoordinates(coords);
-          view?.setCenter(coords);
-        },
-        (err) => console.error(err),
-        { enableHighAccuracy: true }
+      if (coords) {
+        // 誤差圈
+        accuracyFeature.setGeometry(new CircleGeom(coords, accuracy));
+
+        // 使用者位置
+        positionFeature.setGeometry(new Point(coords));
+
+        // 更新方向錐形
+        updateConeGeometry(coords, currentHeadingRef.current);
+
+        // 讓地圖跟隨使用者
+        map.getView().animate({ center: coords, duration: 800 });
+      }
+    });
+
+    // === 監聽裝置方向 ===
+    const handleOrientation = (event) => {
+      const heading = event.alpha;
+      if (heading != null) {
+        const rad = (heading * Math.PI) / 180;
+        currentHeadingRef.current = rad;
+        const coords = geolocation.getPosition();
+        if (coords) updateConeGeometry(coords, rad);
+      }
+    };
+
+    // iOS 權限要求
+    if (typeof DeviceOrientationEvent !== "undefined" && 
+        typeof DeviceOrientationEvent.requestPermission === "function") {
+      DeviceOrientationEvent.requestPermission()
+        .then((res) => {
+          if (res === "granted") {
+            window.addEventListener("deviceorientationabsolute", handleOrientation);
+          }
+        })
+        .catch(console.error);
+    } else {
+      window.addEventListener("deviceorientationabsolute", handleOrientation);
+      window.addEventListener("deviceorientation", handleOrientation);
+    }
+
+    // === 載入 GeoJSON 圖層 ===
+    LAYER_CONFIGS.forEach((cfg) => loadGeoJSONLayer(map, cfg));
+
+    // === 點擊地圖複製經緯度 ===
+    const clickMarkerSource = new VectorSource();
+    const clickMarkerLayer = new VectorLayer({
+      source: clickMarkerSource,
+      zIndex: 2000,
+    });
+    map.addLayer(clickMarkerLayer);
+    clickMarkerRef.current = clickMarkerSource;
+
+    const handleMapClick = (evt) => {
+      console.log("地圖被點擊了！", evt.coordinate);
+
+      const coords = evt.coordinate;
+      const lonLat = toLonLat(coords);
+      const [lon, lat] = lonLat;
+
+      // 格式化經緯度
+      const coordText = `${lat.toFixed(6)}, ${lon.toFixed(6)}`;
+
+      console.log("經緯度:", coordText);
+
+      // 複製到剪貼簿
+      navigator.clipboard.writeText(coordText).then(() => {
+        console.log("複製成功:", coordText);
+        // 顯示通知
+        setCopyNotification(coordText);
+        setTimeout(() => setCopyNotification(null), 2000);
+      }).catch(err => {
+        console.error("複製失敗:", err);
+        // 即使複製失敗也顯示通知
+        setCopyNotification(coordText);
+        setTimeout(() => setCopyNotification(null), 2000);
+      });
+
+      // 清除舊標記
+      clickMarkerSource.clear();
+
+      // 添加新標記
+      const marker = new Feature({
+        geometry: new Point(coords),
+      });
+
+      marker.setStyle(
+        new Style({
+          image: new CircleStyle({
+            radius: 10,
+            fill: new Fill({ color: "rgba(255, 0, 0, 0.6)" }),
+            stroke: new Stroke({ color: "#fff", width: 3 }),
+          }),
+        })
       );
 
-      return () => navigator.geolocation.clearWatch(watchId);
-    }
-  }, [map, view]);
+      clickMarkerSource.addFeature(marker);
 
-  // 取得方向資訊
-  useEffect(() => {
-    const handleOrientation = (event) => {
-      const alpha = event.alpha ?? 0;
-      setOrientation(alpha);
+      // 3秒後移除標記
+      setTimeout(() => {
+        clickMarkerSource.clear();
+      }, 3000);
     };
 
-    if (window.DeviceOrientationEvent) {
-      if (typeof DeviceOrientationEvent.requestPermission === "function") {
-        // iOS
-        DeviceOrientationEvent.requestPermission()
-          .then((res) => {
-            if (res === "granted") {
-              window.addEventListener("deviceorientationabsolute", handleOrientation);
-            }
-          })
-          .catch(console.error);
-      } else {
-        window.addEventListener("deviceorientationabsolute", handleOrientation);
-      }
-    }
+    map.on("singleclick", handleMapClick);
+    console.log("地圖點擊事件已註冊");
 
     return () => {
+      geolocation.setTracking(false);
+      map.un("singleclick", handleMapClick);
+      map.setTarget(null);
       window.removeEventListener("deviceorientationabsolute", handleOrientation);
+      window.removeEventListener("deviceorientation", handleOrientation);
     };
   }, []);
 
-  // 更新方向錐形
+  // === 載入 GeoJSON ===
+  const loadGeoJSONLayer = async (map, config) => {
+    try {
+      const res = await fetch(config.url);
+      const data = await res.json();
+      const features = new GeoJSON().readFeatures(data, {
+        featureProjection: "EPSG:3857",
+      });
+
+      const source = new VectorSource({ features });
+      const layer = new VectorLayer({
+        source,
+        style: config.style,
+      });
+
+      map.addLayer(layer);
+      setLayers((prev) => ({ ...prev, [config.name]: layer }));
+    } catch (err) {
+      console.error(`載入 ${config.name} 圖層失敗:`, err);
+    }
+  };
+
+  // === 圖層顯示控制 ===
   useEffect(() => {
-    if (!position || orientation === null) return;
+    const visibility = {};
+    Object.keys(layers).forEach((n) => {
+      visibility[n] = layers[n]?.getVisible() ?? true;
+    });
+    setLayerVisibility(visibility);
+  }, [layers]);
 
-    const [x, y] = position;
-    const distance = 30; // 錐形長度
-    const rad = (orientation * Math.PI) / 180;
+  const toggleLayer = (name) => {
+    const layer = layers[name];
+    if (layer) {
+      const visible = !layer.getVisible();
+      layer.setVisible(visible);
+      setLayerVisibility((prev) => ({ ...prev, [name]: visible }));
+    }
+  };
 
-    const frontX = x + Math.sin(rad) * distance;
-    const frontY = y - Math.cos(rad) * distance;
-
-    const leftX = x + Math.sin(rad - 0.3) * distance * 0.8;
-    const leftY = y - Math.cos(rad - 0.3) * distance * 0.8;
-
-    const rightX = x + Math.sin(rad + 0.3) * distance * 0.8;
-    const rightY = y - Math.cos(rad + 0.3) * distance * 0.8;
-
-    const coneCoords = [
-      [
-        [x, y],
-        [leftX, leftY],
-        [frontX, frontY],
-        [rightX, rightY],
-        [x, y],
-      ],
-    ];
-
-    directionFeature.current?.getGeometry()?.setCoordinates(coneCoords);
-  }, [position, orientation]);
+  // 測試按鈕功能
+  const testNotification = () => {
+    console.log("測試按鈕被點擊");
+    setCopyNotification("25.050000, 121.500000 (測試)");
+    setTimeout(() => setCopyNotification(null), 2000);
+  };
 
   return (
-    <div className="relative w-full h-screen">
-      <div ref={mapRef} className="w-full h-full" />
-      <div className="absolute bottom-4 left-4 bg-black/70 text-white p-3 rounded-xl text-sm">
-        <p>方向角 α: {orientation?.toFixed(1) ?? "N/A"}°</p>
-        <p>
-          位置:{" "}
-          {position
-            ? `${position[0].toFixed(2)}, ${position[1].toFixed(2)}`
-            : "定位中..."}
-        </p>
-      </div>
+    <div style={{ position: "relative", width: "100%", height: "100vh" }}>
+      <div ref={mapRef} style={{ width: "100%", height: "100%" }} />
+
+      <LayerSwitcher
+        layers={layers}
+        layerVisibility={layerVisibility}
+        toggleLayer={toggleLayer}
+      />
+
+      {/* 測試按鈕 */}
+      <button
+        onClick={testNotification}
+        style={{
+          position: "absolute",
+          bottom: "20px",
+          right: "20px",
+          zIndex: 1001,
+          backgroundColor: "#2563eb",
+          color: "white",
+          padding: "10px 20px",
+          borderRadius: "8px",
+          border: "none",
+          cursor: "pointer",
+          fontSize: "16px",
+          fontWeight: "bold",
+          boxShadow: "0 4px 6px rgba(0,0,0,0.3)"
+        }}
+      >
+        測試通知
+      </button>
+
+      {/* 複製通知 */}
+      {copyNotification && (
+        <div
+          style={{
+            position: "fixed",
+            top: "20px",
+            left: "50%",
+            transform: "translateX(-50%)",
+            backgroundColor: "#16a34a",
+            color: "white",
+            padding: "15px 25px",
+            borderRadius: "8px",
+            boxShadow: "0 4px 6px rgba(0,0,0,0.3)",
+            zIndex: 1002,
+            display: "flex",
+            alignItems: "center",
+            gap: "10px"
+          }}
+        >
+          <svg style={{ width: "20px", height: "20px" }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+          </svg>
+          <div>
+            <div style={{ fontWeight: "bold" }}>已複製經緯度</div>
+            <div style={{ fontSize: "14px", opacity: 0.9 }}>{copyNotification}</div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

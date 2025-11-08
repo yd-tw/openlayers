@@ -14,7 +14,7 @@ import Feature from "ol/Feature";
 import Point from "ol/geom/Point";
 import LineString from "ol/geom/LineString";
 import Heatmap from "ol/layer/Heatmap";
-import { fromLonLat } from "ol/proj";
+import { fromLonLat, toLonLat } from "ol/proj";
 import { Style, Stroke, Fill, Circle as CircleStyle } from "ol/style";
 import LayerSwitcher from "./LayerSwitcher";
 
@@ -120,6 +120,7 @@ export default function MapComponent() {
   const [layerVisibility, setLayerVisibility] = useState({});
   const [a1AccidentDatas, setA1AccidentDatas] = useState([]);
   const [a2AccidentDatas, setA2AccidentDatas] = useState([]);
+  const [copyNotification, setCopyNotification] = useState(null);
 
   useEffect(() => {
     if (!mapRef.current) return;
@@ -188,6 +189,66 @@ export default function MapComponent() {
 
     // === 載入 API 線段資料 ===
     loadAPILinesLayer(map);
+
+    // === 點擊地圖複製經緯度功能 ===
+    const clickMarkerSource = new VectorSource();
+    const clickMarkerLayer = new VectorLayer({
+      source: clickMarkerSource,
+      zIndex: 9999,
+    });
+    map.addLayer(clickMarkerLayer);
+
+    // 地圖點擊事件
+    map.on("singleclick", (evt) => {
+      const coords = evt.coordinate;
+      const lonLat = toLonLat(coords);
+      const [lon, lat] = lonLat;
+
+      // 格式化經緯度（6位小數）
+      const coordText = `${lat.toFixed(6)}, ${lon.toFixed(6)}`;
+
+      console.log("點擊座標:", coordText);
+
+      // 複製到剪貼簿
+      navigator.clipboard
+        .writeText(coordText)
+        .then(() => {
+          console.log("複製成功");
+          setCopyNotification(coordText);
+          setTimeout(() => setCopyNotification(null), 2000);
+        })
+        .catch((err) => {
+          console.error("複製失敗:", err);
+          // 即使複製失敗也顯示通知
+          setCopyNotification(coordText);
+          setTimeout(() => setCopyNotification(null), 2000);
+        });
+
+      // 清除舊標記
+      clickMarkerSource.clear();
+
+      // 添加新標記
+      const marker = new Feature({
+        geometry: new Point(coords),
+      });
+
+      marker.setStyle(
+        new Style({
+          image: new CircleStyle({
+            radius: 8,
+            fill: new Fill({ color: "rgba(255, 0, 0, 0.7)" }),
+            stroke: new Stroke({ color: "#fff", width: 2 }),
+          }),
+        })
+      );
+
+      clickMarkerSource.addFeature(marker);
+
+      // 2秒後移除標記
+      setTimeout(() => {
+        clickMarkerSource.clear();
+      }, 2000);
+    });
 
     return () => {
       geolocation.setTracking(false);
@@ -327,6 +388,48 @@ export default function MapComponent() {
         layerVisibility={layerVisibility}
         toggleLayer={toggleLayer}
       />
+
+      {/* 複製通知 */}
+      {copyNotification && (
+        <div
+          style={{
+            position: "fixed",
+            top: "20px",
+            left: "50%",
+            transform: "translateX(-50%)",
+            backgroundColor: "#16a34a",
+            color: "white",
+            padding: "12px 24px",
+            borderRadius: "8px",
+            boxShadow: "0 4px 6px rgba(0,0,0,0.3)",
+            zIndex: 10000,
+            display: "flex",
+            alignItems: "center",
+            gap: "10px",
+            fontSize: "14px",
+          }}
+        >
+          <svg
+            style={{ width: "20px", height: "20px", flexShrink: 0 }}
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M5 13l4 4L19 7"
+            />
+          </svg>
+          <div>
+            <div style={{ fontWeight: "600" }}>已複製經緯度</div>
+            <div style={{ fontSize: "13px", opacity: 0.95 }}>
+              {copyNotification}
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }
