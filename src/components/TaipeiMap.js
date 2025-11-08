@@ -180,7 +180,7 @@ export default function MapComponent() {
       features: [positionFeature],
     });
     const positionLayer = new VectorLayer({ source: vectorSource });
-    map.addLayer(positionLayer);
+    mapObj.addLayer(positionLayer);
 
     // === 載入其他圖層 ===
     LAYER_CONFIGS.forEach((config) => loadGeoJSONLayer(mapObj, config));
