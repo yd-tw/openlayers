@@ -60,35 +60,44 @@ export default function MapModeSelector({ className = '' }: ModeSelectorProps) {
   };
 
   return (
-    <div className={`flex gap-2 ${className}`}>
-      {modes.map((mode) => {
-        const isActive = currentMode === mode.value;
-        const isDisabled = loading;
+    <div className={`rounded-md bg-white p-2.5 shadow-lg ${className}`}>
+      <h4 className="mb-2 text-base font-semibold">模式選擇</h4>
+      <div className="space-y-2">
+        {modes.map((mode) => {
+          const isActive = currentMode === mode.value;
+          const isDisabled = loading;
 
-        return (
-          <button
-            key={mode.value}
-            onClick={() => handleModeChange(mode.value)}
-            disabled={isDisabled}
-            className={`
-              flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-white
-              transition-all duration-200 shadow-md
-              ${isActive ? mode.color : 'bg-gray-400 hover:bg-gray-500'}
-              ${isActive ? 'scale-105 ring-2 ring-white' : ''}
-              ${isDisabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
-            `}
-          >
-            <span className="text-2xl">{mode.icon}</span>
-            <span className="text-sm">{mode.label}</span>
-          </button>
-        );
-      })}
+          return (
+            <div key={mode.value} className="flex items-center gap-2">
+              <input
+                type="radio"
+                id={`mode-${mode.value}`}
+                name="transport-mode"
+                checked={isActive}
+                onChange={() => handleModeChange(mode.value)}
+                disabled={isDisabled}
+                className="h-4 w-4 cursor-pointer accent-blue-600"
+              />
+              <label
+                htmlFor={`mode-${mode.value}`}
+                className={`cursor-pointer text-sm select-none flex items-center gap-1.5 ${
+                  isDisabled ? 'opacity-50 cursor-not-allowed' : ''
+                }`}
+              >
+                <span>{mode.icon}</span>
+                <span>{mode.label}</span>
+              </label>
+            </div>
+          );
+        })}
 
-      {!isFlutter && (
-        <div className="flex items-center px-3 py-1 bg-yellow-100 text-yellow-800 text-xs rounded-md">
-          離線模式
-        </div>
-      )}
+        {!isFlutter && (
+          <div className="mt-2 pt-2 border-t border-gray-200 text-xs text-yellow-700 flex items-center gap-1">
+            <span>⚠️</span>
+            <span>離線模式</span>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

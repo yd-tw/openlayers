@@ -394,11 +394,6 @@ export default function MapComponent() {
 
   return (
     <div className="relative h-screen w-full">
-      {/* 模式選擇器 - 置於地圖上方 */}
-      <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-10">
-        <MapModeSelector />
-      </div>
-
       {/* 地圖 */}
       <div ref={mapRef} className="h-screen w-full" />
 
@@ -408,6 +403,11 @@ export default function MapComponent() {
         layerVisibility={layerVisibility}
         toggleLayer={toggleLayer}
       />
+
+      {/* 模式選擇器 - 置於地圖左下方 */}
+      <div className="absolute bottom-2.5 left-2.5 z-[1000]">
+        <MapModeSelector />
+      </div>
 
       {/* 複製通知 */}
       {copyNotification && (
