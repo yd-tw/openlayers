@@ -116,56 +116,22 @@ export default function MapComponent() {
   const mapInstanceRef = useRef(null);
   const [layers, setLayers] = useState({});
   const [layerVisibility, setLayerVisibility] = useState({});
+  const [a1AccidentDatas, setA1AccidentDatas] = useState([]);
+  const [a2AccidentDatas, setA2AccidentDatas] = useState([]);
 
   useEffect(() => {
     if (!mapRef.current) return;
 
-    // 載入事故資料熱力圖
-    Promise.all([fetch("/a1_accident.json"), fetch("/a2_accident.json")])
-      .then(([a1, a2]) => Promise.all([a1.json(), a2.json()]))
-      .then(([a1Data, a2Data]) => {
-        let features = [];
+    fetch("/accident_a1.json")
+      .then((res) => res.json())
+      .then((data) => {
+        setA1AccidentDatas(data);
+      });
 
-        // A1 事故資料
-        features = a1Data.result.records.map((p) => {
-          const f = new Feature({
-            geometry: new Point(fromLonLat([p["經度"], p["緯度"]])),
-          });
-          f.set("weight", weightConfig.a1AccidentWeight);
-          return f;
-        });
-
-        // A2 事故資料
-        features = [
-          ...features,
-          ...a2Data.result.records.map((p) => {
-            const f = new Feature({
-              geometry: new Point(fromLonLat([p["經度"], p["緯度"]])),
-            });
-            f.set("weight", weightConfig.a2AccidentWeight);
-            return f;
-          }),
-        ];
-
-        // 建立熱力圖圖層
-        const heatLayer = new Heatmap({
-          source: new VectorSource({ features }),
-          blur: 20,
-          radius: 10,
-          opacity: 0.8,
-        });
-
-        // 設定熱力圖漸層色
-        heatLayer.setGradient([
-          "#fff0f5", // very light pink (LavenderBlush)
-          "#ffb6c1", // lightpink
-          "#ff69b4", // hotpink
-          "#ff1493", // deeppink
-          "#c71585", // mediumvioletred
-          "#8b008b", // darkmagenta
-        ]);
-
-        map.addLayer(heatLayer);
+    fetch("/accident_a2.json")
+      .then((res) => res.json())
+      .then((data) => {
+        setA2AccidentDatas(data);
       });
 
     // 初始化地圖
@@ -277,6 +243,56 @@ export default function MapComponent() {
     });
     setLayerVisibility(visibility);
   }, [layers]);
+
+  useEffect(() => {
+    let features = [];
+
+    // A1 事故資料
+    if (a1AccidentDatas.length > 0) {
+      features.push(
+        ...a1AccidentDatas.map((p) => {
+          const f = new Feature({
+            geometry: new Point(fromLonLat([p.lon + 100, p.lat + 20])),
+          });
+          f.set("weight", weightConfig.a1AccidentWeight);
+          return f;
+        }),
+      );
+    }
+
+    // A2 事故資料
+    if (a2AccidentDatas.length > 0) {
+      features.push(
+        ...a2AccidentDatas.map((p) => {
+          const f = new Feature({
+            geometry: new Point(fromLonLat([p.lon + 100, p.lat + 20])),
+          });
+          f.set("weight", weightConfig.a2AccidentWeight);
+          return f;
+        }),
+      );
+    }
+
+    // 建立熱力圖圖層
+    const heatLayer = new Heatmap({
+      source: new VectorSource({ features }),
+      blur: 20,
+      radius: 10,
+      opacity: 0.8,
+    });
+
+    // 設定熱力圖漸層色
+    heatLayer.setGradient([
+      "#fff0f5", // very light pink (LavenderBlush)
+      "#ffb6c1", // lightpink
+      "#ff69b4", // hotpink
+      "#ff1493", // deeppink
+      "#c71585", // mediumvioletred
+      "#8b008b", // darkmagenta
+    ]);
+
+    mapInstanceRef.current.addLayer(heatLayer);
+  }, [a1AccidentDatas, a2AccidentDatas]);
 
   /**
    * 切換圖層顯示/隱藏
