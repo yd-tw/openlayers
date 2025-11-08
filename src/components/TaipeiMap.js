@@ -7,7 +7,6 @@ import View from "ol/View";
 import TileLayer from "ol/layer/Tile";
 import VectorLayer from "ol/layer/Vector";
 import VectorSource from "ol/source/Vector";
-import OSM from "ol/source/OSM";
 import XYZ from "ol/source/XYZ";
 import Feature from "ol/Feature";
 import Point from "ol/geom/Point";
@@ -105,65 +104,20 @@ export default function MapComponent() {
       });
     });
 
-    // === 點擊地圖複製經緯度功能 ===
-    const clickMarkerSource = new VectorSource();
-    const clickMarkerLayer = new VectorLayer({
-      source: clickMarkerSource,
-      zIndex: 9999,
-    });
-
-    mapObj.addLayer(clickMarkerLayer);
-
-    mapObj.on("singleclick", (evt) => {
-      const coords = evt.coordinate;
-      const [lon, lat] = toLonLat(coords);
-      const coordText = `${lat.toFixed(6)}, ${lon.toFixed(6)}`;
-
-      navigator.clipboard
-        .writeText(coordText)
-        .then(() => setCopyNotification(coordText))
-        .catch(() => setCopyNotification(coordText));
-
-      clickMarkerSource.clear();
-
-      const markerFeature = new Feature({
-        geometry: new Point(coords),
-      });
-
-      markerFeature.setStyle(
-        new Style({
-          image: new CircleStyle({
-            radius: 8,
-            fill: new Fill({ color: "#f5ba4b" }),
-            stroke: new Stroke({ color: "#fff", width: 2 }),
-          }),
-        }),
-      );
-
-      clickMarkerSource.addFeature(markerFeature);
-
-      if (copyNotificationTimeoutRef.current) {
-        clearTimeout(copyNotificationTimeoutRef.current);
-      }
-      copyNotificationTimeoutRef.current = setTimeout(() => {
-        clickMarkerSource.clear();
-        setCopyNotification(null);
-      }, 2000);
+    // === 載入地圖複製經緯度功能 ===
+    loadClickMarkerLayer().then((clickMarkerLayer) => {
+      mapObj.addLayer(clickMarkerLayer);
     });
 
     // === 監聽 Flutter 位置更新 ===
     const townpassClient = getTownPassClient();
-
     const unsubscribeLocation = townpassClient.onLocationUpdate((location) => {
-      // 轉換為 OpenLayers 座標
       const coords = fromLonLat([location.longitude, location.latitude]);
 
-      // 更新位置標記
       if (positionFeatureRef.current) {
         positionFeatureRef.current.setGeometry(new Point(coords));
       }
 
-      // 更新地圖視角
       if (mapInstanceRef.current) {
         mapInstanceRef.current.getView().animate({
           center: coords,
@@ -402,6 +356,57 @@ export default function MapComponent() {
     }
   };
 
+  const loadClickMarkerLayer = async () => {
+    try {
+      // 建立 Vector Source
+      const clickMarkerSource = new VectorSource();
+
+      // 建立 Vector Layer
+      const clickMarkerLayer = new VectorLayer({ source: clickMarkerSource });
+
+      mapInstanceRef.current?.on("singleclick", (evt) => {
+        const coords = evt.coordinate;
+        const [lon, lat] = toLonLat(coords);
+        const coordText = `${lat.toFixed(6)}, ${lon.toFixed(6)}`;
+
+        navigator.clipboard
+          .writeText(coordText)
+          .then(() => setCopyNotification(coordText))
+          .catch(() => setCopyNotification(coordText));
+
+        clickMarkerSource.clear();
+
+        const markerFeature = new Feature({
+          geometry: new Point(coords),
+        });
+
+        markerFeature.setStyle(
+          new Style({
+            image: new CircleStyle({
+              radius: 8,
+              fill: new Fill({ color: "#f5ba4b" }),
+              stroke: new Stroke({ color: "#fff", width: 2 }),
+            }),
+          }),
+        );
+
+        clickMarkerSource.addFeature(markerFeature);
+
+        if (copyNotificationTimeoutRef.current) {
+          clearTimeout(copyNotificationTimeoutRef.current);
+        }
+        copyNotificationTimeoutRef.current = setTimeout(() => {
+          clickMarkerSource.clear();
+          setCopyNotification(null);
+        }, 2000);
+      });
+
+      return clickMarkerLayer;
+    } catch (error) {
+      console.error("載入點擊標記圖層失敗: ", error);
+    }
+  };
+
   /**
    * 切換圖層顯示/隱藏
    */
@@ -530,7 +535,6 @@ export default function MapComponent() {
         />
       </div>
 
-      {/* 複製通知 */}
       {copyNotification && (
         <div
           style={{
