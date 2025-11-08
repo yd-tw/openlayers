@@ -15,39 +15,13 @@ import LineString from "ol/geom/LineString";
 import Heatmap from "ol/layer/Heatmap";
 import { fromLonLat, toLonLat } from "ol/proj";
 import { Style, Stroke, Fill, Circle as CircleStyle } from "ol/style";
+
+// Components
 import LayerSwitcher from "./LayerSwitcher";
 import MapModeSelector from "./MapModeSelector";
-import { getTownPassClient } from "@/lib/townpass/client";
 
-// GeoJSON 圖層配置
-// const LAYER_CONFIGS = [
-//   {
-//     name: "highway",
-//     displayName: "公路",
-//     url: "/highway.geojson",
-//     style: new Style({
-//       stroke: new Stroke({ color: "#ff6600", width: 2 }),
-//       fill: new Fill({ color: "rgba(255, 165, 0, 0.3)" }),
-//     }),
-//   },
-//   {
-//     name: "walk",
-//     displayName: "人行道",
-//     url: "/osm-walk.geojson",
-//     style: new Style({
-//       stroke: new Stroke({ color: "rgba(0, 255, 38, 0.74)", width: 5 }),
-//       fill: new Fill({ color: "rgba(0, 255, 38, 0.74)" }),
-//     }),
-//   },
-//   {
-//     name: "bike",
-//     displayName: "自行車道",
-//     url: "/bike.geojson",
-//     style: new Style({
-//       stroke: new Stroke({ color: "rgba(255, 0, 255, 0.74)", width: 5 }),
-//     }),
-//   },
-// ];
+// Libraries
+import { getTownPassClient } from "@/lib/townpass/client";
 
 // Configs
 import weightConfig from "@/configs/weightConfig.json";
