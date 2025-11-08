@@ -324,18 +324,12 @@ export default function MapComponent() {
 
   // 取得方向資訊
   useEffect(() => {
-    const angleOffset = 0; // 調整此值：如果還不對可以改成 0 / 90 / 180 / 270 來測試
     const handleOrientation = (event) => {
-      // 取 alpha（若 iOS 有 webkitCompassHeading 則可優先使用）
-      const rawAlpha = event.alpha ?? event.webkitCompassHeading ?? 0;
+    let alpha = event.alpha ?? event.webkitCompassHeading ?? 0;
+    const corrected = (360 - alpha + 360) % 360;
 
-      // 計算方法：以 rawAlpha 為基準，加上偏移，然後模 360
-      // 為了安全起見先把值正規化到 0-360，再加 offset
-      const normalized = ((rawAlpha % 360) + 360) % 360;
-      const corrected = (normalized + angleOffset) % 360;
-
-      setOrientation(corrected);
-    };
+    setOrientation(corrected);
+  };
 
     if (window.DeviceOrientationEvent) {
       if (typeof DeviceOrientationEvent.requestPermission === "function") {
