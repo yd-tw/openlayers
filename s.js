@@ -1,126 +1,56 @@
-/*
-  將使用者提供的資料（含「路徑（x）」、「路徑（y）」欄位）轉為標準 GeoJSON。
-  - 若同一筆資料的路徑中包含「#」，視為多段（MultiLineString）。
-  - 轉換時所有座標 (x, y) 皆會自動除以 10000。
-  - 若需進行投影轉換（例如 TWD97 → WGS84），可另外設定 options.transform 與 transformFn。
+// 先安裝套件：npm install proj4 fs
 
-  使用方式 (Node.js):
-    1. 準備好 data.json
-    2. node convert_to_geojson.js
-    3. 輸出檔案會是 output.geojson
-*/
+const fs = require("fs");
+const proj4 = require("proj4");
 
-const fs = require('fs');
+// 定義 TM2 坐標系（以台北市常用 TM2/TWD97為例）
+const tm2 = "+proj=tmerc +lat_0=0 +lon_0=121 +k=0.9999 +x_0=250000 +y_0=0 +ellps=GRS80 +units=m +no_defs";
+const epsg3857 = "+proj=merc +lon_0=0 +k=1 +x_0=0 +y_0=0 +datum=WGS84 +units=m +no_defs";
 
-// 主轉換函式
-function convertToGeoJSON(data, options = {}) {
-  const records = data.results || (data.result && data.result.results);
-  if (!records) throw new Error('輸入格式錯誤：找不到 data.results 或 data.result.results');
-  const features = records.map(item => {
-    const rawX = item['路徑（x）'] || item['路徑(x)'] || '';
-    const rawY = item['路徑（y）'] || item['路徑(y)'] || '';
+// 讀取原始 JSON
+const data = JSON.parse(fs.readFileSync("data.json", "utf8"));
 
-    if (!rawX || !rawY) {
-      return {
-        type: 'Feature',
-        properties: filterProps(item),
-        geometry: null
-      };
-    }
+// 將資料轉成 GeoJSON Feature
+const features = data.result.results.map(item => {
+  // 處理多段（# 分隔）
+  const xSegments = item["路徑（x）"].split("#").map(s => s.split(",").map(Number));
+  const ySegments = item["路徑（y）"].split("#").map(s => s.split(",").map(Number));
 
-    const xSegments = rawX.split('#').map(s => s.trim()).filter(Boolean);
-    const ySegments = rawY.split('#').map(s => s.trim()).filter(Boolean);
-
-    let segments = [];
-    if (xSegments.length === ySegments.length) {
-      for (let i = 0; i < xSegments.length; i++) {
-        const xs = xSegments[i].split(',').map(t => t.trim()).filter(Boolean);
-        const ys = ySegments[i].split(',').map(t => t.trim()).filter(Boolean);
-        const coords = pairXY(xs, ys, options);
-        if (coords.length) segments.push(coords);
-      }
-    } else {
-      const xs = rawX.split(',').map(t => t.trim()).filter(Boolean);
-      const ys = rawY.split(',').map(t => t.trim()).filter(Boolean);
-      const coords = pairXY(xs, ys, options);
-      if (coords.length) segments.push(coords);
-    }
-
-    let geometry = null;
-    if (segments.length === 1) {
-      geometry = { type: 'LineString', coordinates: segments[0] };
-    } else if (segments.length > 1) {
-      geometry = { type: 'MultiLineString', coordinates: segments };
-    } else {
-      geometry = null;
-    }
-
-    return {
-      type: 'Feature',
-      properties: filterProps(item),
-      geometry
-    };
+  const coordinates = xSegments.map((xSeg, idx) => {
+    return xSeg.map((x, i) => {
+      const y = ySegments[idx][i];
+      // TM2 -> EPSG:3857
+      return proj4(tm2, epsg3857, [x, y]);
+    });
   });
 
+  // 如果只有一段，使用 LineString；多段使用 MultiLineString
+  const geometry = coordinates.length === 1
+    ? { type: "LineString", coordinates: coordinates[0] }
+    : { type: "MultiLineString", coordinates };
+
   return {
-    type: 'FeatureCollection',
-    features
+    type: "Feature",
+    properties: {
+      _id: item._id,
+      路段序號: item["路段序號"],
+      路段名稱: item["路段名稱"],
+      起點描述: item["路段起點描述"],
+      迄點描述: item["路段迄點描述"],
+      自行車道長度: item["自行車道長度（m）"],
+      自行車道寬度: item["自行車道寬度（m）"]
+    },
+    geometry
   };
-}
+});
 
-// 將 X、Y 配對並同時除以 10000
-function pairXY(xs, ys, options) {
-  const n = Math.min(xs.length, ys.length);
-  const coords = [];
-  for (let i = 0; i < n; i++) {
-    const xi = parseFloat(xs[i]);
-    const yi = parseFloat(ys[i]);
-    if (Number.isFinite(xi) && Number.isFinite(yi)) {
-      if (options.transform && typeof options.transformFn === 'function') {
-        coords.push(options.transformFn([xi, yi]));
-      } else {
-        coords.push([xi, yi]);
-      }
-    }
-  }
-  return coords;
-}
+// 組成 GeoJSON
+const geojson = {
+  type: "FeatureCollection",
+  features
+};
 
-function filterProps(item) {
-  const props = {};
-  for (const k in item) {
-    if (Object.prototype.hasOwnProperty.call(item, k)) {
-      if (k === '路徑（x）' || k === '路徑（y）' || k === '路徑(x)' || k === '路徑(y)') continue;
-      props[k] = item[k];
-    }
-  }
-  return props;
-}
+// 輸出到檔案
+fs.writeFileSync("output.geojson", JSON.stringify(geojson, null, 2));
 
-// 主執行區塊
-(async () => {
-  try {
-    const inputPath = './data.json';
-    const outputPath = './output.geojson';
-
-    if (!fs.existsSync(inputPath)) {
-      console.error(`找不到輸入檔案 ${inputPath}`);
-      process.exit(1);
-    }
-
-    const raw = fs.readFileSync(inputPath, 'utf8');
-    const data = JSON.parse(raw);
-
-    const options = { transform: false, transformFn: null };
-
-    const geojson = convertToGeoJSON(data, options);
-    fs.writeFileSync(outputPath, JSON.stringify(geojson, null, 2), 'utf8');
-
-    console.log(`✅ 轉換完成！所有座標已除以 10000，輸出檔案：${outputPath}`);
-  } catch (err) {
-    console.error('轉換失敗：', err);
-    process.exit(1);
-  }
-})();
-
-module.exports = { convertToGeoJSON };
+console.log("GeoJSON 已生成完成：output.geojson");

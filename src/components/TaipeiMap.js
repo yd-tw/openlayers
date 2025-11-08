@@ -27,7 +27,7 @@ export default function MapComponent() {
       }),
     });
 
-    fetch("/t.geojson")
+    fetch("/highway.geojson")
       .then((res) => res.json())
       .then((data) => {
         const features = new GeoJSON().readFeatures(data, {
@@ -51,29 +51,29 @@ export default function MapComponent() {
         map.addLayer(vectorLayer);
       });
 
-      // fetch("/bike.geojson")
-      // .then((res) => res.json())
-      // .then((data) => {
-      //   const features = new GeoJSON().readFeatures(data, {
-      //     featureProjection: "EPSG:3826",
-      //   });
+      fetch("/bike.geojson")
+      .then((res) => res.json())
+      .then((data) => {
+        const features = new GeoJSON().readFeatures(data, {
+          featureProjection: "EPSG:3857",
+        });
 
-      //   const bikeSource = new VectorSource({ features });
+        const bikeSource = new VectorSource({ features });
 
-      //   const vLayer = new VectorLayer({
-      //     source: bikeSource,
-      //     style: new Style({
-      //       stroke: new Stroke({ color: "#ff6600", width: 20 }),
-      //       fill: new Fill({ color: "rgba(255, 165, 0, 0.3)" }),
-      //       image: new CircleStyle({
-      //         radius: 6,
-      //         fill: new Fill({ color: "#ff6600" }),
-      //       }),
-      //     }),
-      //   });
+        const vLayer = new VectorLayer({
+          source: bikeSource,
+          style: new Style({
+            stroke: new Stroke({ color: "rgba(0, 255, 38, 0.74)", width: 20 }),
+            fill: new Fill({ color: "rgba(0, 255, 38, 0.74)" }),
+            image: new CircleStyle({
+              radius: 6,
+              fill: new Fill({ color: "#ff6600" }),
+            }),
+          }),
+        });
 
-      //   map.addLayer(vLayer);
-      // });
+        map.addLayer(vLayer);
+      });
 
     return () => map.setTarget(null);
   }, []);
