@@ -166,7 +166,9 @@ export default function MapComponent() {
     mapObj.addLayer(vectorLayer);
 
     // 位置點
-    positionFeature.current = new Feature(new Point(fromLonLat([121.5, 25.05])));
+    positionFeature.current = new Feature(
+      new Point(fromLonLat([121.5, 25.05])),
+    );
     positionFeature.current.setStyle(
       new Style({
         image: new CircleStyle({
@@ -174,7 +176,7 @@ export default function MapComponent() {
           fill: new Fill({ color: "#1151ff" }),
           stroke: new Stroke({ color: "#fff", width: 2 }),
         }),
-      })
+      }),
     );
 
     // 方向扇形
@@ -183,10 +185,13 @@ export default function MapComponent() {
       new Style({
         fill: new Fill({ color: "rgba(17, 81, 255, 0.25)" }),
         stroke: new Stroke({ color: "#1151ff", width: 2 }),
-      })
+      }),
     );
 
-    vectorSource.addFeatures([positionFeature.current, directionFeature.current]);
+    vectorSource.addFeatures([
+      positionFeature.current,
+      directionFeature.current,
+    ]);
 
     // === 載入其他圖層 ===
     LAYER_CONFIGS.forEach((config) => loadGeoJSONLayer(mapObj, config));
@@ -309,13 +314,16 @@ export default function MapComponent() {
     if ("geolocation" in navigator) {
       const watchId = navigator.geolocation.watchPosition(
         (pos) => {
-          const coords = fromLonLat([pos.coords.longitude, pos.coords.latitude]);
+          const coords = fromLonLat([
+            pos.coords.longitude,
+            pos.coords.latitude,
+          ]);
           setPosition(coords);
           positionFeature.current?.getGeometry()?.setCoordinates(coords);
           view?.setCenter(coords);
         },
         (err) => console.error(err),
-        { enableHighAccuracy: true }
+        { enableHighAccuracy: true },
       );
 
       return () => navigator.geolocation.clearWatch(watchId);
@@ -325,11 +333,11 @@ export default function MapComponent() {
   // 取得方向資訊
   useEffect(() => {
     const handleOrientation = (event) => {
-    let alpha = event.alpha ?? event.webkitCompassHeading ?? 0;
-    const corrected = (360 - alpha + 360) % 360;
+      let alpha = event.alpha ?? event.webkitCompassHeading ?? 0;
+      const corrected = (360 - alpha + 360) % 360;
 
-    setOrientation(corrected);
-  };
+      setOrientation(corrected);
+    };
 
     if (window.DeviceOrientationEvent) {
       if (typeof DeviceOrientationEvent.requestPermission === "function") {
@@ -337,7 +345,10 @@ export default function MapComponent() {
         DeviceOrientationEvent.requestPermission()
           .then((res) => {
             if (res === "granted") {
-              window.addEventListener("deviceorientationabsolute", handleOrientation);
+              window.addEventListener(
+                "deviceorientationabsolute",
+                handleOrientation,
+              );
             }
           })
           .catch(console.error);
@@ -347,7 +358,10 @@ export default function MapComponent() {
     }
 
     return () => {
-      window.removeEventListener("deviceorientationabsolute", handleOrientation);
+      window.removeEventListener(
+        "deviceorientationabsolute",
+        handleOrientation,
+      );
     };
   }, []);
 

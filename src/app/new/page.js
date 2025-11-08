@@ -42,7 +42,9 @@ export default function MapWithOrientation() {
     mapObj.addLayer(vectorLayer);
 
     // 位置點
-    positionFeature.current = new Feature(new Point(fromLonLat([121.5, 25.05])));
+    positionFeature.current = new Feature(
+      new Point(fromLonLat([121.5, 25.05])),
+    );
     positionFeature.current.setStyle(
       new Style({
         image: new CircleStyle({
@@ -50,7 +52,7 @@ export default function MapWithOrientation() {
           fill: new Fill({ color: "#1151ff" }),
           stroke: new Stroke({ color: "#fff", width: 2 }),
         }),
-      })
+      }),
     );
 
     // 方向扇形
@@ -59,10 +61,13 @@ export default function MapWithOrientation() {
       new Style({
         fill: new Fill({ color: "rgba(17, 81, 255, 0.25)" }),
         stroke: new Stroke({ color: "#1151ff", width: 2 }),
-      })
+      }),
     );
 
-    vectorSource.addFeatures([positionFeature.current, directionFeature.current]);
+    vectorSource.addFeatures([
+      positionFeature.current,
+      directionFeature.current,
+    ]);
 
     setMap(mapObj);
     setView(initialView);
@@ -77,13 +82,16 @@ export default function MapWithOrientation() {
     if ("geolocation" in navigator) {
       const watchId = navigator.geolocation.watchPosition(
         (pos) => {
-          const coords = fromLonLat([pos.coords.longitude, pos.coords.latitude]);
+          const coords = fromLonLat([
+            pos.coords.longitude,
+            pos.coords.latitude,
+          ]);
           setPosition(coords);
           positionFeature.current?.getGeometry()?.setCoordinates(coords);
           view?.setCenter(coords);
         },
         console.error,
-        { enableHighAccuracy: true }
+        { enableHighAccuracy: true },
       );
 
       return () => navigator.geolocation.clearWatch(watchId);
@@ -104,7 +112,10 @@ export default function MapWithOrientation() {
         DeviceOrientationEvent.requestPermission()
           .then((res) => {
             if (res === "granted") {
-              window.addEventListener("deviceorientationabsolute", handleOrientation);
+              window.addEventListener(
+                "deviceorientationabsolute",
+                handleOrientation,
+              );
             }
           })
           .catch(console.error);
@@ -114,7 +125,10 @@ export default function MapWithOrientation() {
     }
 
     return () => {
-      window.removeEventListener("deviceorientationabsolute", handleOrientation);
+      window.removeEventListener(
+        "deviceorientationabsolute",
+        handleOrientation,
+      );
     };
   }, []);
 
@@ -143,9 +157,9 @@ export default function MapWithOrientation() {
   }, [position, orientation]);
 
   return (
-    <div className="relative w-full h-screen">
-      <div ref={mapRef} className="w-full h-full" />
-      <div className="absolute bottom-4 left-4 bg-black/70 text-white p-3 rounded-xl text-sm">
+    <div className="relative h-screen w-full">
+      <div ref={mapRef} className="h-full w-full" />
+      <div className="absolute bottom-4 left-4 rounded-xl bg-black/70 p-3 text-sm text-white">
         <p>方向角 α: {orientation?.toFixed(1) ?? "N/A"}°</p>
         <p>
           位置:{" "}

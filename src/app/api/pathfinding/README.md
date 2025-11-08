@@ -1,6 +1,6 @@
-# A* 尋路 API 端點
+# A\* 尋路 API 端點
 
-這個 API 端點使用 A* 演算法來尋找兩點之間的最佳路徑，並優先選擇自行車道（bike=1）。
+這個 API 端點使用 A\* 演算法來尋找兩點之間的最佳路徑，並優先選擇自行車道（bike=1）。
 
 ## 端點
 
@@ -72,15 +72,15 @@ POST /api/pathfinding
 ### JavaScript/Fetch
 
 ```javascript
-const response = await fetch('/api/pathfinding', {
-  method: 'POST',
+const response = await fetch("/api/pathfinding", {
+  method: "POST",
   headers: {
-    'Content-Type': 'application/json',
+    "Content-Type": "application/json",
   },
   body: JSON.stringify({
     start: { lat: 25.0169482, lng: 121.5337558 },
-    end: { lat: 25.0455956, lng: 121.5195799 }
-  })
+    end: { lat: 25.0455956, lng: 121.5195799 },
+  }),
 });
 
 const data = await response.json();
@@ -100,9 +100,9 @@ curl -X POST http://localhost:3000/api/pathfinding \
 
 ## 演算法說明
 
-### A* 尋路演算法
+### A\* 尋路演算法
 
-此 API 使用 A* 演算法來尋找最佳路徑：
+此 API 使用 A\* 演算法來尋找最佳路徑：
 
 1. **啟發式函數 (Heuristic)**：使用 Haversine 公式計算兩點之間的直線距離
 2. **成本函數 (Cost)**：

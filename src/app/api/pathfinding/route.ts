@@ -1,6 +1,6 @@
-import { NextRequest, NextResponse } from 'next/server';
-import fs from 'fs';
-import path from 'path';
+import { NextRequest, NextResponse } from "next/server";
+import fs from "fs";
+import path from "path";
 
 interface RoadSegment {
   id: number;
@@ -124,7 +124,7 @@ class Graph {
   calculateEdgeCost(segment: RoadSegment): number {
     const distance = calculateDistance(
       { lat: segment.start_lat, lng: segment.start_lng },
-      { lat: segment.end_lat, lng: segment.end_lng }
+      { lat: segment.end_lat, lng: segment.end_lng },
     );
 
     // 如果 bike=1，成本較低；如果 bike=0，成本增加
@@ -139,7 +139,7 @@ class Graph {
 function aStar(
   graph: Graph,
   startKey: string,
-  endKey: string
+  endKey: string,
 ): Array<{ lat: number; lng: number; segmentId?: number }> | null {
   const startNode = graph.getNode(startKey);
   const endNode = graph.getNode(endKey);
@@ -168,7 +168,10 @@ function aStar(
     // 找到 f 值最小的節點
     openSet.sort((a, b) => a.f - b.f);
     const current = openSet.shift()!;
-    const currentKey = graph.findNearestNode({ lat: current.lat, lng: current.lng })!;
+    const currentKey = graph.findNearestNode({
+      lat: current.lat,
+      lng: current.lng,
+    })!;
 
     // 到達終點
     if (currentKey === endKey) {
@@ -215,7 +218,7 @@ function aStar(
 
         // 從 openSet 移除舊的節點（如果存在）
         const existingIndex = openSet.findIndex(
-          (n) => n.lat === neighborNode.lat && n.lng === neighborNode.lng
+          (n) => n.lat === neighborNode.lat && n.lng === neighborNode.lng,
         );
         if (existingIndex !== -1) {
           openSet.splice(existingIndex, 1);
@@ -238,20 +241,23 @@ export async function POST(request: NextRequest) {
     if (
       !start ||
       !end ||
-      typeof start.lat !== 'number' ||
-      typeof start.lng !== 'number' ||
-      typeof end.lat !== 'number' ||
-      typeof end.lng !== 'number'
+      typeof start.lat !== "number" ||
+      typeof start.lng !== "number" ||
+      typeof end.lat !== "number" ||
+      typeof end.lng !== "number"
     ) {
       return NextResponse.json(
-        { error: '請提供有效的起點和終點座標 (start.lat, start.lng, end.lat, end.lng)' },
-        { status: 400 }
+        {
+          error:
+            "請提供有效的起點和終點座標 (start.lat, start.lng, end.lat, end.lng)",
+        },
+        { status: 400 },
       );
     }
 
     // 讀取 backend.json
-    const filePath = path.join(process.cwd(), 'public', 'backend.json');
-    const fileContent = fs.readFileSync(filePath, 'utf-8');
+    const filePath = path.join(process.cwd(), "public", "backend.json");
+    const fileContent = fs.readFileSync(filePath, "utf-8");
     const jsonData = JSON.parse(fileContent);
     const segments: RoadSegment[] = jsonData.lines || [];
 
@@ -264,8 +270,8 @@ export async function POST(request: NextRequest) {
 
     if (!startKey || !endKey) {
       return NextResponse.json(
-        { error: '無法找到接近起點或終點的道路節點' },
-        { status: 404 }
+        { error: "無法找到接近起點或終點的道路節點" },
+        { status: 404 },
       );
     }
 
@@ -273,7 +279,7 @@ export async function POST(request: NextRequest) {
     const routePath = aStar(graph, startKey, endKey);
 
     if (!routePath) {
-      return NextResponse.json({ error: '找不到路徑' }, { status: 404 });
+      return NextResponse.json({ error: "找不到路徑" }, { status: 404 });
     }
 
     // 計算統計資訊
@@ -293,7 +299,7 @@ export async function POST(request: NextRequest) {
         if (segment) {
           const distance = calculateDistance(
             { lat: segment.start_lat, lng: segment.start_lng },
-            { lat: segment.end_lat, lng: segment.end_lng }
+            { lat: segment.end_lat, lng: segment.end_lng },
           );
           totalDistance += distance;
           if (segment.bike === 1) {
@@ -312,22 +318,36 @@ export async function POST(request: NextRequest) {
     const bikePercentage =
       totalDistance > 0 ? (bikeDistance / totalDistance) * 100 : 0;
 
-    return NextResponse.json({
-      success: true,
-      path: routePath,
-      statistics: {
-        totalDistance: Math.round(totalDistance * 100) / 100,
-        bikeDistance: Math.round(bikeDistance * 100) / 100,
-        bikePercentage: Math.round(bikePercentage * 100) / 100,
-        segmentCount: segmentDetails.length,
-      },
-      segments: segmentDetails,
-    });
+    // 建立 GeoJSON 格式的路徑
+    const geojson = {
+      type: "FeatureCollection",
+      features: [
+        {
+          type: "Feature",
+          geometry: {
+            type: "LineString",
+            coordinates: routePath.map((point) => [point.lng, point.lat]),
+          },
+          properties: {
+            totalDistance: Math.round(totalDistance * 100) / 100,
+            bikeDistance: Math.round(bikeDistance * 100) / 100,
+            bikePercentage: Math.round(bikePercentage * 100) / 100,
+            segmentCount: segmentDetails.length,
+            segments: segmentDetails,
+          },
+        },
+      ],
+    };
+
+    return NextResponse.json(geojson);
   } catch (error) {
-    console.error('尋路錯誤:', error);
+    console.error("尋路錯誤:", error);
     return NextResponse.json(
-      { error: '伺服器錯誤', details: error instanceof Error ? error.message : '未知錯誤' },
-      { status: 500 }
+      {
+        error: "伺服器錯誤",
+        details: error instanceof Error ? error.message : "未知錯誤",
+      },
+      { status: 500 },
     );
   }
 }
