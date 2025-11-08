@@ -13,7 +13,6 @@ import GeoJSON from "ol/format/GeoJSON";
 import Feature from "ol/Feature";
 import Point from "ol/geom/Point";
 import LineString from "ol/geom/LineString";
-import Polygon from "ol/geom/Polygon";
 import Heatmap from "ol/layer/Heatmap";
 import { fromLonLat } from "ol/proj";
 import { Style, Stroke, Fill, Circle as CircleStyle } from "ol/style";
@@ -49,7 +48,10 @@ const LAYER_CONFIGS = [
 // Configs
 import weightConfig from "@/configs/weightConfig.json";
 
-// 轉換 API 資料為 OpenLayers 圖層
+/**
+ * 從 API 資料建立線段圖層
+ * 根據 bike 和 sidewalk 屬性決定顏色
+ */
 function createLinesLayerFromAPI(data) {
   const features = data.lines.map(line => {
     // 將經緯度轉換為 OpenLayers 投影座標
@@ -113,11 +115,13 @@ export default function MapComponent() {
   useEffect(() => {
     if (!mapRef.current) return;
 
+    // 載入事故資料熱力圖
     Promise.all([fetch("/a1_accident.json"), fetch("/a2_accident.json")])
       .then(([a1, a2]) => Promise.all([a1.json(), a2.json()]))
       .then(([a1Data, a2Data]) => {
         let features = [];
 
+        // A1 事故資料
         features = a1Data.result.records.map((p) => {
           const f = new Feature({
             geometry: new Point(fromLonLat([p["經度"], p["緯度"]])),
@@ -126,6 +130,7 @@ export default function MapComponent() {
           return f;
         });
 
+        // A2 事故資料
         features = [
           ...features,
           ...a2Data.result.records.map((p) => {
@@ -137,6 +142,7 @@ export default function MapComponent() {
           }),
         ];
 
+        // 建立熱力圖圖層
         const heatLayer = new Heatmap({
           source: new VectorSource({ features }),
           blur: 20,
@@ -144,6 +150,7 @@ export default function MapComponent() {
           opacity: 0.8,
         });
 
+        // 設定熱力圖漸層色
         heatLayer.setGradient([
           "#fff0f5", // very light pink (LavenderBlush)
           "#ffb6c1", // lightpink
@@ -168,7 +175,7 @@ export default function MapComponent() {
 
     mapInstanceRef.current = map;
 
-    // 定位
+    // 定位功能
     const geolocation = new Geolocation({
       tracking: true,
       projection: map.getView().getProjection(),
@@ -186,38 +193,22 @@ export default function MapComponent() {
       }),
     );
 
-    // 面朝方向錐形區域
-    const coneFeature = new Feature();
-    coneFeature.setStyle(
-      new Style({
-        fill: new Fill({
-          color: "rgba(15, 83, 254, 0.25)", // 淺藍漸層
-        }),
-        stroke: new Stroke({
-          color: "rgba(15, 83, 254, 0.4)",
-          width: 1.5,
-        }),
-      }),
-    );
-
+    // 建立位置圖層
     const vectorSource = new VectorSource({
-      features: [positionFeature, coneFeature],
+      features: [positionFeature],
     });
     const positionLayer = new VectorLayer({ source: vectorSource });
     map.addLayer(positionLayer);
 
-    // === 位置變化 ===
+    // 位置變化監聽
     geolocation.on("change:position", () => {
       const coords = geolocation.getPosition();
       if (coords) {
         positionFeature.setGeometry(new Point(coords));
-        updateConeGeometry(coords, currentHeadingRef.current);
+        // 地圖視角跟隨使用者位置
         map.getView().animate({ center: coords, duration: 800 });
       }
     });
-
-    window.addEventListener("deviceorientationabsolute", handleOrientation);
-    window.addEventListener("deviceorientation", handleOrientation);
 
     // === 載入其他圖層 ===
     LAYER_CONFIGS.forEach((config) => loadGeoJSONLayer(map, config));
@@ -228,15 +219,12 @@ export default function MapComponent() {
     return () => {
       geolocation.setTracking(false);
       map.setTarget(null);
-      window.removeEventListener(
-        "deviceorientationabsolute",
-        handleOrientation,
-      );
-      window.removeEventListener("deviceorientation", handleOrientation);
     };
   }, []);
 
-  // 載入 API 線段圖層
+  /**
+   * 載入 API 線段圖層
+   */
   const loadAPILinesLayer = async (map) => {
     try {
       const response = await fetch('https://tmp114514.ricecall.com/lines');
@@ -252,7 +240,9 @@ export default function MapComponent() {
     }
   };
 
-  // 載入 GeoJSON 圖層
+  /**
+   * 載入 GeoJSON 圖層
+   */
   const loadGeoJSONLayer = async (map, config) => {
     try {
       const response = await fetch(config.url);
@@ -272,7 +262,7 @@ export default function MapComponent() {
     }
   };
 
-  // 同步圖層可見性
+  // 同步圖層可見性狀態
   useEffect(() => {
     const visibility = {};
     Object.keys(layers).forEach((name) => {
@@ -281,6 +271,9 @@ export default function MapComponent() {
     setLayerVisibility(visibility);
   }, [layers]);
 
+  /**
+   * 切換圖層顯示/隱藏
+   */
   const toggleLayer = (layerName) => {
     const layer = layers[layerName];
     if (layer) {
