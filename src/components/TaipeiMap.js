@@ -33,6 +33,7 @@ export default function MapComponent() {
   const mapInstanceRef = useRef(null);
   const positionFeatureRef = useRef(null);
   const directionFeatureRef = useRef(null);
+  const copyNotificationTimeoutRef = useRef(null);
   const [layers, setLayers] = useState({});
   const [layerVisibility, setLayerVisibility] = useState({});
   const [copyNotification, setCopyNotification] = useState(null);
@@ -46,7 +47,7 @@ export default function MapComponent() {
 
     const initialView = new View({
       center: fromLonLat([121.534, 25.021]),
-      zoom: 20,
+      zoom: 18,
     });
 
     const baseLayer = new TileLayer({
@@ -90,6 +91,18 @@ export default function MapComponent() {
       mapObj.addLayer(accidentLayer);
       setLayers((prev) => ({ ...prev, accident: accidentLayer }));
       accidentLayer.set("displayName", "交通事故熱點");
+
+      // 根據 zoom 調整熱力圖細節
+      const view = mapObj.getView();
+      view.on("change:resolution", () => {
+        const zoom = view.getZoom();
+
+        const radius = Math.max(5, (zoom - 10) * 2); // zoom=18 時 ≈16px
+        const blur = radius * 1.5;
+
+        accidentLayer.setRadius(radius);
+        accidentLayer.setBlur(blur);
+      });
     });
 
     // === 點擊地圖複製經緯度功能 ===
@@ -103,47 +116,38 @@ export default function MapComponent() {
 
     mapObj.on("singleclick", (evt) => {
       const coords = evt.coordinate;
-      const lonLat = toLonLat(coords);
-      const [lon, lat] = lonLat;
-
-      // 格式化經緯度（6位小數）
+      const [lon, lat] = toLonLat(coords);
       const coordText = `${lat.toFixed(6)}, ${lon.toFixed(6)}`;
 
-      // 複製到剪貼簿
       navigator.clipboard
         .writeText(coordText)
-        .then(() => {
-          setCopyNotification(coordText);
-          setTimeout(() => setCopyNotification(null), 2000);
-        })
-        .catch((err) => {
-          setCopyNotification(coordText);
-          setTimeout(() => setCopyNotification(null), 2000);
-        });
+        .then(() => setCopyNotification(coordText))
+        .catch(() => setCopyNotification(coordText));
 
-      // 清除舊標記
       clickMarkerSource.clear();
 
-      // 添加新標記
-      const marker = new Feature({
+      const markerFeature = new Feature({
         geometry: new Point(coords),
       });
 
-      marker.setStyle(
+      markerFeature.setStyle(
         new Style({
           image: new CircleStyle({
             radius: 8,
-            fill: new Fill({ color: "rgba(255, 0, 0, 0.7)" }),
+            fill: new Fill({ color: "#f5ba4b" }),
             stroke: new Stroke({ color: "#fff", width: 2 }),
           }),
         }),
       );
 
-      clickMarkerSource.addFeature(marker);
+      clickMarkerSource.addFeature(markerFeature);
 
-      // 2秒後移除標記
-      setTimeout(() => {
+      if (copyNotificationTimeoutRef.current) {
+        clearTimeout(copyNotificationTimeoutRef.current);
+      }
+      copyNotificationTimeoutRef.current = setTimeout(() => {
         clickMarkerSource.clear();
+        setCopyNotification(null);
       }, 2000);
     });
 
@@ -231,11 +235,13 @@ export default function MapComponent() {
       const bikeVectorLayer = new VectorLayer({
         source: bikeVectorSource,
         visible: false,
-        style: (feature) => {
+        style: () => {
+          const zoom = mapInstanceRef.current?.getView()?.getZoom() ?? 18;
+          const width = Math.max(1, (zoom - 10) * 0.8);
           return new Style({
             stroke: new Stroke({
               color: "#fd853a",
-              width: 4,
+              width,
             }),
           });
         },
@@ -271,11 +277,13 @@ export default function MapComponent() {
       const sidewalkVectorLayer = new VectorLayer({
         source: sidewalkVectorSource,
         visible: false,
-        style: (feature) => {
+        style: () => {
+          const zoom = mapInstanceRef.current?.getView()?.getZoom() ?? 18;
+          const width = Math.max(1, (zoom - 10) * 0.8);
           return new Style({
             stroke: new Stroke({
               color: "#76a732",
-              width: 4,
+              width,
             }),
           });
         },
@@ -362,7 +370,7 @@ export default function MapComponent() {
         new Style({
           image: new CircleStyle({
             radius: 8,
-            fill: new Fill({ color: "#1151ff" }),
+            fill: new Fill({ color: "#5ab4c5" }),
             stroke: new Stroke({ color: "#fff", width: 2 }),
           }),
         }),
@@ -372,8 +380,7 @@ export default function MapComponent() {
       const directionFeature = new Feature(new Polygon([[]]));
       directionFeature.setStyle(
         new Style({
-          fill: new Fill({ color: "rgba(17, 81, 255, 0.25)" }),
-          stroke: new Stroke({ color: "#1151ff", width: 2 }),
+          fill: new Fill({ color: "#93d4df" }),
         }),
       );
 
@@ -441,7 +448,8 @@ export default function MapComponent() {
   useEffect(() => {
     const handleOrientation = (event) => {
       const alpha = event.alpha ?? 0;
-      setOrientation(alpha);
+      const angle = (alpha + 180) % 360;
+      setOrientation(angle);
     };
 
     if (window.DeviceOrientationEvent) {
@@ -528,7 +536,7 @@ export default function MapComponent() {
             top: "20px",
             left: "50%",
             transform: "translateX(-50%)",
-            backgroundColor: "#16a34a",
+            backgroundColor: "#76a732",
             color: "white",
             padding: "12px 24px",
             borderRadius: "8px",

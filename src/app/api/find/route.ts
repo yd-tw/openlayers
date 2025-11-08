@@ -28,6 +28,8 @@ interface Node {
   key?: string; // 節點的唯一識別 key
 }
 
+type RouteType = "bike" | "walk";
+
 // Min-Heap 實作，用於 A* 演算法的 openSet
 class MinHeap {
   private heap: Node[] = [];
@@ -147,11 +149,13 @@ class Graph {
   private segments: RoadSegment[];
   private nodes: Map<string, Point>;
   private edges: Map<string, Array<{ to: string; segment: RoadSegment }>>;
+  private routeType: RouteType;
 
-  constructor(segments: RoadSegment[]) {
+  constructor(segments: RoadSegment[], routeType: RouteType) {
     this.segments = segments;
     this.nodes = new Map();
     this.edges = new Map();
+    this.routeType = routeType;
     this.buildGraph();
   }
 
@@ -217,19 +221,25 @@ class Graph {
     return this.edges.get(key) || [];
   }
 
-  // 計算邊的成本，優先選擇有人行道的路徑
+  // 計算邊的成本，根據路線類型選擇優先路徑
   calculateEdgeCost(segment: RoadSegment): number {
     const distance = calculateDistance(
       { lat: segment.start_lat, lng: segment.start_lng },
       { lat: segment.end_lat, lng: segment.end_lng },
     );
 
-    // 如果有人行道（sidewalk 不為 null），成本較低；如果沒有人行道，成本增加
-    // 使用權重因子來調整偏好程度
-    const sidewalkWeight =
-      segment.sidewalk !== null && segment.sidewalk !== "" ? 1.0 : 3.0; // 無人行道的路徑成本是 3 倍
+    let weight = 1.0;
 
-    return distance * sidewalkWeight;
+    if (this.routeType === "bike") {
+      // 自行車路線：優先選擇 bike=1 的路段
+      weight = segment.bike === 1 ? 1.0 : 3.0;
+    } else if (this.routeType === "walk") {
+      // 步行路線：優先選擇有人行道的路段
+      weight =
+        segment.sidewalk !== null && segment.sidewalk !== "" ? 1.0 : 3.0;
+    }
+
+    return distance * weight;
   }
 }
 
@@ -326,7 +336,17 @@ function aStar(
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { start, end } = body;
+    const { start, end, type = "bike" } = body;
+
+    // 驗證 type 參數
+    if (type !== "bike" && type !== "walk") {
+      return NextResponse.json(
+        {
+          error: "type 參數必須是 'bike' 或 'walk'",
+        },
+        { status: 400 },
+      );
+    }
 
     // 驗證輸入
     if (
@@ -350,8 +370,8 @@ export async function POST(request: NextRequest) {
     const data = await res.json();
     const segments: RoadSegment[] = data?.lines || [];
 
-    // 建立圖形
-    const graph = new Graph(segments);
+    // 建立圖形，傳入路線類型
+    const graph = new Graph(segments, type);
 
     // 尋找最接近起點和終點的節點
     const startKey = graph.findNearestNode(start);
@@ -371,58 +391,28 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "找不到路徑" }, { status: 404 });
     }
 
-    // 計算統計資訊
-    let totalDistance = 0;
-    let sidewalkDistance = 0;
-    const segmentDetails: Array<{
-      id: number;
-      name: string;
-      sidewalk: string | null;
-      distance: number;
-    }> = [];
-
-    for (let i = 0; i < routePath.length - 1; i++) {
-      const segmentId = routePath[i + 1].segmentId;
-      if (segmentId) {
-        const segment = segments.find((s) => s.id === segmentId);
-        if (segment) {
-          const distance = calculateDistance(
-            { lat: segment.start_lat, lng: segment.start_lng },
-            { lat: segment.end_lat, lng: segment.end_lng },
-          );
-          totalDistance += distance;
-          if (segment.sidewalk !== null && segment.sidewalk !== "") {
-            sidewalkDistance += distance;
-          }
-          segmentDetails.push({
-            id: segment.id,
-            name: segment.name,
-            sidewalk: segment.sidewalk,
-            distance: Math.round(distance * 100) / 100,
-          });
-        }
-      }
-    }
-
     // 建立 GeoJSON 格式的路徑，將每個路段分開以便標記不同顏色
     const features = [];
 
     for (let i = 0; i < routePath.length - 1; i++) {
       const segmentId = routePath[i + 1].segmentId;
-      let hasSidewalk = false;
+      const properties: Record<string, boolean> = {};
 
       if (segmentId) {
         const segment = segments.find((s) => s.id === segmentId);
-        if (segment && segment.sidewalk !== null && segment.sidewalk !== "") {
-          hasSidewalk = true;
+        if (segment) {
+          if (type === "bike") {
+            properties.isBikeLane = segment.bike === 1;
+          } else if (type === "walk") {
+            properties.hasSidewalk =
+              segment.sidewalk !== null && segment.sidewalk !== "";
+          }
         }
       }
 
       features.push({
         type: "Feature",
-        properties: {
-          hasSidewalk: hasSidewalk,
-        },
+        properties,
         geometry: {
           type: "LineString",
           coordinates: [

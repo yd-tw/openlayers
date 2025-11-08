@@ -14,13 +14,13 @@ import Feature from "ol/Feature";
 import { Point, Polygon } from "ol/geom";
 
 export default function MapWithOrientation() {
-  const mapRef = useRef(null);
-  const [map, setMap] = useState(null);
-  const [view, setView] = useState(null);
-  const positionFeature = useRef(null);
-  const directionFeature = useRef(null);
-  const [orientation, setOrientation] = useState(null);
-  const [position, setPosition] = useState(null);
+  const mapRef = useRef<HTMLDivElement>(null);
+  const [map, setMap] = useState<Map | null>(null);
+  const [view, setView] = useState<View | null>(null);
+  const positionFeature = useRef<Feature<Point> | null>(null);
+  const directionFeature = useRef<Feature<Polygon> | null>(null);
+  const [orientation, setOrientation] = useState<number | null>(null);
+  const [position, setPosition] = useState<[number, number] | null>(null);
 
   // 初始化地圖
   useEffect(() => {
@@ -82,7 +82,7 @@ export default function MapWithOrientation() {
     setView(initialView);
 
     return () => {
-      mapObj.setTarget(null);
+      mapObj.setTarget(undefined);
     };
   }, []);
 
@@ -96,7 +96,7 @@ export default function MapWithOrientation() {
           const coords = fromLonLat([
             pos.coords.longitude,
             pos.coords.latitude,
-          ]);
+          ]) as [number, number];
           setPosition(coords);
           positionFeature.current?.getGeometry()?.setCoordinates(coords);
           view?.setCenter(coords);
@@ -111,34 +111,39 @@ export default function MapWithOrientation() {
 
   // 取得方向資訊
   useEffect(() => {
-    const handleOrientation = (event) => {
+    const handleOrientation = (event: DeviceOrientationEvent) => {
       const alpha = event.alpha ?? 0;
       const corrected = (alpha + 270) % 360;
       setOrientation(corrected);
     };
 
     if (window.DeviceOrientationEvent) {
-      if (typeof DeviceOrientationEvent.requestPermission === "function") {
+      // iOS 裝置需要請求權限
+      const DeviceOrientationEventTyped = DeviceOrientationEvent as unknown as {
+        requestPermission?: () => Promise<'granted' | 'denied'>;
+      };
+
+      if (typeof DeviceOrientationEventTyped.requestPermission === "function") {
         // iOS
-        DeviceOrientationEvent.requestPermission()
+        DeviceOrientationEventTyped.requestPermission()
           .then((res) => {
             if (res === "granted") {
               window.addEventListener(
                 "deviceorientationabsolute",
-                handleOrientation,
+                handleOrientation as EventListener,
               );
             }
           })
           .catch(console.error);
       } else {
-        window.addEventListener("deviceorientationabsolute", handleOrientation);
+        window.addEventListener("deviceorientationabsolute", handleOrientation as EventListener);
       }
     }
 
     return () => {
       window.removeEventListener(
         "deviceorientationabsolute",
-        handleOrientation,
+        handleOrientation as EventListener,
       );
     };
   }, []);
