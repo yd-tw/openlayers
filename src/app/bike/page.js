@@ -103,7 +103,7 @@ export default function MapComponent() {
         const vectorLayer = new VectorLayer({
           source: vectorSource,
           style: new Style({
-            stroke: new Stroke({ color: "#ff6600", width: 2 }),
+            stroke: new Stroke({ color: "#ff6600", width: 5 }),
             fill: new Fill({ color: "rgba(255, 165, 0, 0.3)" }),
             image: new CircleStyle({
               radius: 6,
