@@ -4,6 +4,9 @@ export type UserMode = 'pedestrian' | 'bicycle' | 'vehicle';
 // 訊息優先級
 export type MessagePriority = 'high' | 'medium' | 'low';
 
+// 提醒方式
+export type AlertMethod = 'notification' | 'vibration' | 'both';
+
 // 同步訊息
 export interface SyncMessage {
   id: string;
@@ -12,6 +15,8 @@ export interface SyncMessage {
   priority: MessagePriority;
   timestamp: number;
   icon?: string;
+  alertMethod?: AlertMethod;
+  targetModes?: UserMode[];
 }
 
 // 同步狀態

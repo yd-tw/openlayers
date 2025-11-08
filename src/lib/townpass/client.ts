@@ -56,9 +56,10 @@ export class TownPassClient {
       throw new Error('Not running in Flutter WebView');
     }
 
+    let reply: string | undefined;
     try {
       const message: FlutterMessage = { name, data };
-      const reply = await this.flutter.postMessage(JSON.stringify(message));
+      reply = await this.flutter.postMessage(JSON.stringify(message));
 
       console.log('TownPass: Received reply from Flutter (type):', typeof reply);
       console.log('TownPass: Received reply from Flutter (length):', reply?.length);
