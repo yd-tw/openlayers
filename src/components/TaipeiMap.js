@@ -145,7 +145,7 @@ export default function MapComponent() {
         new Style({
           image: new CircleStyle({
             radius: 8,
-            fill: new Fill({ color: "rgba(255, 0, 0, 0.7)" }),
+            fill: new Fill({ color: "#f5ba4b" }),
             stroke: new Stroke({ color: "#fff", width: 2 }),
           }),
         }),
@@ -378,7 +378,7 @@ export default function MapComponent() {
         new Style({
           image: new CircleStyle({
             radius: 8,
-            fill: new Fill({ color: "#1151ff" }),
+            fill: new Fill({ color: "#71c5d5" }),
             stroke: new Stroke({ color: "#fff", width: 2 }),
           }),
         }),
@@ -388,8 +388,7 @@ export default function MapComponent() {
       const directionFeature = new Feature(new Polygon([[]]));
       directionFeature.setStyle(
         new Style({
-          fill: new Fill({ color: "rgba(17, 81, 255, 0.25)" }),
-          stroke: new Stroke({ color: "#1151ff", width: 2 }),
+          fill: new Fill({ color: "#93d4df" }),
         }),
       );
 
@@ -545,7 +544,7 @@ export default function MapComponent() {
             top: "20px",
             left: "50%",
             transform: "translateX(-50%)",
-            backgroundColor: "#16a34a",
+            backgroundColor: "#76a732",
             color: "white",
             padding: "12px 24px",
             borderRadius: "8px",
