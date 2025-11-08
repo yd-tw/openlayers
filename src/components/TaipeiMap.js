@@ -513,19 +513,21 @@ export default function MapComponent() {
 
   return (
     <div className="relative h-screen w-full">
-      {/* 地圖 */}
-      <div ref={mapRef} className="h-screen w-full" />
-
-      {/* 圖層切換器 */}
-      <LayerSwitcher
-        layers={layers}
-        layerVisibility={layerVisibility}
-        toggleLayer={toggleLayer}
-      />
-
-      {/* 模式選擇器 - 置於地圖左下方 */}
-      <div className="absolute bottom-2.5 left-2.5 z-[1000]">
+      {/* 模式選擇器 - 置於地圖上方 */}
+      <div className="">
         <MapModeSelector />
+      </div>
+
+      <div className="h-full w-full relative">
+        {/* 地圖 */}
+        <div ref={mapRef} className="h-screen w-full" />
+
+        {/* 圖層切換器 */}
+        <LayerSwitcher
+          layers={layers}
+          layerVisibility={layerVisibility}
+          toggleLayer={toggleLayer}
+        />
       </div>
 
       {/* 複製通知 */}
