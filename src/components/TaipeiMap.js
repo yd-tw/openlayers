@@ -147,7 +147,16 @@ export default function MapComponent() {
     };
 
     window.addEventListener("deviceorientationabsolute", handleOrientation);
-    window.addEventListener("deviceorientation", handleOrientation);
+    
+    let lastAlpha = 0;
+    let smoothing = 0.1; // 0.0～1.0，越小越穩定但反應越慢
+
+    window.addEventListener("deviceorientation", (event) => {
+      if (event.alpha != null) {
+        lastAlpha = lastAlpha + smoothing * (event.alpha - lastAlpha);
+        updateDirection(lastAlpha); // 在這裡更新地圖方向
+      }
+    });
 
     // === 載入其他圖層 ===
     LAYER_CONFIGS.forEach((config) => loadGeoJSONLayer(map, config));
