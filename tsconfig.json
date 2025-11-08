@@ -31,6 +31,6 @@
     "**/*.mts",
     ".next\\dev/types/**/*.ts",
     ".next\\dev/types/**/*.ts"
-  ],
+, "src/app/test/page.js"  ],
   "exclude": ["node_modules"]
 }
