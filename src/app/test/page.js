@@ -15,8 +15,8 @@ import Point from "ol/geom/Point";
 import Polygon from "ol/geom/Polygon";
 import CircleGeom from "ol/geom/Circle";
 import { fromLonLat } from "ol/proj";
-import { Style, Stroke, Fill, Circle as CircleStyle, Text } from "ol/style";
-import LayerSwitcher from "../../components/LayerSwitcher";
+import { Style, Stroke, Fill, Circle as CircleStyle } from "ol/style";
+import LayerSwitcher from "@/components/LayerSwitcher";
 
 // === GeoJSON 圖層設定 ===
 const LAYER_CONFIGS = [
@@ -85,7 +85,7 @@ export default function MapComponent() {
           color: "rgba(17, 81, 255, 0.4)",
           width: 1.5,
         }),
-      }),
+      })
     );
 
     positionFeature.setStyle(
@@ -95,7 +95,7 @@ export default function MapComponent() {
           fill: new Fill({ color: "#1151ff" }),
           stroke: new Stroke({ color: "#fff", width: 2 }),
         }),
-      }),
+      })
     );
 
     coneFeature.setStyle(
@@ -107,7 +107,7 @@ export default function MapComponent() {
           color: "#1151ff",
           width: 2,
         }),
-      }),
+      })
     );
 
     const vectorSource = new VectorSource({
@@ -175,17 +175,12 @@ export default function MapComponent() {
     };
 
     // iOS 權限要求
-    if (
-      typeof DeviceOrientationEvent !== "undefined" &&
-      typeof DeviceOrientationEvent.requestPermission === "function"
-    ) {
+    if (typeof DeviceOrientationEvent !== "undefined" && 
+        typeof DeviceOrientationEvent.requestPermission === "function") {
       DeviceOrientationEvent.requestPermission()
         .then((res) => {
           if (res === "granted") {
-            window.addEventListener(
-              "deviceorientationabsolute",
-              handleOrientation,
-            );
+            window.addEventListener("deviceorientationabsolute", handleOrientation);
           }
         })
         .catch(console.error);
@@ -199,12 +194,8 @@ export default function MapComponent() {
 
     return () => {
       geolocation.setTracking(false);
-      map.un("singleclick", handleMapClick);
       map.setTarget(null);
-      window.removeEventListener(
-        "deviceorientationabsolute",
-        handleOrientation,
-      );
+      window.removeEventListener("deviceorientationabsolute", handleOrientation);
       window.removeEventListener("deviceorientation", handleOrientation);
     };
   }, []);
@@ -250,13 +241,13 @@ export default function MapComponent() {
   };
 
   return (
-    <div style={{ position: "relative", width: "100%", height: "100vh" }}>
-      <div ref={mapRef} style={{ width: "100%", height: "100%" }} />
+    <>
+      <div ref={mapRef} className="w-full h-screen" />
       <LayerSwitcher
         layers={layers}
         layerVisibility={layerVisibility}
         toggleLayer={toggleLayer}
       />
-    </div>
+    </>
   );
 }
