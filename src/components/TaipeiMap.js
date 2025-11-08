@@ -140,7 +140,7 @@ export default function MapComponent() {
       target: mapRef.current,
       layers: [new TileLayer({ source: new OSM() })],
       view: new View({
-        center: fromLonLat([121.5, 25.05]),
+        center: fromLonLat([121.534, 25.021]),
         zoom: 20,
       }),
     });
