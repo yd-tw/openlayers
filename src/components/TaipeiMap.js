@@ -12,11 +12,11 @@ import Geolocation from "ol/Geolocation";
 import GeoJSON from "ol/format/GeoJSON";
 import Feature from "ol/Feature";
 import Point from "ol/geom/Point";
+import LineString from "ol/geom/LineString";
 import Polygon from "ol/geom/Polygon";
 import Heatmap from "ol/layer/Heatmap";
 import { fromLonLat } from "ol/proj";
 import { Style, Stroke, Fill, Circle as CircleStyle } from "ol/style";
-
 import LayerSwitcher from "./LayerSwitcher";
 
 // GeoJSON 圖層配置
@@ -48,6 +48,61 @@ const LAYER_CONFIGS = [
 
 // Configs
 import weightConfig from "@/configs/weightConfig.json";
+
+// 轉換 API 資料為 OpenLayers 圖層
+function createLinesLayerFromAPI(data) {
+  const features = data.lines.map(line => {
+    // 將經緯度轉換為 OpenLayers 投影座標
+    const startCoord = fromLonLat([line.start_lng, line.start_lat]);
+    const endCoord = fromLonLat([line.end_lng, line.end_lat]);
+    
+    // 建立線段幾何
+    const lineGeometry = new LineString([startCoord, endCoord]);
+    
+    // 建立 Feature 並儲存所有屬性
+    const feature = new Feature({
+      geometry: lineGeometry,
+      id: line.id,
+      name: line.name,
+      bike: line.bike,
+      rd_from: line.rd_from,
+      sidewalk: line.sidewalk
+    });
+    
+    return feature;
+  });
+  
+  // 建立 Vector Source
+  const vectorSource = new VectorSource({
+    features: features
+  });
+  
+  // 建立 Vector Layer 並設定動態樣式
+  const vectorLayer = new VectorLayer({
+    source: vectorSource,
+    style: (feature) => {
+      const isBike = feature.get('bike') === 1;
+      const hasSidewalk = feature.get('sidewalk') !== null && feature.get('sidewalk') !== undefined;
+      
+      let color = '#3b82f6'; // 預設藍色
+      
+      if (hasSidewalk) {
+        color = '#00ff26'; // 綠色 (有人行道)
+      } else if (isBike) {
+        color = '#ff00ff'; // 紫色 (自行車道)
+      }
+      
+      return new Style({
+        stroke: new Stroke({
+          color: color,
+          width: 2
+        })
+      });
+    }
+  });
+  
+  return vectorLayer;
+}
 
 export default function MapComponent() {
   const mapRef = useRef(null);
@@ -161,49 +216,14 @@ export default function MapComponent() {
       }
     });
 
-    // === 方向變化 ===
-    const currentHeadingRef = { current: 0 };
-
-    const updateConeGeometry = (coords, heading) => {
-      if (!coords || heading == null) return;
-
-      const radius = 30; // 錐形長度（公尺）
-      const halfAngle = (30 * Math.PI) / 180; // 左右各 30°
-      const steps = 10;
-      const points = [coords];
-
-      for (let i = -halfAngle; i <= halfAngle; i += (halfAngle * 2) / steps) {
-        const angle = heading + i;
-        const dx = radius * Math.sin(angle);
-        const dy = radius * Math.cos(angle);
-        points.push([coords[0] + dx, coords[1] + dy]);
-      }
-      points.push(coords);
-      coneFeature.setGeometry(new Polygon([points]));
-    };
-
-    // === DeviceOrientation API ===
-    let lastUpdate = 0;
-    const handleOrientation = (event) => {
-      const now = Date.now();
-      if (now - lastUpdate < 100) return; // 限制更新頻率為 100ms
-      
-      lastUpdate = now;
-
-      let heading = event.webkitCompassHeading ?? event.alpha;
-      if (heading != null) {
-        const rad = (heading * Math.PI) / 180;
-        currentHeadingRef.current = rad;
-        const coords = geolocation.getPosition();
-        updateConeGeometry(coords, rad);
-      }
-    };
-
     window.addEventListener("deviceorientationabsolute", handleOrientation);
     window.addEventListener("deviceorientation", handleOrientation);
 
     // === 載入其他圖層 ===
     LAYER_CONFIGS.forEach((config) => loadGeoJSONLayer(map, config));
+
+    // === 載入 API 線段資料 ===
+    loadAPILinesLayer(map);
 
     return () => {
       geolocation.setTracking(false);
@@ -215,6 +235,22 @@ export default function MapComponent() {
       window.removeEventListener("deviceorientation", handleOrientation);
     };
   }, []);
+
+  // 載入 API 線段圖層
+  const loadAPILinesLayer = async (map) => {
+    try {
+      const response = await fetch('https://tmp114514.ricecall.com/lines');
+      const data = await response.json();
+      
+      // 使用轉換函數建立圖層
+      const linesLayer = createLinesLayerFromAPI(data);
+      
+      map.addLayer(linesLayer);
+      setLayers((prev) => ({ ...prev, apiLines: linesLayer }));
+    } catch (error) {
+      console.error('載入 API 線段圖層失敗:', error);
+    }
+  };
 
   // 載入 GeoJSON 圖層
   const loadGeoJSONLayer = async (map, config) => {
