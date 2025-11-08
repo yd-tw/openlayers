@@ -1,0 +1,2155 @@
+{
+  "type": "FeatureCollection",
+  "generator": "overpass-turbo",
+  "copyright": "The data included in this document is from www.openstreetmap.org. The data is made available under ODbL.",
+  "timestamp": "2025-11-08T09:40:43Z",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/34992912",
+        "highway": "residential",
+        "name": "龍泉街",
+        "name:en": "Longquan Street",
+        "name:nan": "Liông-choân-koe",
+        "name:nan-Hant": "龍泉街",
+        "name:nan-Latn-pehoeji": "Liông-choân-koe",
+        "name:nan-Latn-tailo": "Liông-tsuân-kue",
+        "name:zh": "龍泉街",
+        "oneway": "yes",
+        "sidewalk": "left",
+        "surface": "asphalt"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [121.5293141, 25.0264509],
+          [121.5293115, 25.0263697],
+          [121.5292935, 25.0259371],
+          [121.5292835, 25.0256555],
+          [121.5292743, 25.0253158],
+          [121.5292733, 25.0252761],
+          [121.5293288, 25.0249377]
+        ]
+      },
+      "id": "way/34992912"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/49073247",
+        "highway": "residential",
+        "name": "建國南路一段65巷",
+        "name:en": "Lane 65, Section 1, Jianguo South Road",
+        "name:nan": "Kiàn-kok-lâm-lō͘-1-tōaⁿ 65-hāng",
+        "name:nan-Hant": "建國南路一段65巷",
+        "name:nan-Latn-pehoeji": "Kiàn-kok-lâm-lō͘-1-tōaⁿ 65-hāng",
+        "name:nan-Latn-tailo": "Kiàn-kok-lâm-lōo-1-tuānn 65-hāng",
+        "name:zh": "建國南路一段65巷",
+        "oneway": "yes",
+        "sidewalk": "left",
+        "surface": "asphalt"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [121.5383119, 25.0438063],
+          [121.5377106, 25.0437747],
+          [121.5369419, 25.0437386],
+          [121.5368838, 25.0437283]
+        ]
+      },
+      "id": "way/49073247"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/49073271",
+        "foot": "no",
+        "highway": "trunk_link",
+        "lit": "yes",
+        "oneway": "yes",
+        "sidewalk": "no",
+        "surface": "asphalt"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [121.5365879, 25.0483926],
+          [121.5365839, 25.0482798],
+          [121.5365634, 25.0477172]
+        ]
+      },
+      "id": "way/49073271"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/49695743",
+        "cycleway:both": "no",
+        "highway": "residential",
+        "lanes": "1",
+        "maxspeed": "30",
+        "maxspeed:type": "sign",
+        "motor_vehicle:conditional": "no@(Mo-Fr 07:20-07:50, 12:00-12:20, 16:00-16:20; SH off)",
+        "name": "新生南路一段139巷",
+        "name:en": "Lane 139, Section 1, Xinsheng South Road",
+        "name:nan": "Sin-seng Lâm-lō͘ 1-tōaⁿ 139-hāng",
+        "name:nan-Hant": "新生南路一段139巷",
+        "name:nan-Latn-pehoeji": "Sin-seng Lâm-lō͘ 1-tōaⁿ 139-hāng",
+        "name:nan-Latn-tailo": "Sin-sing Lâm-lōo 1-tuānn 139-hāng",
+        "name:zh": "新生南路一段139巷",
+        "oneway": "yes",
+        "oneway:bicycle": "no",
+        "sidewalk": "no",
+        "smoothness": "good",
+        "surface": "asphalt"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [121.5328408, 25.0366955],
+          [121.5329733, 25.0366356],
+          [121.5335671, 25.0366082],
+          [121.5341776, 25.0365903]
+        ]
+      },
+      "id": "way/49695743"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/49698364",
+        "highway": "service",
+        "lit": "yes",
+        "maxspeed": "30",
+        "name": "和平東路二段118巷2弄",
+        "name:en": "Alley 2, Lane 118, Section 2, Heping East Road",
+        "name:zh": "和平東路二段118巷2弄",
+        "oneway": "yes",
+        "sidewalk": "left"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [121.5428795, 25.0243903],
+          [121.541772, 25.0245414],
+          [121.5413634, 25.0245972],
+          [121.5413096, 25.0246045]
+        ]
+      },
+      "id": "way/49698364"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/49698365",
+        "highway": "service",
+        "lit": "yes",
+        "maxspeed": "30",
+        "name": "和平東路二段118巷4弄",
+        "name:en": "Alley 4, Lane 118, Section 2, Heping East Road",
+        "name:zh": "和平東路二段118巷4弄",
+        "oneway": "yes",
+        "sidewalk": "left"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [121.5412565, 25.0242478],
+          [121.5413099, 25.0242402],
+          [121.5428708, 25.0240184]
+        ]
+      },
+      "id": "way/49698365"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/49698366",
+        "highway": "service",
+        "lit": "yes",
+        "maxspeed": "30",
+        "name": "和平東路二段118巷6弄",
+        "name:en": "Alley 6, Lane 118, Section 2, Heping East Road",
+        "name:zh": "和平東路二段118巷6弄",
+        "oneway": "yes",
+        "sidewalk": "right",
+        "surface": "asphalt"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [121.5428622, 25.0236508],
+          [121.5427703, 25.0236639],
+          [121.5422921, 25.0237326],
+          [121.5412557, 25.0238815],
+          [121.541203, 25.0238891]
+        ]
+      },
+      "id": "way/49698366"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/49698367",
+        "bicycle": "yes",
+        "foot": "yes",
+        "highway": "service",
+        "lit": "yes",
+        "maxspeed": "30",
+        "name": "和平東路二段96巷15弄",
+        "name:en": "Alley 15, Lane 96, Section 2, Heping East Road",
+        "name:zh": "和平東路二段96巷15弄",
+        "oneway": "yes",
+        "sidewalk": "right",
+        "surface": "asphalt"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [121.5411507, 25.0235378],
+          [121.5412018, 25.0235305],
+          [121.5422352, 25.0233837],
+          [121.5428539, 25.0232957]
+        ]
+      },
+      "id": "way/49698367"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/49710834",
+        "bridge": "yes",
+        "highway": "trunk_link",
+        "layer": "1",
+        "lit": "yes",
+        "oneway": "yes",
+        "sidewalk": "no",
+        "surface": "asphalt"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [121.5365634, 25.0477172],
+          [121.5365283, 25.0465219],
+          [121.536608, 25.0456861]
+        ]
+      },
+      "id": "way/49710834"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/49710835",
+        "foot": "no",
+        "highway": "trunk_link",
+        "oneway": "yes",
+        "sidewalk": "no"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [121.5368959, 25.0476988],
+          [121.536902, 25.0482659],
+          [121.5369025, 25.0482763],
+          [121.5369235, 25.048365],
+          [121.5369349, 25.0484134]
+        ]
+      },
+      "id": "way/49710835"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/49749149",
+        "highway": "service",
+        "name": "和平東路二段36巷",
+        "name:en": "Lane 36, Section 2, Heping East Road",
+        "name:zh": "和平東路二段36巷",
+        "oneway": "yes",
+        "service": "alley",
+        "sidewalk": "right",
+        "surface": "asphalt"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [121.5369338, 25.0249629],
+          [121.5369415, 25.0252491],
+          [121.5369945, 25.0255812],
+          [121.5370099, 25.0256725]
+        ]
+      },
+      "id": "way/49749149"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/49749151",
+        "highway": "service",
+        "name": "和平東路二段18巷",
+        "name:en": "Lane 18, Section 2, Heping East Road",
+        "name:zh": "和平東路二段18巷",
+        "oneway": "yes",
+        "service": "alley",
+        "sidewalk": "right"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [121.5359291, 25.0258231],
+          [121.5359272, 25.025729],
+          [121.5359251, 25.0253234],
+          [121.5359231, 25.0249616],
+          [121.53592, 25.0245076],
+          [121.5359168, 25.0240513],
+          [121.5359133, 25.0235543],
+          [121.5359106, 25.0231556],
+          [121.535908, 25.0227847],
+          [121.5359074, 25.0226864]
+        ]
+      },
+      "id": "way/49749151"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/51362362",
+        "highway": "trunk",
+        "lanes": "2",
+        "lit": "yes",
+        "maxspeed": "70",
+        "name": "新生高架道路",
+        "name:en": "Xinsheng Expressway",
+        "name:nan": "Sin-seng Ko-kà Tō-lō͘",
+        "name:nan-Hant": "新生高架道路",
+        "name:nan-Latn-pehoeji": "Sin-seng Ko-kà Tō-lō͘",
+        "name:nan-Latn-tailo": "Sin-sing Ko-kà Tō-lōo",
+        "name:zh": "新生高架道路",
+        "oneway": "yes",
+        "sidewalk": "no",
+        "surface": "asphalt"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [121.5293011, 25.0413447],
+          [121.529222, 25.0410658],
+          [121.5291742, 25.0410313]
+        ]
+      },
+      "id": "way/51362362"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/51362369",
+        "bicycle": "no",
+        "bridge": "yes",
+        "bus": "yes",
+        "foot": "no",
+        "highway": "trunk",
+        "lanes": "3",
+        "layer": "1",
+        "lit": "yes",
+        "maxspeed": "80",
+        "maxweightrating:hgv": "10",
+        "maxweightrating:hgv:conditional": "19 @ government-owned vehicles",
+        "motorcycle:conditional": "no @ <=250 cc",
+        "name": "市民大道高架道路",
+        "name:en": "Civic Boulevard Expressway",
+        "name:nan": "Chhī-bîn Tāi-tō Ko-kè Tō-lō͘",
+        "name:nan-Hant": "市民大道高架道路",
+        "name:nan-Latn-pehoeji": "Chhī-bîn Tāi-tō Ko-kè Tō-lō͘",
+        "name:nan-Latn-tailo": "Tshī-bîn Tāi-tō Ko-kè Tō-lōo",
+        "name:zh": "市民大道高架道路",
+        "oneway": "yes",
+        "sidewalk": "no"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [121.5266591, 25.0473025],
+          [121.5261058, 25.0474696],
+          [121.5259431, 25.0475125],
+          [121.525748, 25.0475625],
+          [121.5255743, 25.0476062],
+          [121.5254172, 25.047642],
+          [121.5251867, 25.0476913],
+          [121.5249619, 25.0477357],
+          [121.524663, 25.0477885],
+          [121.5243329, 25.047834],
+          [121.5240669, 25.0478626],
+          [121.5237649, 25.0478845],
+          [121.5217318, 25.0480011],
+          [121.5214746, 25.0480236],
+          [121.5212272, 25.0480459],
+          [121.5210333, 25.0480728],
+          [121.5208161, 25.0481098],
+          [121.5204339, 25.0481857],
+          [121.5201241, 25.0482435],
+          [121.5197406, 25.0483089],
+          [121.5184518, 25.0485155]
+        ]
+      },
+      "id": "way/51362369"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/51392891",
+        "cycleway:left": "no",
+        "cycleway:right": "shared_lane",
+        "cycleway:right:lane": "pictogram",
+        "highway": "residential",
+        "lit": "yes",
+        "maxspeed": "30",
+        "maxspeed:type": "sign",
+        "name": "新生北路一段47巷",
+        "name:en": "Lane 47, Section 1, Xinsheng North Road",
+        "name:zh": "新生北路一段47巷",
+        "oneway": "yes",
+        "sidewalk": "right",
+        "surface": "asphalt",
+        "width": "4"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [121.5314339, 25.0479796],
+          [121.5312057, 25.0479635],
+          [121.5300565, 25.0479955]
+        ]
+      },
+      "id": "way/51392891"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/51833092",
+        "highway": "service",
+        "name": "金山南路二段13巷",
+        "name:en": "Lane 13, Section 2, Jinshan South Road",
+        "name:nan": "Kim-soaⁿ Lâm-lō͘ 2-tōaⁿ 13-hāng",
+        "name:nan-Hant": "金山南路二段13巷",
+        "name:nan-Latn-pehoeji": "Kim-soaⁿ Lâm-lō͘ 2-tōaⁿ 13-hāng",
+        "name:nan-Latn-tailo": "Kim-suann Lâm-lōo 2-tuānn 13-hāng",
+        "name:zh": "金山南路二段13巷",
+        "oneway": "yes",
+        "service": "alley",
+        "sidewalk": "left"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [121.5291375, 25.0332314],
+          [121.5286305, 25.0332868],
+          [121.5281841, 25.0333439],
+          [121.5277462, 25.0334137],
+          [121.5273039, 25.0334708],
+          [121.527225, 25.033485]
+        ]
+      },
+      "id": "way/51833092"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/53547406",
+        "highway": "residential",
+        "lanes": "1",
+        "name": "和平東路一段248巷",
+        "name:en": "Lane 248, Section 1, Heping East Road",
+        "name:nan": "Hô-pêng-tang-lō͘-1-tōaⁿ 248-hāng",
+        "name:nan-Hant": "和平東路一段248巷",
+        "name:nan-Latn-pehoeji": "Hô-pêng-tang-lō͘-1-tōaⁿ 248-hāng",
+        "name:nan-Latn-tailo": "Hô-pîng-tang-lōo-1-tuānn 248-hāng",
+        "name:zh": "和平東路一段248巷",
+        "oneway": "yes",
+        "sidewalk": "right",
+        "surface": "asphalt"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [121.5328841, 25.0261684],
+          [121.5328741, 25.0260809],
+          [121.5328333, 25.0257203],
+          [121.5327803, 25.0252525],
+          [121.5327213, 25.0247333],
+          [121.5326619, 25.0242082],
+          [121.5326039, 25.0236962],
+          [121.5325499, 25.0232203]
+        ]
+      },
+      "id": "way/53547406"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/58976063",
+        "highway": "secondary",
+        "lanes": "4",
+        "lit": "yes",
+        "maxheight": "default",
+        "name": "和平東路一段",
+        "name:en": "Heping East Road Section 1",
+        "name:nan": "Hô-pêng-tang-lō͘-1-tōaⁿ",
+        "name:nan-Hant": "和平東路一段",
+        "name:nan-Latn-pehoeji": "Hô-pêng-tang-lō͘-1-tōaⁿ",
+        "name:nan-Latn-tailo": "Hô-pîng-tang-lōo-1-tuānn",
+        "name:zh": "和平東路一段",
+        "oneway": "yes",
+        "sidewalk": "right",
+        "surface": "asphalt"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [121.5348064, 25.0261274],
+          [121.5346734, 25.0261451],
+          [121.5341811, 25.0262181],
+          [121.5336925, 25.0262569],
+          [121.5336346, 25.026262],
+          [121.5335262, 25.0262702],
+          [121.5330608, 25.0263069],
+          [121.5326936, 25.0263362],
+          [121.5320585, 25.0263868],
+          [121.5319915, 25.0263922],
+          [121.5316101, 25.0264219],
+          [121.5315285, 25.026429],
+          [121.5313251, 25.0264451],
+          [121.5304883, 25.0265117],
+          [121.5304155, 25.0265187],
+          [121.5302926, 25.0265272],
+          [121.529945, 25.0265554],
+          [121.5295783, 25.0265851],
+          [121.5288651, 25.0266396],
+          [121.5287757, 25.0266478]
+        ]
+      },
+      "id": "way/58976063"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/93305730",
+        "alt_name": "北科學生吃飯路線",
+        "covered": "no",
+        "highway": "service",
+        "maxspeed": "30",
+        "name": "新生南路一段12巷",
+        "name:en": "Lane 12, Section 1, Xinsheng South Road",
+        "name:nan": "Sin-seng Lâm-lō͘ 1-tōaⁿ 12-hāng",
+        "name:nan-Hant": "新生南路一段12巷",
+        "name:nan-Latn-pehoeji": "Sin-seng Lâm-lō͘ 1-tōaⁿ 12-hāng",
+        "name:nan-Latn-tailo": "Sin-sing Lâm-lōo 1-tuānn 12-hāng",
+        "name:zh": "新生南路一段12巷",
+        "oneway": "no",
+        "service": "alley",
+        "sidewalk": "right",
+        "surface": "asphalt"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [121.532807, 25.0437703],
+          [121.5326855, 25.0437712],
+          [121.5325821, 25.0437455],
+          [121.5322806, 25.0436706]
+        ]
+      },
+      "id": "way/93305730"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/182973466",
+        "highway": "secondary",
+        "lanes": "2",
+        "name": "信義路二段",
+        "name:en": "Section 2, Xinyi Road",
+        "name:nan": "Sìn-gī-lō-2-tōaⁿ",
+        "name:nan-Hant": "信義路二段",
+        "name:nan-Latn-pehoeji": "Sìn-gī-lō-2-tōaⁿ",
+        "name:nan-Latn-tailo": "Sìn-gī-lōo-2-tuānn",
+        "name:zh": "信義路二段",
+        "oneway": "yes",
+        "sidewalk": "right",
+        "surface": "asphalt"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [121.5243116, 25.0353602],
+          [121.5244672, 25.0352834],
+          [121.5249489, 25.0350503],
+          [121.5256505, 25.0347054],
+          [121.5257604, 25.0346514],
+          [121.5267104, 25.0341844]
+        ]
+      },
+      "id": "way/182973466"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/182973467",
+        "highway": "secondary",
+        "lanes": "2",
+        "lit": "yes",
+        "name": "信義路二段",
+        "name:en": "Section 2, Xinyi Road",
+        "name:nan": "Sìn-gī-lō-2-tōaⁿ",
+        "name:nan-Latn-pehoeji": "Sìn-gī-lō-2-tōaⁿ",
+        "name:nan-Latn-tailo": "Sìn-gī-lōo-2-tuānn",
+        "name:zh": "信義路二段",
+        "oneway": "yes",
+        "sidewalk": "left",
+        "surface": "asphalt"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [121.5243915, 25.035536],
+          [121.5245583, 25.0354385],
+          [121.525359, 25.0350543],
+          [121.5258328, 25.0348167],
+          [121.5265088, 25.0344794],
+          [121.5268699, 25.0343101],
+          [121.5270567, 25.0342178],
+          [121.527102, 25.0341995],
+          [121.5272371, 25.0341762]
+        ]
+      },
+      "id": "way/182973467"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/192033068",
+        "covered": "no",
+        "hgv:conditional": "no @ (07:00-23:00)",
+        "highway": "service",
+        "maxspeed": "30",
+        "motorcar:conditional": "no @ (12:00-22:00)",
+        "name": "八德路一段82巷",
+        "name:en": "Lane 82, Section 1, Bade Road",
+        "name:nan": "Pat-tek-lō͘ 1-tōaⁿ 82-hāng",
+        "name:nan-Hant": "八德路一段82巷",
+        "name:nan-Latn-pehoeji": "Pat-tek-lō͘ 1-tōaⁿ 82-hāng",
+        "name:nan-Latn-tailo": "Pat-tik-lōo 1-tuānn 82-hāng",
+        "name:zh": "八德路一段82巷",
+        "oneway": "no",
+        "service": "alley",
+        "sidewalk": "left",
+        "surface": "asphalt"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [121.5318149, 25.0441019],
+          [121.5318376, 25.0440316],
+          [121.5319543, 25.0436164]
+        ]
+      },
+      "id": "way/192033068"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/197909810",
+        "highway": "residential",
+        "lit": "yes",
+        "name": "永康街",
+        "name:en": "Yongkang Street",
+        "name:ja": "永康街",
+        "name:nan": "Éng-khong-koe",
+        "name:nan-Hant": "永康街",
+        "name:nan-Latn-pehoeji": "Éng-khong-koe",
+        "name:nan-Latn-tailo": "Íng-khong-kue",
+        "name:zh": "永康街",
+        "oneway": "yes",
+        "sidewalk": "both",
+        "surface": "asphalt",
+        "tourism": "attraction"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [121.5295023, 25.0312864],
+          [121.5295084, 25.0309182],
+          [121.529516, 25.0307677],
+          [121.5295331, 25.0305535],
+          [121.529533, 25.0305295],
+          [121.5295339, 25.0304729],
+          [121.5295418, 25.0301502]
+        ]
+      },
+      "id": "way/197909810"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/198310888",
+        "bicycle": "yes",
+        "foot": "yes",
+        "highway": "residential",
+        "lit": "yes",
+        "name": "潮州街98巷",
+        "name:en": "Lane 98, ChaoZhou Street",
+        "name:nan": "Tiô-chiu-koe 98-hāng",
+        "name:nan-Hant": "潮州街98巷",
+        "name:nan-Latn-pehoeji": "Tiô-chiu-koe 98-hāng",
+        "name:nan-Latn-tailo": "Tiô-tsiu-kue 98-hāng",
+        "name:zh": "潮州街98巷",
+        "oneway": "no",
+        "sidewalk": "no",
+        "surface": "asphalt"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [121.5253189, 25.0290515],
+          [121.5252693, 25.0287573],
+          [121.5252094, 25.0284264],
+          [121.5251558, 25.0281006]
+        ]
+      },
+      "id": "way/198310888"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/198582310",
+        "highway": "tertiary",
+        "lit": "yes",
+        "name": "杭州南路二段",
+        "name:en": "Section 2, Hangzhou South Road",
+        "name:nan": "Hâng-chiu-lâm-lō͘ 2-tōaⁿ",
+        "name:nan-Latn-pehoeji": "Hâng-chiu-lâm-lō͘ 2-tōaⁿ",
+        "name:nan-Latn-tailo": "Hâng-tsiu-lâm-lōo 2-tuānn",
+        "name:zh": "杭州南路二段",
+        "name:zh-Hans": "杭州南路二段",
+        "name:zh-Hant": "杭州南路二段",
+        "oneway": "yes",
+        "sidewalk": "both",
+        "surface": "asphalt"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [121.5225741, 25.0324039],
+          [121.5226216, 25.0324941],
+          [121.5228298, 25.0328332],
+          [121.5230065, 25.0331329],
+          [121.5234716, 25.0339213],
+          [121.5237641, 25.0344172],
+          [121.5240901, 25.0349699],
+          [121.5242732, 25.0352739],
+          [121.5243116, 25.0353602]
+        ]
+      },
+      "id": "way/198582310"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/202975324",
+        "highway": "residential",
+        "lanes": "1",
+        "name": "溫州街18巷",
+        "name:en": "Lane 18, Wenzhou Street",
+        "name:nan": "Un-chiu-koe 18-hāng",
+        "name:nan-Hant": "溫州街18巷",
+        "name:nan-Latn-pehoeji": "Un-chiu-koe 18-hāng",
+        "name:nan-Latn-tailo": "Un-tsiu-kue 18-hāng",
+        "name:zh": "溫州街18巷",
+        "oneway": "yes",
+        "sidewalk": "left",
+        "surface": "asphalt"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [121.5314425, 25.0248587],
+          [121.5316679, 25.0248366],
+          [121.5321814, 25.0247862],
+          [121.5327213, 25.0247333],
+          [121.5334526, 25.0246617]
+        ]
+      },
+      "id": "way/202975324"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/204711194",
+        "bicycle": "no",
+        "bridge": "yes",
+        "bus": "yes",
+        "foot": "no",
+        "highway": "trunk",
+        "lanes": "3",
+        "layer": "1",
+        "lit": "yes",
+        "maxspeed": "80",
+        "maxweightrating:hgv": "10",
+        "maxweightrating:hgv:conditional": "19 @ government-owned vehicles",
+        "motorcycle:conditional": "no @ <=250 cc",
+        "name": "市民大道高架道路",
+        "name:en": "Civic Boulevard Expressway",
+        "name:nan": "Chhī-bîn Tāi-tō Ko-kè Tō-lō͘",
+        "name:nan-Hant": "市民大道高架道路",
+        "name:nan-Latn-pehoeji": "Chhī-bîn Tāi-tō Ko-kè Tō-lō͘",
+        "name:nan-Latn-tailo": "Tshī-bîn Tāi-tō Ko-kè Tō-lōo",
+        "name:zh": "市民大道高架道路",
+        "oneway": "yes",
+        "sidewalk": "no"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [121.5184222, 25.0483928],
+          [121.5195635, 25.0482226],
+          [121.5199592, 25.0481619],
+          [121.5205459, 25.0480515],
+          [121.5208074, 25.0480029],
+          [121.5211112, 25.047953],
+          [121.521372, 25.0479185],
+          [121.5216984, 25.0478923],
+          [121.5239628, 25.0477593],
+          [121.5243144, 25.0477295],
+          [121.5246944, 25.0476749],
+          [121.5249284, 25.0476366],
+          [121.5251975, 25.0475807],
+          [121.5255071, 25.0475103],
+          [121.5258472, 25.0474228],
+          [121.5261548, 25.0473383],
+          [121.5266128, 25.0471992]
+        ]
+      },
+      "id": "way/204711194"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/205066812",
+        "highway": "secondary",
+        "lanes": "4",
+        "lit": "yes",
+        "name": "和平東路一段",
+        "name:en": "Heping East Road Section 1",
+        "name:nan": "Hô-pêng-tang-lō͘-1-tōaⁿ",
+        "name:nan-Hant": "和平東路一段",
+        "name:nan-Latn-pehoeji": "Hô-pêng-tang-lō͘-1-tōaⁿ",
+        "name:nan-Latn-tailo": "Hô-pîng-tang-lōo-1-tuānn",
+        "name:zh": "和平東路一段",
+        "oneway": "yes",
+        "sidewalk": "right",
+        "surface": "asphalt"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [121.5298746, 25.026413],
+          [121.5301316, 25.0263957],
+          [121.5302779, 25.0263858],
+          [121.5304309, 25.0263718],
+          [121.5304815, 25.0263669],
+          [121.5315149, 25.0262855],
+          [121.5315957, 25.0262791],
+          [121.5319761, 25.0262448],
+          [121.5320444, 25.026239],
+          [121.5328841, 25.0261684],
+          [121.5329825, 25.0261606],
+          [121.5335111, 25.0261186],
+          [121.5336174, 25.0261102],
+          [121.5336806, 25.0261058],
+          [121.5341896, 25.02607],
+          [121.5342944, 25.026058],
+          [121.5346587, 25.0260049],
+          [121.5347862, 25.0259854]
+        ]
+      },
+      "id": "way/205066812"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/232003903",
+        "access:lanes": "no|||",
+        "bus:lanes": "designated|||",
+        "cycleway:right": "shared_lane",
+        "cycleway:right:lane": "pictogram",
+        "highway": "secondary",
+        "lanes": "4",
+        "lit": "yes",
+        "maxspeed": "50",
+        "maxspeed:type": "sign",
+        "name": "新生北路一段",
+        "name:en": "Section 1, Xinsheng North Road",
+        "name:nan": "Sin-seng Pak-lō͘ 1-tōaⁿ",
+        "name:nan-Hant": "新生北路一段",
+        "name:nan-Latn-pehoeji": "Sin-seng Pak-lō͘ 1-tōaⁿ",
+        "name:nan-Latn-tailo": "Sin-sing Pak-lōo 1-tuānn",
+        "name:zh": "新生北路一段",
+        "oneway": "yes",
+        "sidewalk": "right",
+        "surface": "asphalt"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [121.5329955, 25.0455158],
+          [121.5329956, 25.045574],
+          [121.5329999, 25.045756]
+        ]
+      },
+      "id": "way/232003903"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/238018915",
+        "highway": "residential",
+        "name": "潮州街78巷",
+        "name:en": "Lane 78, ChaoZhou Street",
+        "name:nan": "Tiô-chiu-koe 78-hāng",
+        "name:nan-Hant": "潮州街78巷",
+        "name:nan-Latn-pehoeji": "Tiô-chiu-koe 78-hāng",
+        "name:nan-Latn-tailo": "Tiô-tsiu-kue 78-hāng",
+        "name:zh": "潮州街78巷",
+        "oneway": "no",
+        "sidewalk": "no"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [121.5242374, 25.028564],
+          [121.5242738, 25.0292166]
+        ]
+      },
+      "id": "way/238018915"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/238018922",
+        "highway": "residential",
+        "name": "潮州街55巷",
+        "name:en": "Lane 55, ChaoZhou Street",
+        "name:nan": "Tiô-chiu-koe 55-hāng",
+        "name:nan-Hant": "潮州街55巷",
+        "name:nan-Latn-pehoeji": "Tiô-chiu-koe 55-hāng",
+        "name:nan-Latn-tailo": "Tiô-tsiu-kue 55-hāng",
+        "name:zh": "潮州街55巷",
+        "sidewalk": "no"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [121.5240298, 25.0292549],
+          [121.5241068, 25.0296345],
+          [121.5241337, 25.0297669],
+          [121.5241863, 25.0300258],
+          [121.5242933, 25.0305527]
+        ]
+      },
+      "id": "way/238018922"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/238035397",
+        "cycleway:right": "shared_lane",
+        "cycleway:right:lane": "pictogram",
+        "highway": "tertiary_link",
+        "lanes": "2",
+        "lit": "yes",
+        "maxspeed": "50",
+        "maxspeed:type": "sign",
+        "oneway": "yes",
+        "sidewalk": "right",
+        "source": "Bing",
+        "surface": "asphalt"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [121.5300347, 25.0480194],
+          [121.5300482, 25.048374],
+          [121.5300109, 25.0485116]
+        ]
+      },
+      "id": "way/238035397"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/245579205",
+        "cycleway:both": "shared_lane",
+        "cycleway:both:lane": "pictogram",
+        "highway": "tertiary",
+        "lanes": "2",
+        "lit": "yes",
+        "maxspeed": "50",
+        "maxspeed:type": "sign",
+        "name": "龍江路",
+        "name:en": "Longjiang Road",
+        "name:nan": "Liông-kang-lō͘",
+        "name:nan-Hant": "龍江路",
+        "name:nan-Latn-pehoeji": "Liông-kang-lō͘",
+        "name:nan-Latn-tailo": "Liông-kang-lōo",
+        "name:zh": "龍江路",
+        "sidewalk": "separate",
+        "surface": "asphalt"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [121.5405311, 25.0467673],
+          [121.5405503, 25.0467047]
+        ]
+      },
+      "id": "way/245579205"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/245579206",
+        "highway": "residential",
+        "lane_markings": "no",
+        "lit": "yes",
+        "maxspeed": "50",
+        "maxspeed:type": "sign",
+        "name": "八德路二段",
+        "name:en": "Section 2, Bade Road",
+        "name:nan": "Pat-tek-lō͘ 2-tōaⁿ",
+        "name:zh": "八德路二段",
+        "sidewalk": "separate",
+        "surface": "asphalt",
+        "width": "5"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [121.5381647, 25.0463719],
+          [121.5381793, 25.0462976]
+        ]
+      },
+      "id": "way/245579206"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/248046399",
+        "highway": "residential",
+        "name": "潮州街73巷",
+        "name:en": "Lane 73, ChaoZhou Street",
+        "name:nan": "Tiô-chiu-koe 73-hāng",
+        "name:nan-Hant": "潮州街73巷",
+        "name:nan-Latn-pehoeji": "Tiô-chiu-koe 73-hāng",
+        "name:nan-Latn-tailo": "Tiô-tsiu-kue 73-hāng",
+        "name:zh": "潮州街73巷",
+        "sidewalk": "no"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [121.5257518, 25.0297835],
+          [121.525702, 25.0295794],
+          [121.5255617, 25.0290144]
+        ]
+      },
+      "id": "way/248046399"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/260881642",
+        "cycleway:right": "no",
+        "foot": "no",
+        "highway": "tertiary_link",
+        "lanes": "1",
+        "lit": "yes",
+        "maxspeed": "30",
+        "maxspeed:type": "sign",
+        "oneway": "yes",
+        "sidewalk": "no",
+        "surface": "asphalt"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [121.5310633, 25.0467076],
+          [121.5312575, 25.0468988],
+          [121.5310616, 25.0470438],
+          [121.5309028, 25.0472133],
+          [121.530861, 25.047258]
+        ]
+      },
+      "id": "way/260881642"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/260882325",
+        "cycleway:left": "lane",
+        "cycleway:left:lane": "exclusive",
+        "cycleway:left:oneway": "-1",
+        "cycleway:right": "no",
+        "highway": "residential",
+        "lit": "yes",
+        "maxspeed": "30",
+        "maxspeed:type": "sign",
+        "name": "松江路38巷",
+        "name:en": "Lane 38, Songjiang Road",
+        "name:nan": "Siông-kang-lō͘ 38-hāng",
+        "name:nan-Hant": "松江路38巷",
+        "name:nan-Latn-pehoeji": "Siông-kang-lō͘ 38-hāng",
+        "name:nan-Latn-tailo": "Siông-kang-lōo 38-hāng",
+        "name:zh": "松江路38巷",
+        "oneway": "yes",
+        "oneway:bicycle": "no",
+        "sidewalk": "both",
+        "surface": "asphalt",
+        "width": "3"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [121.530449, 25.0476101],
+          [121.5314262, 25.0475939]
+        ]
+      },
+      "id": "way/260882325"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/268564468",
+        "highway": "secondary",
+        "lanes": "3",
+        "lit": "yes",
+        "name": "和平東路一段",
+        "name:en": "Heping East Road Section 1",
+        "name:nan": "Hô-pêng-tang-lō͘-1-tōaⁿ",
+        "name:nan-Latn-pehoeji": "Hô-pêng-tang-lō͘-1-tōaⁿ",
+        "name:nan-Latn-tailo": "Hô-pîng-tang-lōo-1-tuānn",
+        "name:zh": "和平東路一段",
+        "oneway": "yes",
+        "sidewalk": "right",
+        "surface": "asphalt"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [121.5259761, 25.0267249],
+          [121.5260583, 25.0267183],
+          [121.5274894, 25.0266032],
+          [121.5275804, 25.0265949],
+          [121.5277635, 25.02658],
+          [121.528507, 25.0265196]
+        ]
+      },
+      "id": "way/268564468"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/288878927",
+        "access": "yes",
+        "bicycle": "yes",
+        "cycleway": "no",
+        "foot": "yes",
+        "highway": "tertiary",
+        "lanes": "3",
+        "lit": "yes",
+        "maxheight": "4",
+        "maxspeed": "50",
+        "maxspeed:type": "sign",
+        "name": "八德路二段",
+        "name:en": "Section 2, Bade Road",
+        "name:nan": "Pat-tek-lō͘ 2-tōaⁿ",
+        "name:nan-Hant": "八德路二段",
+        "name:nan-Latn-pehoeji": "Pat-tek-lō͘ 2-tōaⁿ",
+        "name:nan-Latn-tailo": "Pat-tik-lōo 2-tuānn",
+        "name:zh": "八德路二段",
+        "oneway": "yes",
+        "sidewalk": "separate",
+        "surface": "asphalt"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [121.5364063, 25.0459802],
+          [121.5366835, 25.0460396],
+          [121.536916, 25.0460852]
+        ]
+      },
+      "id": "way/288878927"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/298017958",
+        "highway": "residential",
+        "lanes": "1",
+        "lit": "yes",
+        "name": "溫州街16巷",
+        "name:en": "Lane 16, Wenzhou Street",
+        "name:nan": "Un-chiu-koe 16-hāng",
+        "name:nan-Hant": "溫州街16巷",
+        "name:nan-Latn-pehoeji": "Un-chiu-koe 16-hāng",
+        "name:nan-Latn-tailo": "Un-tsiu-kue 16-hāng",
+        "name:zh": "溫州街16巷",
+        "oneway": "yes",
+        "sidewalk": "right",
+        "surface": "asphalt"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [121.5335114, 25.0251888],
+          [121.5327803, 25.0252525],
+          [121.5317194, 25.0253552],
+          [121.5314991, 25.0253728]
+        ]
+      },
+      "id": "way/298017958"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/303420707",
+        "highway": "residential",
+        "name": "瑞安街222巷",
+        "name:en": "Lane 222 Rui'an Street",
+        "name:zh": "瑞安街222巷",
+        "oneway": "yes",
+        "sidewalk": "left"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [121.540191, 25.0274523],
+          [121.5401565, 25.0274716],
+          [121.5397333, 25.0277243],
+          [121.5392144, 25.0280316],
+          [121.5384861, 25.0285142],
+          [121.5384849, 25.0287861]
+        ]
+      },
+      "id": "way/303420707"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/304544026",
+        "highway": "residential",
+        "lit": "yes",
+        "name": "復興南路二段12巷",
+        "name:en": "Lane 12, Section 2, Fuxing South Road",
+        "name:zh": "復興南路二段12巷",
+        "sidewalk": "left"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [121.5418908, 25.0327623],
+          [121.5433974, 25.0327404],
+          [121.5434417, 25.0327529],
+          [121.5435252, 25.0327534]
+        ]
+      },
+      "id": "way/304544026"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/308258580",
+        "highway": "service",
+        "name": "和平東路一段183巷",
+        "name:en": "Lane 183, Section 1, Heping East Road",
+        "name:zh": "和平東路一段183巷",
+        "oneway": "yes",
+        "service": "alley",
+        "sidewalk": "right"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [121.5330608, 25.0263069],
+          [121.533061, 25.0263928],
+          [121.5330528, 25.0268046],
+          [121.5330459, 25.0270054],
+          [121.5330449, 25.0271912],
+          [121.5330397, 25.0275606],
+          [121.5330397, 25.0276322],
+          [121.5330351, 25.028116],
+          [121.5330224, 25.0286282],
+          [121.5330207, 25.0291302]
+        ]
+      },
+      "id": "way/308258580"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/308585152",
+        "access:lanes": "||no||",
+        "bus:lanes": "||designated||",
+        "foot": "use_sidepath",
+        "highway": "secondary",
+        "lanes": "5",
+        "lit": "yes",
+        "name": "新生南路二段",
+        "name:en": "Xinsheng South Road Section 2",
+        "name:nan": "Sin-seng Lâm-lō͘ 2-tōaⁿ",
+        "name:nan-Hant": "新生南路二段",
+        "name:nan-Latn-pehoeji": "Sin-seng Lâm-lō͘ 2-tōaⁿ",
+        "name:nan-Latn-tailo": "Sin-sing Lâm-lōo 2-tuānn",
+        "name:zh": "新生南路二段",
+        "oneway": "yes",
+        "sidewalk": "separate",
+        "surface": "asphalt"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [121.5337696, 25.0306604],
+          [121.533743, 25.0307315],
+          [121.5330497, 25.0326667]
+        ]
+      },
+      "id": "way/308585152"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/312657744",
+        "highway": "residential",
+        "lanes": "1",
+        "lit": "yes",
+        "name": "溫州街20巷",
+        "name:en": "Lane 20, Wenzhou Street",
+        "name:nan": "Un-chiu-koe 20-hāng",
+        "name:nan-Hant": "溫州街20巷",
+        "name:nan-Latn-pehoeji": "Un-chiu-koe 20-hāng",
+        "name:nan-Latn-tailo": "Un-tsiu-kue 20-hāng",
+        "name:zh": "溫州街20巷",
+        "oneway": "yes",
+        "sidewalk": "right",
+        "surface": "asphalt"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [121.5333917, 25.0241437],
+          [121.5326619, 25.0242082]
+        ]
+      },
+      "id": "way/312657744"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/312657745",
+        "highway": "residential",
+        "lit": "yes",
+        "maxspeed": "30",
+        "name": "溫州街",
+        "name:en": "Wenzhou Street",
+        "name:nan": "Un-chiu-koe",
+        "name:nan-Hant": "溫州街",
+        "name:nan-Latn-pehoeji": "Un-chiu-koe",
+        "name:nan-Latn-tailo": "Un-tsiu-kue",
+        "name:zh": "溫州街",
+        "oneway": "no",
+        "sidewalk": "left",
+        "surface": "asphalt"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [121.5331726, 25.022201],
+          [121.5332245, 25.0226549],
+          [121.5332326, 25.0227239],
+          [121.5332331, 25.0227325],
+          [121.5332813, 25.023156],
+          [121.533334, 25.0236195],
+          [121.5333657, 25.0239187],
+          [121.5333917, 25.0241437],
+          [121.5334424, 25.0245723],
+          [121.5334526, 25.0246617],
+          [121.533481, 25.024912],
+          [121.5335009, 25.0250861],
+          [121.5335114, 25.0251888],
+          [121.5335521, 25.025537],
+          [121.5335664, 25.0256631],
+          [121.5335851, 25.0258268],
+          [121.5336073, 25.0260214],
+          [121.5336174, 25.0261102],
+          [121.5336346, 25.026262]
+        ]
+      },
+      "id": "way/312657745"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/529138608",
+        "highway": "secondary",
+        "lanes": "3",
+        "lit": "yes",
+        "maxspeed": "50",
+        "name": "和平東路一段",
+        "name:en": "Heping East Road Section 1",
+        "name:nan": "Hô-pêng-tang-lō͘-1-tōaⁿ",
+        "name:nan-Latn-pehoeji": "Hô-pêng-tang-lō͘-1-tōaⁿ",
+        "name:nan-Latn-tailo": "Hô-pîng-tang-lōo-1-tuānn",
+        "name:zh": "和平東路一段",
+        "oneway": "yes",
+        "sidewalk": "right",
+        "surface": "asphalt"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [121.5287757, 25.0266478],
+          [121.5286253, 25.0266602],
+          [121.5285197, 25.0266691],
+          [121.5279877, 25.0267134],
+          [121.5277143, 25.0267361],
+          [121.527592, 25.0267463],
+          [121.5275035, 25.0267541],
+          [121.5272377, 25.0267758],
+          [121.5267782, 25.026814],
+          [121.5260799, 25.0268729],
+          [121.5259982, 25.0268798]
+        ]
+      },
+      "id": "way/529138608"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/609514186",
+        "access:conditional": "no @ (12:00-22:00)",
+        "covered": "no",
+        "foot:conditional": "yes @ (12:00-22:00)",
+        "highway": "service",
+        "name": "八德路一段43巷",
+        "name:en": "Lane 43, Section 1, Bade Road",
+        "name:nan": "Pat-tek-lō͘ 1-tōaⁿ 43-hāng",
+        "name:nan-Hant": "八德路一段43巷",
+        "name:nan-Latn-pehoeji": "Pat-tek-lō͘ 1-tōaⁿ 43-hāng",
+        "name:nan-Latn-tailo": "Pat-tik-lōo 1-tuānn 43-hāng",
+        "name:zh": "八德路一段43巷",
+        "oneway": "no",
+        "service": "alley",
+        "sidewalk": "left",
+        "surface": "asphalt"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [121.5315555, 25.0448059],
+          [121.5317414, 25.0442282],
+          [121.5317741, 25.0441808],
+          [121.5318149, 25.0441019]
+        ]
+      },
+      "id": "way/609514186"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/752147499",
+        "bridge": "yes",
+        "highway": "service",
+        "layer": "1",
+        "name": "機車專用道",
+        "oneway": "yes",
+        "sidewalk": "no",
+        "surface": "asphalt"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [121.5368185, 25.0436306],
+          [121.5368009, 25.0438728],
+          [121.5368278, 25.0443884],
+          [121.5368278, 25.0446939],
+          [121.5368288, 25.0449128],
+          [121.5368321, 25.0451677],
+          [121.5368417, 25.0454926],
+          [121.5368331, 25.0458944],
+          [121.536846, 25.0462222],
+          [121.5368868, 25.0465977],
+          [121.5368944, 25.0471114],
+          [121.5369051, 25.0474879],
+          [121.5369115, 25.0478527],
+          [121.5369271, 25.0482502]
+        ]
+      },
+      "id": "way/752147499"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/910093765",
+        "highway": "tertiary",
+        "lanes": "6",
+        "lit": "yes",
+        "name": "杭州南路一段",
+        "name:en": "Section 1, Hangzhou South Road",
+        "name:nan": "Hâng-chiu-lâm-lō͘ 1-tōaⁿ",
+        "name:nan-Hant": "杭州南路一段",
+        "name:nan-Latn-pehoeji": "Hâng-chiu-lâm-lō͘ 1-tōaⁿ",
+        "name:nan-Latn-tailo": "Hâng-tsiu-lâm-lōo 1-tuānn",
+        "name:zh": "杭州南路一段",
+        "oneway": "yes",
+        "sidewalk": "both",
+        "surface": "asphalt"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [121.5243557, 25.0354583],
+          [121.5243915, 25.035536],
+          [121.5244177, 25.0355965],
+          [121.5245904, 25.0362032],
+          [121.524715, 25.036632],
+          [121.5247618, 25.036793],
+          [121.5247793, 25.0368533],
+          [121.5247889, 25.0368865],
+          [121.5248907, 25.0372368],
+          [121.5249783, 25.0375383],
+          [121.5250789, 25.0378846],
+          [121.5251512, 25.038125],
+          [121.525174, 25.038207]
+        ]
+      },
+      "id": "way/910093765"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/910567291",
+        "bridge": "yes",
+        "highway": "trunk",
+        "lanes": "4",
+        "layer": "1",
+        "lit": "yes",
+        "maxweightrating:hgv": "10",
+        "maxweightrating:hgv:conditional": "19 @ governmental-owned vehicle",
+        "motorcycle:conditional": "no @ <=250 cc",
+        "name": "建國快速道路",
+        "name:en": "Jianguo Expressway",
+        "name:nan": "Kiàn-kok Khoài-sok Tō-lō͘",
+        "name:nan-Hant": "建國快速道路",
+        "name:nan-Latn-pehoeji": "Kiàn-kok Khoài-sok Tō-lō͘",
+        "name:nan-Latn-tailo": "Kiàn-kok Khuài-sok Tō-lōo",
+        "name:zh": "建國快速道路",
+        "note": "No goods vehicles with total weight more than 5T, except official vehicles. https://www.dot.gov.taipei/cp.aspx?n=180956B21422E411",
+        "oneway": "yes",
+        "parking:both": "no",
+        "sidewalk": "no"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [121.5366887, 25.0444713],
+          [121.5367272, 25.045687],
+          [121.5367965, 25.0478729],
+          [121.5368096, 25.0485636],
+          [121.5368667, 25.0515793],
+          [121.5369436, 25.055092],
+          [121.5369338, 25.0559506],
+          [121.5369678, 25.0582505]
+        ]
+      },
+      "id": "way/910567291"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/910959595",
+        "bridge": "yes",
+        "foot": "no",
+        "highway": "trunk",
+        "lanes": "2",
+        "layer": "1",
+        "lit": "yes",
+        "maxspeed": "70",
+        "maxweightrating:hgv": "10",
+        "maxweightrating:hgv:conditional": "19 @ government-owned vehicles",
+        "motorcycle:conditional": "no @ <=250 cc",
+        "name": "建國快速道路",
+        "name:en": "Jianguo Expressway",
+        "name:nan": "Kiàn-kok Khoài-sok Tō-lō͘",
+        "name:nan-Hant": "建國快速道路",
+        "name:nan-Latn-pehoeji": "Kiàn-kok Khoài-sok Tō-lō͘",
+        "name:nan-Latn-tailo": "Kiàn-kok Khuài-sok Tō-lōo",
+        "name:zh": "建國快速道路",
+        "oneway": "yes",
+        "sidewalk": "no"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [121.5368832, 25.0582448],
+          [121.5368454, 25.0572071],
+          [121.536824, 25.0561259],
+          [121.5368023, 25.0540286],
+          [121.5367285, 25.0510305],
+          [121.536695, 25.0492369],
+          [121.5366785, 25.0478924],
+          [121.536608, 25.0456861]
+        ]
+      },
+      "id": "way/910959595"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/916543682",
+        "covered": "no",
+        "highway": "service",
+        "maxspeed": "30",
+        "name": "忠孝東路二段121巷",
+        "name:en": "Lane 121, Zhongxiao East Road Section 2",
+        "name:nan": "Tiong-hàu-tang-lō͘-2-tōaⁿ 121-hāng",
+        "name:nan-Hant": "忠孝東路二段121巷",
+        "name:nan-Latn-pehoeji": "Tiong-hàu-tang-lō͘-2-tōaⁿ 121-hāng",
+        "name:nan-Latn-tailo": "Tiong-hàu-tang-lōo-2-tuānn 121-hāng",
+        "name:zh": "忠孝東路二段121巷",
+        "oneway": "no",
+        "service": "alley",
+        "sidewalk": "right",
+        "surface": "paving_stones"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [121.5322651, 25.0431762],
+          [121.5322731, 25.0435019],
+          [121.5322427, 25.0436624]
+        ]
+      },
+      "id": "way/916543682"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/916543683",
+        "alt_name": "北科學生吃飯路線",
+        "covered": "no",
+        "highway": "service",
+        "maxspeed": "30",
+        "name": "新生南路一段12巷",
+        "name:en": "Lane 12, Section 1, Xinsheng South Road",
+        "name:nan": "Sin-seng Lâm-lō͘ 1-tōaⁿ 12-hāng",
+        "name:nan-Hant": "新生南路一段12巷",
+        "name:nan-Latn-pehoeji": "Sin-seng Lâm-lō͘ 1-tōaⁿ 12-hāng",
+        "name:nan-Latn-tailo": "Sin-sing Lâm-lōo 1-tuānn 12-hāng",
+        "name:zh": "新生南路一段12巷",
+        "oneway": "no",
+        "service": "alley",
+        "sidewalk": "right",
+        "surface": "asphalt"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [121.5322427, 25.0436624],
+          [121.5319543, 25.0436164]
+        ]
+      },
+      "id": "way/916543683"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/916543684",
+        "alt_name": "北科學生吃飯路線",
+        "covered": "no",
+        "highway": "service",
+        "maxspeed": "30",
+        "name": "新生南路一段12巷",
+        "oneway": "no",
+        "service": "alley",
+        "sidewalk": "right",
+        "surface": "asphalt"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [121.5322806, 25.0436706],
+          [121.5322427, 25.0436624]
+        ]
+      },
+      "id": "way/916543684"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/1058125427",
+        "highway": "secondary",
+        "lanes": "3",
+        "name": "信義路一段",
+        "name:en": "Section 1, Xinyi Road",
+        "name:nan": "Sìn-gī-lō-1-tōaⁿ",
+        "name:nan-Latn-pehoeji": "Sìn-gī-lō-1-tōaⁿ",
+        "name:nan-Latn-tailo": "Sìn-gī-lōo-1-tuānn",
+        "name:zh": "信義路一段",
+        "oneway": "yes",
+        "sidewalk": "right",
+        "surface": "asphalt"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [121.5236852, 25.035665],
+          [121.5240519, 25.0354857],
+          [121.5241552, 25.0354358],
+          [121.5243116, 25.0353602]
+        ]
+      },
+      "id": "way/1058125427"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/1062919961",
+        "highway": "secondary",
+        "lanes": "2",
+        "lit": "yes",
+        "name": "信義路一段",
+        "name:en": "Section 1, Xinyi Road",
+        "name:nan": "Sìn-gī-lō-1-tōaⁿ",
+        "name:nan-Latn-pehoeji": "Sìn-gī-lō-1-tōaⁿ",
+        "name:nan-Latn-tailo": "Sìn-gī-lōo-1-tuānn",
+        "name:zh": "信義路一段",
+        "name:zh-Hans": "信义路一段",
+        "name:zh-Hant": "信義路一段",
+        "oneway": "yes",
+        "sidewalk": "left",
+        "surface": "asphalt"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [121.5227757, 25.0363504],
+          [121.5228807, 25.0362989],
+          [121.5230396, 25.0362208],
+          [121.5233535, 25.0360665],
+          [121.5235874, 25.0359515],
+          [121.5242228, 25.035636],
+          [121.5243915, 25.035536]
+        ]
+      },
+      "id": "way/1062919961"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/1068183458",
+        "access:lanes": "||no",
+        "bus:lanes": "||designated",
+        "foot": "use_sidepath",
+        "highway": "secondary",
+        "lanes": "3",
+        "lit": "yes",
+        "name": "新生南路二段",
+        "name:en": "Xinsheng South Road Section 2",
+        "name:nan": "Sin-seng Lâm-lō͘ 2-tōaⁿ",
+        "name:nan-Hant": "新生南路二段",
+        "name:nan-Latn-pehoeji": "Sin-seng Lâm-lō͘ 2-tōaⁿ",
+        "name:nan-Latn-tailo": "Sin-sing Lâm-lōo 2-tuānn",
+        "name:zh": "新生南路二段",
+        "oneway": "yes",
+        "sidewalk": "separate",
+        "surface": "asphalt"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [121.5330497, 25.0326667],
+          [121.5329028, 25.0329466],
+          [121.5328035, 25.033274],
+          [121.5327792, 25.0333603],
+          [121.5327699, 25.0333985],
+          [121.5327636, 25.0335176]
+        ]
+      },
+      "id": "way/1068183458"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/1068234498",
+        "access:lanes": "||no",
+        "bus:lanes": "||designated",
+        "highway": "secondary",
+        "lanes": "3",
+        "lit": "yes",
+        "name": "新生南路一段",
+        "name:en": "Xinsheng South Road Section 1",
+        "name:nan": "Sin-seng Lâm-lō͘ 1-tōaⁿ",
+        "name:nan-Hant": "新生南路一段",
+        "name:nan-Latn-pehoeji": "Sin-seng Lâm-lō͘ 1-tōaⁿ",
+        "name:nan-Latn-tailo": "Sin-sing Lâm-lōo 1-tuānn",
+        "name:zh": "新生南路一段",
+        "oneway": "yes",
+        "sidewalk": "no",
+        "surface": "asphalt"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [121.5329102, 25.0411399],
+          [121.5328626, 25.0415749],
+          [121.5328727, 25.0420582],
+          [121.532874, 25.0421187],
+          [121.5329143, 25.0422446]
+        ]
+      },
+      "id": "way/1068234498"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/1068234502",
+        "access:lanes": "||no",
+        "bus:lanes": "||designated",
+        "foot": "no",
+        "highway": "secondary",
+        "lanes": "3",
+        "lit": "yes",
+        "name": "新生南路一段",
+        "name:en": "Xinsheng South Road Section 1",
+        "name:nan": "Sin-seng Lâm-lō͘ 1-tōaⁿ",
+        "name:nan-Hant": "新生南路一段",
+        "name:nan-Latn-pehoeji": "Sin-seng Lâm-lō͘ 1-tōaⁿ",
+        "name:nan-Latn-tailo": "Sin-sing Lâm-lōo 1-tuānn",
+        "name:zh": "新生南路一段",
+        "oneway": "yes",
+        "sidewalk": "no",
+        "surface": "asphalt"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [121.5327504, 25.0409998],
+          [121.5327854, 25.0408319],
+          [121.5327819, 25.040395],
+          [121.5327797, 25.0402851],
+          [121.5327321, 25.0401915]
+        ]
+      },
+      "id": "way/1068234502"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/1068234509",
+        "access:lanes": "|||no",
+        "bus:lanes": "|||designated",
+        "highway": "secondary",
+        "lanes": "4",
+        "lit": "yes",
+        "name": "新生南路一段",
+        "name:en": "Xinsheng South Road Section 1",
+        "name:nan": "Sin-seng Lâm-lō͘ 1-tōaⁿ",
+        "name:nan-Hant": "新生南路一段",
+        "name:nan-Latn-pehoeji": "Sin-seng Lâm-lō͘ 1-tōaⁿ",
+        "name:nan-Latn-tailo": "Sin-sing Lâm-lōo 1-tuānn",
+        "name:zh": "新生南路一段",
+        "oneway": "yes",
+        "sidewalk": "no",
+        "surface": "asphalt"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [121.5328351, 25.0372214],
+          [121.5328056, 25.037372],
+          [121.532816, 25.0378355],
+          [121.5328193, 25.0379297],
+          [121.5328494, 25.0380145]
+        ]
+      },
+      "id": "way/1068234509"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/1079151555",
+        "bridge": "yes",
+        "highway": "trunk",
+        "lanes": "2",
+        "layer": "2",
+        "lit": "yes",
+        "maxspeed": "50",
+        "maxweight:signed": "no",
+        "name": "新生高架道路",
+        "name:en": "Xinsheng Viaduct",
+        "name:nan": "Sin-seng Ko-kà Tō-lō͘",
+        "name:nan-Hant": "新生高架道路",
+        "name:nan-Latn-pehoeji": "Sin-seng Ko-kà Tō-lō͘",
+        "name:nan-Latn-tailo": "Sin-sing Ko-kà Tō-lōo",
+        "name:zh": "新生高架道路",
+        "oneway": "yes",
+        "shoulder": "no",
+        "sidewalk": "both",
+        "surface": "asphalt"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [121.5297245, 25.0480869],
+          [121.5301889, 25.0476218],
+          [121.5306985, 25.0471652],
+          [121.5307533, 25.0471069],
+          [121.5307869, 25.0470592],
+          [121.5308189, 25.0470027],
+          [121.530846, 25.0469356],
+          [121.530861, 25.0468778],
+          [121.530865, 25.0468147],
+          [121.5308616, 25.0467472],
+          [121.5308413, 25.046664]
+        ]
+      },
+      "id": "way/1079151555"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/1102939844",
+        "access": "no",
+        "bus": "designated",
+        "highway": "primary",
+        "lanes": "1",
+        "lit": "yes",
+        "maxheight": "6",
+        "maxspeed": "50",
+        "maxspeed:type": "sign",
+        "name": "羅斯福路公車專用道",
+        "name:en": "Bus Exclusive Lane, Roosevelt Road",
+        "name:nan": "Lô-su-hok-lō͘ Kong-chhia choan-ēng-tō",
+        "name:nan-Hant": "羅斯福路公車專用道",
+        "name:nan-Latn-pehoeji": "Lô-su-hok-lō͘ Kong-chhia choan-ēng-tō",
+        "name:nan-Latn-tailo": "Lô-su-hok-lōo Kong-tshia tsuan-īng-tō",
+        "name:zh": "羅斯福路公車專用道",
+        "oneway": "yes",
+        "ref": "9",
+        "ref:en": "Provincial Highway 9",
+        "ref:zh": "台9線",
+        "sidewalk": "no",
+        "start_date": "2006-03",
+        "surface": "asphalt"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [121.5294088, 25.019572],
+          [121.5290971, 25.0198798],
+          [121.5290243, 25.0199539],
+          [121.5286957, 25.0202886],
+          [121.5279038, 25.0209952],
+          [121.5276795, 25.0211745],
+          [121.5276527, 25.0211979],
+          [121.5275766, 25.0212541],
+          [121.5267346, 25.0219682],
+          [121.5264626, 25.0222082],
+          [121.5264001, 25.0222664],
+          [121.5263355, 25.022324],
+          [121.5262898, 25.0223721],
+          [121.5261825, 25.0224675],
+          [121.5255153, 25.0230314],
+          [121.5253245, 25.0232373],
+          [121.5251476, 25.0235028],
+          [121.524803, 25.0239594],
+          [121.5247067, 25.0240873],
+          [121.5246268, 25.0241932]
+        ]
+      },
+      "id": "way/1102939844"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/1102939845",
+        "access": "no",
+        "bus": "designated",
+        "highway": "primary",
+        "lanes": "1",
+        "lit": "yes",
+        "maxheight": "6",
+        "maxspeed": "50",
+        "maxspeed:type": "sign",
+        "name": "羅斯福路公車專用道",
+        "name:en": "Bus Exclusive Lane, Roosevelt Road",
+        "name:nan": "Lô-su-hok-lō͘ Kong-chhia choan-ēng-tō",
+        "name:nan-Hant": "羅斯福路公車專用道",
+        "name:nan-Latn-pehoeji": "Lô-su-hok-lō͘ Kong-chhia choan-ēng-tō",
+        "name:nan-Latn-tailo": "Lô-su-hok-lōo Kong-tshia tsuan-īng-tō",
+        "name:zh": "羅斯福路公車專用道",
+        "oneway": "yes",
+        "ref": "9",
+        "ref:en": "Provincial Highway 9",
+        "ref:zh": "台9線",
+        "sidewalk": "no",
+        "start_date": "2006-03",
+        "surface": "asphalt"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [121.5224496, 25.0270136],
+          [121.5225156, 25.0269246],
+          [121.5225273, 25.0269088],
+          [121.5233805, 25.0257568],
+          [121.5244371, 25.02435],
+          [121.5244812, 25.0242913],
+          [121.5246556, 25.0240568],
+          [121.5250937, 25.0234679],
+          [121.5254744, 25.0230235],
+          [121.5257762, 25.0227506],
+          [121.5261584, 25.0224401],
+          [121.5262645, 25.0223445],
+          [121.5263085, 25.0222981],
+          [121.5263691, 25.0222342],
+          [121.5275511, 25.0212298],
+          [121.5276351, 25.0211543],
+          [121.527718, 25.0210844]
+        ]
+      },
+      "id": "way/1102939845"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/1104395413",
+        "access": "no",
+        "bus": "designated",
+        "highway": "primary",
+        "lanes": "1",
+        "lit": "yes",
+        "maxheight": "6",
+        "maxspeed": "50",
+        "maxspeed:type": "sign",
+        "name": "羅斯福路公車專用道",
+        "name:en": "Bus Exclusive Lane, Roosevelt Road",
+        "name:nan": "Lô-su-hok-lō͘ Kong-chhia choan-ēng-tō",
+        "name:nan-Hant": "羅斯福路公車專用道",
+        "name:nan-Latn-pehoeji": "Lô-su-hok-lō͘ Kong-chhia choan-ēng-tō",
+        "name:nan-Latn-tailo": "Lô-su-hok-lōo Kong-tshia tsuan-īng-tō",
+        "name:zh": "羅斯福路公車專用道",
+        "oneway": "yes",
+        "ref": "9",
+        "ref:en": "Provincial Highway 9",
+        "ref:zh": "台9線",
+        "sidewalk": "no",
+        "start_date": "2006-03",
+        "surface": "asphalt"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [121.5246268, 25.0241932],
+          [121.5245301, 25.0243215],
+          [121.5234322, 25.0257783],
+          [121.5227312, 25.0267055],
+          [121.5226744, 25.0267823],
+          [121.5225926, 25.0268922],
+          [121.5225791, 25.0269103],
+          [121.5225061, 25.0270083]
+        ]
+      },
+      "id": "way/1104395413"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/1320960187",
+        "highway": "secondary",
+        "lanes": "2",
+        "lit": "yes",
+        "name": "和平東路一段",
+        "name:en": "Heping East Road Section 1",
+        "name:nan": "Hô-pêng-tang-lō͘-1-tōaⁿ",
+        "name:nan-Hant": "和平東路一段",
+        "name:nan-Latn-pehoeji": "Hô-pêng-tang-lō͘-1-tōaⁿ",
+        "name:nan-Latn-tailo": "Hô-pîng-tang-lōo-1-tuānn",
+        "name:zh": "和平東路一段",
+        "oneway": "yes",
+        "sidewalk": "right",
+        "surface": "asphalt"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [121.528507, 25.0265196],
+          [121.5286081, 25.026511],
+          [121.5293141, 25.0264509],
+          [121.5298746, 25.026413]
+        ]
+      },
+      "id": "way/1320960187"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/1334464949",
+        "highway": "residential",
+        "name": "忠孝東路三段217巷7弄",
+        "name:en": "Alley 7, Lane 217 Zhongxiao East Road Section 3",
+        "name:nan": "Tiong-hàu-tang-lō͘-3-tōaⁿ 217-hāng 7-lōng",
+        "name:nan-Hant": "忠孝東路三段217巷7弄",
+        "name:nan-Latn-pehoeji": "Tiong-hàu-tang-lō͘-3-tōaⁿ 217-hāng 7-lōng",
+        "name:nan-Latn-tailo": "Tiong-hàu-tang-lōo-3-tuānn 217-hāng 7-lōng",
+        "name:zh": "忠孝東路三段217巷7弄",
+        "oneway": "yes",
+        "sidewalk": "left",
+        "surface": "asphalt"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [121.5397312, 25.0438891],
+          [121.5396686, 25.0438851],
+          [121.5393995, 25.0438711],
+          [121.5383119, 25.0438063]
+        ]
+      },
+      "id": "way/1334464949"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/1425259624",
+        "cycleway:both": "no",
+        "highway": "unclassified",
+        "name": "台北科技大學停車場入口",
+        "oneway": "no",
+        "parking:both": "no",
+        "sidewalk": "no"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [121.5363958, 25.0432821],
+          [121.5363222, 25.0432809],
+          [121.5361424, 25.0432813],
+          [121.5359285, 25.0432825]
+        ]
+      },
+      "id": "way/1425259624"
+    }
+  ]
+}
