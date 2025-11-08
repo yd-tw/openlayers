@@ -177,19 +177,12 @@ export default function MapComponent() {
       })
     );
 
-    // 方向錐形
-    directionFeature.current = new Feature(
-      new Polygon([[]]) // 初始空
-    );
+    // 方向扇形
+    directionFeature.current = new Feature(new Polygon([[]]));
     directionFeature.current.setStyle(
       new Style({
-        fill: new Fill({
-          color: "rgba(17, 81, 255, 0.25)",
-        }),
-        stroke: new Stroke({
-          color: "#1151ff",
-          width: 2,
-        }),
+        fill: new Fill({ color: "rgba(17, 81, 255, 0.25)" }),
+        stroke: new Stroke({ color: "#1151ff", width: 2 }),
       })
     );
 
@@ -356,34 +349,28 @@ export default function MapComponent() {
     };
   }, []);
 
-  // 更新方向錐形
+  // 更新扇形方向
   useEffect(() => {
     if (!position || orientation === null) return;
 
     const [x, y] = position;
-    const distance = 30; // 錐形長度
+    const radius = 40; // 扇形半徑
+    const spread = 40; // 夾角（度）
+    const steps = 20; // 圓弧細分數量
     const rad = (orientation * Math.PI) / 180;
+    const half = (spread * Math.PI) / 360;
 
-    const frontX = x + Math.sin(rad) * distance;
-    const frontY = y - Math.cos(rad) * distance;
+    const coords = [[x, y]];
 
-    const leftX = x + Math.sin(rad - 0.3) * distance * 0.8;
-    const leftY = y - Math.cos(rad - 0.3) * distance * 0.8;
+    // 生成圓弧座標（順時針方向）
+    for (let i = -half; i <= half; i += (spread * Math.PI) / (180 * steps)) {
+      const px = x + Math.sin(rad + i) * radius;
+      const py = y - Math.cos(rad + i) * radius;
+      coords.push([px, py]);
+    }
 
-    const rightX = x + Math.sin(rad + 0.3) * distance * 0.8;
-    const rightY = y - Math.cos(rad + 0.3) * distance * 0.8;
-
-    const coneCoords = [
-      [
-        [x, y],
-        [leftX, leftY],
-        [frontX, frontY],
-        [rightX, rightY],
-        [x, y],
-      ],
-    ];
-
-    directionFeature.current?.getGeometry()?.setCoordinates(coneCoords);
+    coords.push([x, y]); // 封閉
+    directionFeature.current?.getGeometry()?.setCoordinates([coords]);
   }, [position, orientation]);
 
   // 同步圖層可見性狀態

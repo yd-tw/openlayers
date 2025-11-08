@@ -94,8 +94,8 @@ export default function MapWithOrientation() {
   useEffect(() => {
     const handleOrientation = (event) => {
       // 修正方向，使 0° 為正北，順時針為正
-      const alpha = event.alpha ?? 0;
-      const corrected = 360 - alpha; // 修正為與地圖一致方向
+      const rawAlpha = event.alpha ?? 0;
+      const corrected = (360 - rawAlpha + 90) % 360;
       setOrientation(corrected);
     };
 
