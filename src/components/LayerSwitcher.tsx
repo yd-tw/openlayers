@@ -53,7 +53,7 @@ export default function LayerSwitcher({
   layers,
   toggleLayer,
 }: LayerSwitcherProps) {
-  const [show, setShow] = useState(true);
+  const [show, setShow] = useState(false);
 
   function clickHandler() {
     setShow(!show);
