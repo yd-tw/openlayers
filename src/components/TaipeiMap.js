@@ -51,6 +51,8 @@ export default function MapComponent() {
   const [selectedPoints, setSelectedPoints] = useState([]);
   const [statusMessage, setStatusMessage] = useState("");
   const [currentMode, setCurrentMode] = useState("pedestrian");
+  const [copyNotification, setCopyNotification] = useState(null);
+  const copyNotificationTimeoutRef = useRef(null);
 
   // 取得當前模式
   const { state } = useTownPass();
@@ -127,7 +129,6 @@ export default function MapComponent() {
       });
     });
 
-<<<<<<< HEAD
     // === 建立路徑規劃標記圖層（用於顯示起點和終點）===
     const markersSource = new VectorSource();
     const markersLayer = new VectorLayer({
@@ -203,11 +204,6 @@ export default function MapComponent() {
           return newPoints;
         });
       }
-=======
-    // === 載入地圖複製經緯度功能 ===
-    loadClickMarkerLayer().then((clickMarkerLayer) => {
-      mapObj.addLayer(clickMarkerLayer);
->>>>>>> 72abd84fc1e6cc0be960701d6103a667a8ee7452
     });
 
     // === 監聽 Flutter 位置更新 ===
@@ -686,19 +682,6 @@ export default function MapComponent() {
         <MapModeSelector />
       </div>
 
-<<<<<<< HEAD
-      {/* 路徑規劃控制面板 - 僅在行人或自行車模式下顯示 */}
-      {(currentMode === "pedestrian" || currentMode === "bicycle") && (
-        <div className="absolute bottom-8 left-1/2 z-[1000] -translate-x-1/2 rounded-lg bg-white p-4 shadow-lg">
-          <button
-            onClick={startPathSelection}
-            disabled={isSelectingPath}
-            className={`rounded px-4 py-2 font-medium ${
-              isSelectingPath
-                ? "cursor-not-allowed bg-gray-300 text-gray-500"
-                : "bg-blue-500 text-white hover:bg-blue-600"
-            }`}
-=======
       <div className="relative flex-1">
         {/* 地圖 */}
         <div ref={mapRef} className="w-full h-full" />
@@ -735,10 +718,8 @@ export default function MapComponent() {
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
->>>>>>> 72abd84fc1e6cc0be960701d6103a667a8ee7452
           >
             {isSelectingPath ? "選擇中..." : "路徑規劃"}
-          </button>
 
           {statusMessage && (
             <div className="mt-3 text-center text-sm text-gray-700">
