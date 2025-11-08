@@ -45,7 +45,7 @@ export default function MapComponent() {
 
     const initialView = new View({
       center: fromLonLat([121.534, 25.021]),
-      zoom: 20,
+      zoom: 18,
     });
 
     const baseLayer = new TileLayer({
