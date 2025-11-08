@@ -70,8 +70,6 @@ export default function MapComponent() {
     // === 載入位置圖層 ===
     loadPositionLayer().then((positionLayer) => {
       mapObj.addLayer(positionLayer);
-      setLayers((prev) => ({ ...prev, position: positionLayer }));
-      positionLayer.set("displayName", "當前位置");
     });
 
     // === 載入 API 線段資料 ===
