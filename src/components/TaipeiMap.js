@@ -43,6 +43,13 @@ const LAYER_CONFIGS = [
     }),
   },
 ];
+import { Style, Stroke, Fill } from "ol/style";
+import { Feature } from "ol";
+import Heatmap from "ol/layer/Heatmap";
+import Point from "ol/geom/Point";
+
+// Configs
+import weightConfig from "@/configs/weightConfig.json";
 
 export default function MapComponent() {
   const mapRef = useRef(null);
@@ -52,6 +59,49 @@ export default function MapComponent() {
 
   useEffect(() => {
     if (!mapRef.current) return;
+
+    Promise.all([fetch("/a1_accident.json"), fetch("/a2_accident.json")])
+      .then(([a1, a2]) => Promise.all([a1.json(), a2.json()]))
+      .then(([a1Data, a2Data]) => {
+        let features = [];
+
+        features = a1Data.result.records.map((p) => {
+          const f = new Feature({
+            geometry: new Point(fromLonLat([p["經度"], p["緯度"]])),
+          });
+          f.set("weight", weightConfig.a1AccidentWeight);
+          return f;
+        });
+
+        features = [
+          ...features,
+          ...a2Data.result.records.map((p) => {
+            const f = new Feature({
+              geometry: new Point(fromLonLat([p["經度"], p["緯度"]])),
+            });
+            f.set("weight", weightConfig.a2AccidentWeight);
+            return f;
+          }),
+        ];
+
+        const heatLayer = new Heatmap({
+          source: new VectorSource({ features }),
+          blur: 20,
+          radius: 10,
+          opacity: 0.8,
+        });
+
+        heatLayer.setGradient([
+          "#fff0f5", // very light pink (LavenderBlush)
+          "#ffb6c1", // lightpink
+          "#ff69b4", // hotpink
+          "#ff1493", // deeppink
+          "#c71585", // mediumvioletred
+          "#8b008b", // darkmagenta
+        ]);
+
+        map.addLayer(heatLayer);
+      });
 
     // 初始化地圖
     const map = new Map({
@@ -80,7 +130,7 @@ export default function MapComponent() {
           fill: new Fill({ color: "#0f53fe" }),
           stroke: new Stroke({ color: "#fff", width: 3 }),
         }),
-      })
+      }),
     );
 
     // 面朝方向錐形區域
@@ -94,7 +144,7 @@ export default function MapComponent() {
           color: "rgba(15, 83, 254, 0.4)",
           width: 1.5,
         }),
-      })
+      }),
     );
 
     const vectorSource = new VectorSource({
@@ -155,7 +205,10 @@ export default function MapComponent() {
     return () => {
       geolocation.setTracking(false);
       map.setTarget(null);
-      window.removeEventListener("deviceorientationabsolute", handleOrientation);
+      window.removeEventListener(
+        "deviceorientationabsolute",
+        handleOrientation,
+      );
       window.removeEventListener("deviceorientation", handleOrientation);
     };
   }, []);
