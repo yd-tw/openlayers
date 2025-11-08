@@ -8,9 +8,9 @@ import TileLayer from "ol/layer/Tile";
 import VectorLayer from "ol/layer/Vector";
 import VectorSource from "ol/source/Vector";
 import OSM from "ol/source/OSM";
-import GeoJSON from "ol/format/GeoJSON";
 import Feature from "ol/Feature";
 import Point from "ol/geom/Point";
+import Polygon from "ol/geom/Polygon";
 import LineString from "ol/geom/LineString";
 import Heatmap from "ol/layer/Heatmap";
 import { fromLonLat, toLonLat } from "ol/proj";
@@ -344,12 +344,22 @@ export default function MapComponent() {
         }),
       );
 
-      // 儲存 Feature 引用供 Flutter 位置更新使用
+      // 方向扇形 Feature
+      const directionFeature = new Feature(new Polygon([[]]));
+      directionFeature.setStyle(
+        new Style({
+          fill: new Fill({ color: "rgba(17, 81, 255, 0.25)" }),
+          stroke: new Stroke({ color: "#1151ff", width: 2 }),
+        }),
+      );
+
+      // 儲存 Feature 引用供 Flutter 方向更新使用
       positionFeatureRef.current = positionFeature;
+      directionFeatureRef.current = directionFeature;
 
       // 建立 Vector Source
       const vectorSource = new VectorSource({
-        features: [positionFeature],
+        features: [positionFeature, directionFeature],
       });
 
       // 建立 Vector Layer
