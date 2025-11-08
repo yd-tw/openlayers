@@ -10,7 +10,13 @@ import VectorSource from "ol/source/Vector";
 import OSM from "ol/source/OSM";
 import GeoJSON from "ol/format/GeoJSON";
 import { fromLonLat } from "ol/proj";
-import { Style, Stroke, Fill, Circle as CircleStyle } from "ol/style";
+import { Style, Stroke, Fill } from "ol/style";
+import { Feature } from "ol";
+import Heatmap from "ol/layer/Heatmap";
+import Point from "ol/geom/Point";
+
+// Configs
+import weightConfig from "@/configs/weightConfig.json";
 
 export default function MapComponent() {
   const mapRef = useRef(null);
@@ -78,12 +84,12 @@ export default function MapComponent() {
 
         // 定義不同類型對應的顏色
         const typeColors = {
-          1: "rgba(255, 0, 0, 0.74)",    // 類型 1 - 紅色
-          2: "rgba(0, 255, 0, 0.74)",    // 類型 2 - 綠色
-          3: "rgba(0, 0, 255, 0.74)",    // 類型 3 - 藍色
-          4: "rgba(255, 255, 0, 0.74)",  // 類型 4 - 黃色
-          5: "rgba(255, 0, 255, 0.74)",  // 類型 5 - 洋紅色
-          6: "rgba(0, 255, 255, 0.74)",  // 類型 6 - 青色
+          1: "rgba(255, 0, 0, 0.74)", // 類型 1 - 紅色
+          2: "rgba(0, 255, 0, 0.74)", // 類型 2 - 綠色
+          3: "rgba(0, 0, 255, 0.74)", // 類型 3 - 藍色
+          4: "rgba(255, 255, 0, 0.74)", // 類型 4 - 黃色
+          5: "rgba(255, 0, 255, 0.74)", // 類型 5 - 洋紅色
+          6: "rgba(0, 255, 255, 0.74)", // 類型 6 - 青色
           // 可以繼續添加更多類型...
         };
 
@@ -99,16 +105,59 @@ export default function MapComponent() {
             return new Style({
               stroke: new Stroke({
                 color: color,
-                width: 5
+                width: 5,
               }),
               fill: new Fill({
-                color: color
+                color: color,
               }),
             });
-          }
+          },
         });
 
         map.addLayer(vLayer);
+      });
+
+    Promise.all([fetch("/a1_accident.json"), fetch("/a2_accident.json")])
+      .then(([a1, a2]) => Promise.all([a1.json(), a2.json()]))
+      .then(([a1Data, a2Data]) => {
+        let features = [];
+
+        features = a1Data.result.records.map((p) => {
+          const f = new Feature({
+            geometry: new Point(fromLonLat([p["經度"], p["緯度"]])),
+          });
+          f.set("weight", weightConfig.a1AccidentWeight);
+          return f;
+        });
+
+        features = [
+          ...features,
+          ...a2Data.result.records.map((p) => {
+            const f = new Feature({
+              geometry: new Point(fromLonLat([p["經度"], p["緯度"]])),
+            });
+            f.set("weight", weightConfig.a2AccidentWeight);
+            return f;
+          }),
+        ];
+
+        const heatLayer = new Heatmap({
+          source: new VectorSource({ features }),
+          blur: 20,
+          radius: 10,
+          opacity: 0.8,
+        });
+
+        heatLayer.setGradient([
+          "#fff0f5", // very light pink (LavenderBlush)
+          "#ffb6c1", // lightpink
+          "#ff69b4", // hotpink
+          "#ff1493", // deeppink
+          "#c71585", // mediumvioletred
+          "#8b008b", // darkmagenta
+        ]);
+
+        map.addLayer(heatLayer);
       });
 
     return () => map.setTarget(null);
