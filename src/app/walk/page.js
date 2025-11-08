@@ -125,20 +125,20 @@ export default function MapComponent() {
       setSelectedPoints((prev) => {
         const newPoints = [...prev, { lng: lonLat[0], lat: lonLat[1] }];
 
-        // 在地圖上添加標記
+        // 在地圖上添加標記（反轉：第一個點是終點，第二個點是起點）
         const marker = new Feature({
           geometry: new Point(coordinate),
-          type: prev.length === 0 ? "start" : "end",
+          type: prev.length === 0 ? "end" : "start",
         });
         markersSource.addFeature(marker);
 
         if (newPoints.length === 2) {
-          // 已選擇兩個點，開始尋路
+          // 已選擇兩個點，開始尋路（注意：newPoints[0]是終點，newPoints[1]是起點）
           setStatusMessage("正在計算路徑...");
-          findPath(newPoints[0], newPoints[1]);
+          findPath(newPoints[1], newPoints[0]); // 反轉參數順序
           setIsSelectingPath(false);
         } else {
-          setStatusMessage("請點擊地圖選擇終點");
+          setStatusMessage("請點擊地圖選擇起點");
         }
 
         return newPoints;
@@ -202,15 +202,15 @@ export default function MapComponent() {
 
     setSelectedPoints([]);
     setIsSelectingPath(true);
-    setStatusMessage("請點擊地圖選擇起點");
+    setStatusMessage("請點擊地圖選擇終點");
   };
 
   return (
     <div className="relative h-screen w-full">
       <div ref={mapRef} className="h-full w-full"></div>
 
-      {/* 控制面板 */}
-      <div className="absolute top-4 left-4 z-10 rounded-lg bg-white p-4 shadow-lg">
+      {/* 控制面板 - 置中下方 */}
+      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 rounded-lg bg-white p-4 shadow-lg">
         <button
           onClick={startPathSelection}
           disabled={isSelectingPath}
@@ -224,19 +224,19 @@ export default function MapComponent() {
         </button>
 
         {statusMessage && (
-          <div className="mt-3 text-sm text-gray-700">{statusMessage}</div>
+          <div className="mt-3 text-sm text-gray-700 text-center">{statusMessage}</div>
         )}
 
         {selectedPoints.length > 0 && (
           <div className="mt-3 text-xs text-gray-600">
             <div>
-              起點:{" "}
+              終點:{" "}
               {selectedPoints[0] &&
                 `${selectedPoints[0].lat.toFixed(6)}, ${selectedPoints[0].lng.toFixed(6)}`}
             </div>
             {selectedPoints[1] && (
               <div>
-                終點: {selectedPoints[1].lat.toFixed(6)},{" "}
+                起點: {selectedPoints[1].lat.toFixed(6)},{" "}
                 {selectedPoints[1].lng.toFixed(6)}
               </div>
             )}
