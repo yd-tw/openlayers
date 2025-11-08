@@ -20,109 +20,50 @@ import MapModeSelector from "./MapModeSelector";
 import { getTownPassClient } from "@/lib/townpass/client";
 
 // GeoJSON 圖層配置
-const LAYER_CONFIGS = [
-  {
-    name: "highway",
-    displayName: "公路",
-    url: "/highway.geojson",
-    style: new Style({
-      stroke: new Stroke({ color: "#ff6600", width: 2 }),
-      fill: new Fill({ color: "rgba(255, 165, 0, 0.3)" }),
-    }),
-  },
-  {
-    name: "walk",
-    displayName: "人行道",
-    url: "/osm-walk.geojson",
-    style: new Style({
-      stroke: new Stroke({ color: "rgba(0, 255, 38, 0.74)", width: 5 }),
-      fill: new Fill({ color: "rgba(0, 255, 38, 0.74)" }),
-    }),
-  },
-  {
-    name: "bike",
-    displayName: "自行車道",
-    url: "/bike.geojson",
-    style: new Style({
-      stroke: new Stroke({ color: "rgba(255, 0, 255, 0.74)", width: 5 }),
-    }),
-  },
-];
+// const LAYER_CONFIGS = [
+//   {
+//     name: "highway",
+//     displayName: "公路",
+//     url: "/highway.geojson",
+//     style: new Style({
+//       stroke: new Stroke({ color: "#ff6600", width: 2 }),
+//       fill: new Fill({ color: "rgba(255, 165, 0, 0.3)" }),
+//     }),
+//   },
+//   {
+//     name: "walk",
+//     displayName: "人行道",
+//     url: "/osm-walk.geojson",
+//     style: new Style({
+//       stroke: new Stroke({ color: "rgba(0, 255, 38, 0.74)", width: 5 }),
+//       fill: new Fill({ color: "rgba(0, 255, 38, 0.74)" }),
+//     }),
+//   },
+//   {
+//     name: "bike",
+//     displayName: "自行車道",
+//     url: "/bike.geojson",
+//     style: new Style({
+//       stroke: new Stroke({ color: "rgba(255, 0, 255, 0.74)", width: 5 }),
+//     }),
+//   },
+// ];
 
 // Configs
 import weightConfig from "@/configs/weightConfig.json";
 
 /**
  * 從 API 資料建立線段圖層
- * 根據 bike 和 sidewalk 屬性決定顏色
  */
-function createLinesLayerFromAPI(data) {
-  const features = data.lines.map((line) => {
-    // 將經緯度轉換為 OpenLayers 投影座標
-    const startCoord = fromLonLat([line.start_lng, line.start_lat]);
-    const endCoord = fromLonLat([line.end_lng, line.end_lat]);
-
-    // 建立線段幾何
-    const lineGeometry = new LineString([startCoord, endCoord]);
-
-    // 建立 Feature 並儲存所有屬性
-    const feature = new Feature({
-      geometry: lineGeometry,
-      id: line.id,
-      name: line.name,
-      bike: line.bike,
-      rd_from: line.rd_from,
-      sidewalk: line.sidewalk,
-    });
-
-    return feature;
-  });
-
-  // 建立 Vector Source
-  const vectorSource = new VectorSource({
-    features: features,
-  });
-
-  // 建立 Vector Layer 並設定動態樣式
-  const vectorLayer = new VectorLayer({
-    source: vectorSource,
-    visible: false, // 預設關閉
-    style: (feature) => {
-      const isBike = feature.get("bike") === 1;
-      const hasSidewalk =
-        feature.get("sidewalk") !== null &&
-        feature.get("sidewalk") !== undefined;
-
-      let color = "#3b82f6"; // 預設藍色
-
-      if (hasSidewalk) {
-        color = "#00ff26"; // 綠色 (有人行道)
-      } else if (isBike) {
-        color = "#ff00ff"; // 紫色 (自行車道)
-      }
-
-      return new Style({
-        stroke: new Stroke({
-          color: color,
-          width: 2,
-        }),
-      });
-    },
-  });
-
-  return vectorLayer;
-}
+function createLinesLayerFromAPI(data) {}
 
 export default function MapComponent() {
   const mapRef = useRef(null);
   const mapInstanceRef = useRef(null);
-  const heatmapLayerRef = useRef(null);
   const positionFeatureRef = useRef(null);
   const directionFeatureRef = useRef(null);
   const [layers, setLayers] = useState({});
   const [layerVisibility, setLayerVisibility] = useState({});
-  const [a1AccidentDatas, setA1AccidentDatas] = useState([]);
-  const [a2AccidentDatas, setA2AccidentDatas] = useState([]);
   const [copyNotification, setCopyNotification] = useState(null);
   const [map, setMap] = useState(null);
   const [view, setView] = useState(null);
@@ -132,19 +73,6 @@ export default function MapComponent() {
   useEffect(() => {
     if (!mapRef.current) return;
 
-    fetch("/accident_a1.json")
-      .then((res) => res.json())
-      .then((data) => {
-        setA1AccidentDatas(data);
-      });
-
-    fetch("/accident_a2.json")
-      .then((res) => res.json())
-      .then((data) => {
-        setA2AccidentDatas(data);
-      });
-
-    // 初始化地圖
     const initialView = new View({
       center: fromLonLat([121.534, 25.021]),
       zoom: 20,
@@ -160,33 +88,26 @@ export default function MapComponent() {
     setMap(mapObj);
     setView(initialView);
 
-    // 使用者位置圓點（由 Flutter 提供位置）
-    const positionFeature = new Feature();
-    positionFeature.setStyle(
-      new Style({
-        image: new CircleStyle({
-          radius: 8,
-          fill: new Fill({ color: "#1151ff" }),
-          stroke: new Stroke({ color: "#fff", width: 2 }),
-        }),
-      }),
-    );
-
-    // 保存 positionFeature 引用供 Flutter 位置更新使用
-    positionFeatureRef.current = positionFeature;
-
-    // 建立位置圖層
-    const vectorSource = new VectorSource({
-      features: [positionFeature],
+    // === 載入位置圖層 ===
+    loadPositionLayer().then((positionLayer) => {
+      mapObj.addLayer(positionLayer);
+      setLayers((prev) => ({ ...prev, position: positionLayer }));
+      positionLayer.set("displayName", "當前位置");
     });
-    const positionLayer = new VectorLayer({ source: vectorSource });
-    mapObj.addLayer(positionLayer);
-
-    // === 載入其他圖層 ===
-    LAYER_CONFIGS.forEach((config) => loadGeoJSONLayer(mapObj, config));
 
     // === 載入 API 線段資料 ===
-    loadAPILinesLayer(mapObj);
+    loadLinesLayer().then((linesLayer) => {
+      mapObj.addLayer(linesLayer);
+      setLayers((prev) => ({ ...prev, lines: linesLayer }));
+      linesLayer.set("displayName", "路況");
+    });
+
+    // === 載入事故圖層 ===
+    loadAccidentLayer().then((accidentLayer) => {
+      mapObj.addLayer(accidentLayer);
+      setLayers((prev) => ({ ...prev, accident: accidentLayer }));
+      accidentLayer.set("displayName", "交通事故熱點");
+    });
 
     // === 點擊地圖複製經緯度功能 ===
     const clickMarkerSource = new VectorSource();
@@ -194,9 +115,9 @@ export default function MapComponent() {
       source: clickMarkerSource,
       zIndex: 9999,
     });
+
     mapObj.addLayer(clickMarkerLayer);
 
-    // 地圖點擊事件
     mapObj.on("singleclick", (evt) => {
       const coords = evt.coordinate;
       const lonLat = toLonLat(coords);
@@ -205,19 +126,14 @@ export default function MapComponent() {
       // 格式化經緯度（6位小數）
       const coordText = `${lat.toFixed(6)}, ${lon.toFixed(6)}`;
 
-      console.log("點擊座標:", coordText);
-
       // 複製到剪貼簿
       navigator.clipboard
         .writeText(coordText)
         .then(() => {
-          console.log("複製成功");
           setCopyNotification(coordText);
           setTimeout(() => setCopyNotification(null), 2000);
         })
         .catch((err) => {
-          console.error("複製失敗:", err);
-          // 即使複製失敗也顯示通知
           setCopyNotification(coordText);
           setTimeout(() => setCopyNotification(null), 2000);
         });
@@ -252,10 +168,6 @@ export default function MapComponent() {
     const townpassClient = getTownPassClient();
 
     const unsubscribeLocation = townpassClient.onLocationUpdate((location) => {
-      console.log(
-        `📍 位置更新: ${location.latitude.toFixed(6)}, ${location.longitude.toFixed(6)} ${location.isManual ? "(手動)" : "(GPS)"}`,
-      );
-
       // 轉換為 OpenLayers 座標
       const coords = fromLonLat([location.longitude, location.latitude]);
 
@@ -275,50 +187,189 @@ export default function MapComponent() {
 
     return () => {
       unsubscribeLocation();
-      map.setTarget(null);
+      mapObj.setTarget(null);
     };
   }, []);
 
   /**
-   * 載入 API 線段圖層
+   * 載入線段圖層
+   * API URL: https://tmp114514.ricecall.com/lines
+   * API Response:
+   * {
+   *   "lines": [
+   *     {
+   *       "id": 1,
+   *       "name": "line1",
+   *       "start_lng": 121.5340424,
+   *       "start_lat": 25.0226465,
+   *       "end_lng": 121.5335406,
+   *       "end_lat": 25.0226608,
+   *       "bike": 1,
+   *       "rd_from": "rd1",
+   *       "sidewalk": "sidewalk1"
+   *     }
+   *   ]
+   * }
+   * @returns {VectorLayer} 線段圖層
    */
-  const loadAPILinesLayer = async (map) => {
+  const loadLinesLayer = async () => {
     try {
       const response = await fetch("https://tmp114514.ricecall.com/lines");
       const data = await response.json();
 
-      // 使用轉換函數建立圖層
-      const linesLayer = createLinesLayerFromAPI(data);
+      // 建立 Features
+      const features = data.lines.map((line) => {
+        const startCoord = fromLonLat([line.start_lng, line.start_lat]);
+        const endCoord = fromLonLat([line.end_lng, line.end_lat]);
 
-      map.addLayer(linesLayer);
-      setLayers((prev) => ({ ...prev, apiLines: linesLayer }));
-      linesLayer.set("displayName", "路況");
+        const lineGeometry = new LineString([startCoord, endCoord]);
+
+        const feature = new Feature({
+          geometry: lineGeometry,
+          id: line.id,
+          name: line.name,
+          bike: line.bike,
+          rd_from: line.rd_from,
+          sidewalk: line.sidewalk,
+        });
+
+        return feature;
+      });
+
+      // 建立 Vector Source
+      const vectorSource = new VectorSource({
+        features: features,
+      });
+
+      // 建立 Vector Layer 並設定動態樣式
+      const vectorLayer = new VectorLayer({
+        source: vectorSource,
+        visible: false,
+        style: (feature) => {
+          const isBike = feature.get("bike") === 1;
+          const hasSidewalk =
+            feature.get("sidewalk") !== null &&
+            feature.get("sidewalk") !== undefined;
+
+          let color = "#3b82f6";
+
+          if (hasSidewalk) color = "#00ff26";
+          else if (isBike) color = "#ff00ff";
+
+          return new Style({
+            stroke: new Stroke({
+              color: color,
+              width: 2,
+            }),
+          });
+        },
+      });
+
+      return vectorLayer;
     } catch (error) {
       console.error("載入 API 線段圖層失敗:", error);
     }
   };
 
   /**
-   * 載入 GeoJSON 圖層
+   * 載入事故圖層
+   * API URL: /accident_a1.json, /accident_a2.json
+   * API Response:
+   * {
+   *   "data": [
+   *     { "lon": 121.5340424, "lat": 25.0226465 },
+   *     { "lon": 121.5335406, "lat": 25.0226608 },
+   *   ]
+   * }
+   * @returns {VectorLayer} 事故圖層
    */
-  const loadGeoJSONLayer = async (map, config) => {
+  const loadAccidentLayer = async () => {
     try {
-      const response = await fetch(config.url);
-      const data = await response.json();
-      const features = new GeoJSON().readFeatures(data, {
-        featureProjection: "EPSG:3857",
+      const datas = await Promise.all([
+        fetch("/accident_a1.json").then((res) => res.json()),
+        fetch("/accident_a2.json").then((res) => res.json()),
+      ]).then(([a1, a2]) => [...a1, ...a2]);
+
+      // 建立 Features
+      const features = datas.map((p) => {
+        const feature = new Feature({
+          geometry: new Point(fromLonLat([p.lon + 100, p.lat + 20])),
+        });
+
+        feature.set("weight", weightConfig.a2AccidentWeight);
+
+        return feature;
       });
-      const vectorSource = new VectorSource({ features });
-      const vectorLayer = new VectorLayer({
-        source: vectorSource,
-        style: config.style,
+
+      // 建立熱力圖圖層
+      const heatLayer = new Heatmap({
+        source: new VectorSource({ features }),
+        blur: 20,
+        radius: 10,
+        opacity: 0.8,
         visible: false, // 預設關閉
       });
-      vectorLayer.set("displayName", config.displayName);
-      map.addLayer(vectorLayer);
-      setLayers((prev) => ({ ...prev, [config.name]: vectorLayer }));
+
+      // 設定熱力圖漸層色
+      heatLayer.setGradient([
+        "#fff0f5", // very light pink (LavenderBlush)
+        "#ffb6c1", // lightpink
+        "#ff69b4", // hotpink
+        "#ff1493", // deeppink
+        "#c71585", // mediumvioletred
+        "#8b008b", // darkmagenta
+      ]);
+
+      return heatLayer;
     } catch (error) {
-      console.error(`載入 ${config.name} 圖層失敗:`, error);
+      console.error("載入事故圖層失敗:", error);
+    }
+  };
+
+  /**
+   * 載入當前位置圖層
+   * @returns {VectorLayer} 當前位置圖層
+   */
+  const loadPositionLayer = async () => {
+    try {
+      // 建立 Feature
+      const positionFeature = new Feature();
+      positionFeature.setStyle(
+        new Style({
+          image: new CircleStyle({
+            radius: 8,
+            fill: new Fill({ color: "#1151ff" }),
+            stroke: new Stroke({ color: "#fff", width: 2 }),
+          }),
+        }),
+      );
+
+      // 儲存 Feature 引用供 Flutter 位置更新使用
+      positionFeatureRef.current = positionFeature;
+
+      // 建立 Vector Source
+      const vectorSource = new VectorSource({
+        features: [positionFeature],
+      });
+
+      // 建立 Vector Layer
+      const positionLayer = new VectorLayer({ source: vectorSource });
+
+      return positionLayer;
+    } catch (error) {
+      console.error("載入當前位置圖層失敗:", error);
+    }
+  };
+
+  /**
+   * 切換圖層顯示/隱藏
+   */
+  const toggleLayer = (layerName) => {
+    const layer = layers[layerName];
+    if (layer) {
+      const newVisible = !layer.getVisible();
+      layer.setVisible(newVisible);
+      setLayerVisibility((prev) => ({ ...prev, [layerName]: newVisible }));
     }
   };
 
@@ -333,11 +384,18 @@ export default function MapComponent() {
             pos.coords.longitude,
             pos.coords.latitude,
           ]);
+
           setPosition(coords);
-          positionFeatureRef.current?.setGeometry(new Point(coords));
-          view?.setCenter(coords);
+
+          if (positionFeatureRef.current) {
+            positionFeatureRef.current.setGeometry(new Point(coords));
+          }
+
+          if (view) {
+            view.setCenter(coords);
+          }
         },
-        (err) => console.error(err),
+        (err) => console.error(`取得定位資訊失敗: ${err}`),
         { enableHighAccuracy: true },
       );
 
@@ -412,76 +470,6 @@ export default function MapComponent() {
     });
     setLayerVisibility(visibility);
   }, [layers]);
-
-  useEffect(() => {
-    let features = [];
-
-    // A1 事故資料 - 使用 concat 避免 stack overflow
-    if (a1AccidentDatas.length > 0) {
-      const a1Features = a1AccidentDatas.map((p) => {
-        const f = new Feature({
-          geometry: new Point(fromLonLat([p.lon + 100, p.lat + 20])),
-        });
-        f.set("weight", weightConfig.a1AccidentWeight);
-        return f;
-      });
-      features = features.concat(a1Features);
-    }
-
-    // A2 事故資料 - 使用 concat 避免 stack overflow
-    if (a2AccidentDatas.length > 0) {
-      const a2Features = a2AccidentDatas.map((p) => {
-        const f = new Feature({
-          geometry: new Point(fromLonLat([p.lon + 100, p.lat + 20])),
-        });
-        f.set("weight", weightConfig.a2AccidentWeight);
-        return f;
-      });
-      features = features.concat(a2Features);
-    }
-
-    // 建立熱力圖圖層
-    const heatLayer = new Heatmap({
-      source: new VectorSource({ features }),
-      blur: 20,
-      radius: 10,
-      opacity: 0.8,
-      visible: false, // 預設關閉
-    });
-
-    // 設定熱力圖漸層色
-    heatLayer.setGradient([
-      "#fff0f5", // very light pink (LavenderBlush)
-      "#ffb6c1", // lightpink
-      "#ff69b4", // hotpink
-      "#ff1493", // deeppink
-      "#c71585", // mediumvioletred
-      "#8b008b", // darkmagenta
-    ]);
-
-    // 移除舊的圖層
-    if (heatmapLayerRef.current) {
-      mapInstanceRef.current.removeLayer(heatmapLayerRef.current);
-    }
-    mapInstanceRef.current.addLayer(heatLayer);
-    heatmapLayerRef.current = heatLayer; // 儲存新的圖層參考
-
-    // Add heatmap to layer switcher
-    heatLayer.set("displayName", "交通事故熱點");
-    setLayers((prev) => ({ ...prev, heatmap: heatLayer }));
-  }, [a1AccidentDatas, a2AccidentDatas]);
-
-  /**
-   * 切換圖層顯示/隱藏
-   */
-  const toggleLayer = (layerName) => {
-    const layer = layers[layerName];
-    if (layer) {
-      const newVisible = !layer.getVisible();
-      layer.setVisible(newVisible);
-      setLayerVisibility((prev) => ({ ...prev, [layerName]: newVisible }));
-    }
-  };
 
   return (
     <div className="relative h-screen w-full">
