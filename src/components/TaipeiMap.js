@@ -13,8 +13,10 @@ import GeoJSON from "ol/format/GeoJSON";
 import Feature from "ol/Feature";
 import Point from "ol/geom/Point";
 import Polygon from "ol/geom/Polygon";
+import Heatmap from "ol/layer/Heatmap";
 import { fromLonLat } from "ol/proj";
 import { Style, Stroke, Fill, Circle as CircleStyle } from "ol/style";
+
 import LayerSwitcher from "./LayerSwitcher";
 
 // GeoJSON 圖層配置
@@ -43,10 +45,6 @@ const LAYER_CONFIGS = [
     }),
   },
 ];
-import { Style, Stroke, Fill } from "ol/style";
-import { Feature } from "ol";
-import Heatmap from "ol/layer/Heatmap";
-import Point from "ol/geom/Point";
 
 // Configs
 import weightConfig from "@/configs/weightConfig.json";
