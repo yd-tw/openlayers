@@ -235,8 +235,7 @@ class Graph {
       weight = segment.bike === 1 ? 1.0 : 3.0;
     } else if (this.routeType === "walk") {
       // 步行路線：優先選擇有人行道的路段
-      weight =
-        segment.sidewalk !== null && segment.sidewalk !== "" ? 1.0 : 3.0;
+      weight = segment.sidewalk !== null && segment.sidewalk !== "" ? 1.0 : 3.0;
     }
 
     return distance * weight;

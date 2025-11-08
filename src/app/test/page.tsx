@@ -120,7 +120,7 @@ export default function MapWithOrientation() {
     if (window.DeviceOrientationEvent) {
       // iOS 裝置需要請求權限
       const DeviceOrientationEventTyped = DeviceOrientationEvent as unknown as {
-        requestPermission?: () => Promise<'granted' | 'denied'>;
+        requestPermission?: () => Promise<"granted" | "denied">;
       };
 
       if (typeof DeviceOrientationEventTyped.requestPermission === "function") {
@@ -136,7 +136,10 @@ export default function MapWithOrientation() {
           })
           .catch(console.error);
       } else {
-        window.addEventListener("deviceorientationabsolute", handleOrientation as EventListener);
+        window.addEventListener(
+          "deviceorientationabsolute",
+          handleOrientation as EventListener,
+        );
       }
     }
 
