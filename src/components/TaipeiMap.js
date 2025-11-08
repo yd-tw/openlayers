@@ -90,6 +90,18 @@ export default function MapComponent() {
       mapObj.addLayer(accidentLayer);
       setLayers((prev) => ({ ...prev, accident: accidentLayer }));
       accidentLayer.set("displayName", "交通事故熱點");
+
+      // 根據 zoom 調整熱力圖細節
+      const view = mapObj.getView();
+      view.on("change:resolution", () => {
+        const zoom = view.getZoom();
+
+        const radius = Math.max(5, (zoom - 10) * 2); // zoom=18 時 ≈16px
+        const blur = radius * 1.5;
+
+        accidentLayer.setRadius(radius);
+        accidentLayer.setBlur(blur);
+      });
     });
 
     // === 點擊地圖複製經緯度功能 ===
@@ -231,11 +243,13 @@ export default function MapComponent() {
       const bikeVectorLayer = new VectorLayer({
         source: bikeVectorSource,
         visible: false,
-        style: (feature) => {
+        style: () => {
+          const zoom = mapInstanceRef.current?.getView()?.getZoom() ?? 18;
+          const width = Math.max(1, (zoom - 10) * 0.8);
           return new Style({
             stroke: new Stroke({
               color: "#fd853a",
-              width: 4,
+              width,
             }),
           });
         },
@@ -271,11 +285,13 @@ export default function MapComponent() {
       const sidewalkVectorLayer = new VectorLayer({
         source: sidewalkVectorSource,
         visible: false,
-        style: (feature) => {
+        style: () => {
+          const zoom = mapInstanceRef.current?.getView()?.getZoom() ?? 18;
+          const width = Math.max(1, (zoom - 10) * 0.8);
           return new Style({
             stroke: new Stroke({
               color: "#76a732",
-              width: 4,
+              width,
             }),
           });
         },
