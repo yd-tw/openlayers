@@ -11,7 +11,6 @@ import OSM from "ol/source/OSM";
 import GeoJSON from "ol/format/GeoJSON";
 import { fromLonLat, toLonLat } from "ol/proj";
 import { Style, Stroke, Fill, Circle as CircleStyle } from "ol/style";
-import { LineString, Polygon } from "ol/geom";
 import { Point } from "ol/geom";
 import { Feature } from "ol";
 
@@ -72,49 +71,6 @@ export default function MapComponent() {
     map.addLayer(pathLayer);
     pathLayerRef.current = pathLayer;
 
-    // 載入水域 GeoJSON
-    fetch("/water.geojson")
-      .then((res) => res.json())
-      .then((data) => {
-        const features = new GeoJSON().readFeatures(data, {
-          featureProjection: "EPSG:3857",
-        });
-
-        features.forEach((f) => {
-          const geom = f.getGeometry();
-          if (geom instanceof LineString) {
-            const coords = geom.getCoordinates();
-
-            const first = coords[0];
-            const last = coords[coords.length - 1];
-            const isClosed =
-              first.length === last.length &&
-              first.every((v, i) => v === last[i]);
-            if (!isClosed) {
-              coords.push(first);
-            }
-
-            f.setGeometry(new Polygon([coords]));
-          }
-        });
-
-        const vectorSource = new VectorSource({ features });
-
-        const vectorLayer = new VectorLayer({
-          source: vectorSource,
-          style: new Style({
-            stroke: new Stroke({ color: "#ff6600", width: 5 }),
-            fill: new Fill({ color: "rgba(255, 165, 0, 0.3)" }),
-            image: new CircleStyle({
-              radius: 6,
-              fill: new Fill({ color: "#ff6600" }),
-            }),
-          }),
-        });
-
-        map.addLayer(vectorLayer);
-      });
-
     // 地圖點擊事件處理
     const handleMapClick = (event) => {
       if (!isSelectingPath) return;
@@ -161,7 +117,7 @@ export default function MapComponent() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ start, end, type: 'bike' }),
+        body: JSON.stringify({ start, end, type: "bike" }),
       });
 
       if (!response.ok) {
@@ -210,7 +166,7 @@ export default function MapComponent() {
       <div ref={mapRef} className="h-full w-full"></div>
 
       {/* 控制面板 - 置中下方 */}
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 rounded-lg bg-white p-4 shadow-lg">
+      <div className="absolute bottom-8 left-1/2 z-10 -translate-x-1/2 rounded-lg bg-white p-4 shadow-lg">
         <button
           onClick={startPathSelection}
           disabled={isSelectingPath}
@@ -224,7 +180,9 @@ export default function MapComponent() {
         </button>
 
         {statusMessage && (
-          <div className="mt-3 text-sm text-gray-700 text-center">{statusMessage}</div>
+          <div className="mt-3 text-center text-sm text-gray-700">
+            {statusMessage}
+          </div>
         )}
 
         {selectedPoints.length > 0 && (
