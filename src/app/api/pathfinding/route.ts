@@ -27,6 +27,105 @@ interface Node {
   f: number; // g + h
   parent: Node | null;
   segmentId?: number;
+  key?: string; // 節點的唯一識別 key
+}
+
+// Min-Heap 實作，用於 A* 演算法的 openSet
+class MinHeap {
+  private heap: Node[] = [];
+
+  // 取得堆的大小
+  size(): number {
+    return this.heap.length;
+  }
+
+  // 檢查堆是否為空
+  isEmpty(): boolean {
+    return this.heap.length === 0;
+  }
+
+  // 插入新節點
+  push(node: Node): void {
+    this.heap.push(node);
+    this.bubbleUp(this.heap.length - 1);
+  }
+
+  // 取出最小值節點（f 值最小）
+  pop(): Node | undefined {
+    if (this.heap.length === 0) return undefined;
+    if (this.heap.length === 1) return this.heap.pop();
+
+    const min = this.heap[0];
+    this.heap[0] = this.heap.pop()!;
+    this.bubbleDown(0);
+    return min;
+  }
+
+  // 檢查堆中是否包含特定 key 的節點
+  contains(key: string): boolean {
+    return this.heap.some((node) => node.key === key);
+  }
+
+  // 更新節點（如果新的 f 值更小）
+  update(node: Node): boolean {
+    const index = this.heap.findIndex((n) => n.key === node.key);
+    if (index === -1) return false;
+
+    const oldF = this.heap[index].f;
+    this.heap[index] = node;
+
+    if (node.f < oldF) {
+      this.bubbleUp(index);
+    } else if (node.f > oldF) {
+      this.bubbleDown(index);
+    }
+    return true;
+  }
+
+  // 向上調整（用於插入）
+  private bubbleUp(index: number): void {
+    while (index > 0) {
+      const parentIndex = Math.floor((index - 1) / 2);
+      if (this.heap[index].f >= this.heap[parentIndex].f) break;
+
+      [this.heap[index], this.heap[parentIndex]] = [
+        this.heap[parentIndex],
+        this.heap[index],
+      ];
+      index = parentIndex;
+    }
+  }
+
+  // 向下調整（用於刪除）
+  private bubbleDown(index: number): void {
+    while (true) {
+      const leftChild = 2 * index + 1;
+      const rightChild = 2 * index + 2;
+      let smallest = index;
+
+      if (
+        leftChild < this.heap.length &&
+        this.heap[leftChild].f < this.heap[smallest].f
+      ) {
+        smallest = leftChild;
+      }
+
+      if (
+        rightChild < this.heap.length &&
+        this.heap[rightChild].f < this.heap[smallest].f
+      ) {
+        smallest = rightChild;
+      }
+
+      if (smallest === index) break;
+
+      [this.heap[index], this.heap[smallest]] = [
+        this.heap[smallest],
+        this.heap[index],
+      ];
+      index = smallest;
+    }
+  }
 }
 
 // 計算兩點之間的距離（使用 Haversine 公式）
@@ -135,7 +234,7 @@ class Graph {
   }
 }
 
-// A* 演算法實作
+// A* 演算法實作（使用 MinHeap 優化）
 function aStar(
   graph: Graph,
   startKey: string,
@@ -148,7 +247,7 @@ function aStar(
     return null;
   }
 
-  const openSet: Node[] = [];
+  const openSet = new MinHeap();
   const closedSet = new Set<string>();
   const gScores = new Map<string, number>();
 
@@ -159,19 +258,16 @@ function aStar(
     h: calculateDistance(startNode, endNode),
     f: calculateDistance(startNode, endNode),
     parent: null,
+    key: startKey,
   };
 
   openSet.push(startAStarNode);
   gScores.set(startKey, 0);
 
-  while (openSet.length > 0) {
-    // 找到 f 值最小的節點
-    openSet.sort((a, b) => a.f - b.f);
-    const current = openSet.shift()!;
-    const currentKey = graph.findNearestNode({
-      lat: current.lat,
-      lng: current.lng,
-    })!;
+  while (!openSet.isEmpty()) {
+    // 取出 f 值最小的節點 - O(log n) 而非 O(n log n)
+    const current = openSet.pop()!;
+    const currentKey = current.key!;
 
     // 到達終點
     if (currentKey === endKey) {
@@ -214,17 +310,13 @@ function aStar(
           f: tentativeG + h,
           parent: current,
           segmentId: segment.id,
+          key: neighborKey,
         };
 
-        // 從 openSet 移除舊的節點（如果存在）
-        const existingIndex = openSet.findIndex(
-          (n) => n.lat === neighborNode.lat && n.lng === neighborNode.lng,
-        );
-        if (existingIndex !== -1) {
-          openSet.splice(existingIndex, 1);
+        // 使用 MinHeap 的 update 或 push
+        if (!openSet.update(neighborAStarNode)) {
+          openSet.push(neighborAStarNode);
         }
-
-        openSet.push(neighborAStarNode);
       }
     }
   }
@@ -315,9 +407,6 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    const bikePercentage =
-      totalDistance > 0 ? (bikeDistance / totalDistance) * 100 : 0;
-
     // 建立 GeoJSON 格式的路徑
     const geojson = {
       type: "FeatureCollection",
@@ -327,13 +416,6 @@ export async function POST(request: NextRequest) {
           geometry: {
             type: "LineString",
             coordinates: routePath.map((point) => [point.lng, point.lat]),
-          },
-          properties: {
-            totalDistance: Math.round(totalDistance * 100) / 100,
-            bikeDistance: Math.round(bikeDistance * 100) / 100,
-            bikePercentage: Math.round(bikePercentage * 100) / 100,
-            segmentCount: segmentDetails.length,
-            segments: segmentDetails,
           },
         },
       ],
