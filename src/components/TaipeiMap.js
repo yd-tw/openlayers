@@ -56,14 +56,14 @@ import weightConfig from "@/configs/weightConfig.json";
  * 根據 bike 和 sidewalk 屬性決定顏色
  */
 function createLinesLayerFromAPI(data) {
-  const features = data.lines.map(line => {
+  const features = data.lines.map((line) => {
     // 將經緯度轉換為 OpenLayers 投影座標
     const startCoord = fromLonLat([line.start_lng, line.start_lat]);
     const endCoord = fromLonLat([line.end_lng, line.end_lat]);
-    
+
     // 建立線段幾何
     const lineGeometry = new LineString([startCoord, endCoord]);
-    
+
     // 建立 Feature 並儲存所有屬性
     const feature = new Feature({
       geometry: lineGeometry,
@@ -71,41 +71,43 @@ function createLinesLayerFromAPI(data) {
       name: line.name,
       bike: line.bike,
       rd_from: line.rd_from,
-      sidewalk: line.sidewalk
+      sidewalk: line.sidewalk,
     });
-    
+
     return feature;
   });
-  
+
   // 建立 Vector Source
   const vectorSource = new VectorSource({
-    features: features
+    features: features,
   });
-  
+
   // 建立 Vector Layer 並設定動態樣式
   const vectorLayer = new VectorLayer({
     source: vectorSource,
     style: (feature) => {
-      const isBike = feature.get('bike') === 1;
-      const hasSidewalk = feature.get('sidewalk') !== null && feature.get('sidewalk') !== undefined;
-      
-      let color = '#3b82f6'; // 預設藍色
-      
+      const isBike = feature.get("bike") === 1;
+      const hasSidewalk =
+        feature.get("sidewalk") !== null &&
+        feature.get("sidewalk") !== undefined;
+
+      let color = "#3b82f6"; // 預設藍色
+
       if (hasSidewalk) {
-        color = '#00ff26'; // 綠色 (有人行道)
+        color = "#00ff26"; // 綠色 (有人行道)
       } else if (isBike) {
-        color = '#ff00ff'; // 紫色 (自行車道)
+        color = "#ff00ff"; // 紫色 (自行車道)
       }
-      
+
       return new Style({
         stroke: new Stroke({
           color: color,
-          width: 2
-        })
+          width: 2,
+        }),
       });
-    }
+    },
   });
-  
+
   return vectorLayer;
 }
 
@@ -230,17 +232,17 @@ export default function MapComponent() {
    */
   const loadAPILinesLayer = async (map) => {
     try {
-      const response = await fetch('https://tmp114514.ricecall.com/lines');
+      const response = await fetch("https://tmp114514.ricecall.com/lines");
       const data = await response.json();
-      
+
       // 使用轉換函數建立圖層
       const linesLayer = createLinesLayerFromAPI(data);
-      
+
       map.addLayer(linesLayer);
       setLayers((prev) => ({ ...prev, apiLines: linesLayer }));
-      linesLayer.set('displayName', '路況');
+      linesLayer.set("displayName", "路況");
     } catch (error) {
-      console.error('載入 API 線段圖層失敗:', error);
+      console.error("載入 API 線段圖層失敗:", error);
     }
   };
 
@@ -259,7 +261,7 @@ export default function MapComponent() {
         source: vectorSource,
         style: config.style,
       });
-      vectorLayer.set('displayName', config.displayName);
+      vectorLayer.set("displayName", config.displayName);
       map.addLayer(vectorLayer);
       setLayers((prev) => ({ ...prev, [config.name]: vectorLayer }));
     } catch (error) {

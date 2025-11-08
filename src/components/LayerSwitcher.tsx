@@ -11,10 +11,13 @@ interface LayerSwitcherProps {
   toggleLayer: (layerName: string) => void;
 }
 
-export default function LayerSwitcher({ layers, toggleLayer }: LayerSwitcherProps) {
+export default function LayerSwitcher({
+  layers,
+  toggleLayer,
+}: LayerSwitcherProps) {
   return (
-    <div className="absolute top-2.5 right-2.5 bg-white p-2.5 rounded-md shadow-lg z-[1000]">
-      <h4 className="text-base font-semibold mb-2">圖層控制</h4>
+    <div className="absolute top-2.5 right-2.5 z-[1000] rounded-md bg-white p-2.5 shadow-lg">
+      <h4 className="mb-2 text-base font-semibold">圖層控制</h4>
       <div className="space-y-2">
         {Object.keys(layers).map((layerName) => (
           <div key={layerName} className="flex items-center gap-2">
@@ -23,13 +26,13 @@ export default function LayerSwitcher({ layers, toggleLayer }: LayerSwitcherProp
               id={`layer-${layerName}`}
               checked={layers[layerName]?.getVisible() ?? true}
               onChange={() => toggleLayer(layerName)}
-              className="w-4 h-4 cursor-pointer accent-blue-600"
+              className="h-4 w-4 cursor-pointer accent-blue-600"
             />
-            <label 
+            <label
               htmlFor={`layer-${layerName}`}
-              className="text-sm cursor-pointer select-none"
+              className="cursor-pointer text-sm select-none"
             >
-              {layers[layerName]?.get('displayName') || layerName}
+              {layers[layerName]?.get("displayName") || layerName}
             </label>
           </div>
         ))}
