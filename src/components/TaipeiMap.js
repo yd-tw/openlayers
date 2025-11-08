@@ -333,7 +333,7 @@ export default function MapComponent() {
   // 取得方向資訊
   useEffect(() => {
     const handleOrientation = (event) => {
-      let alpha = event.alpha ?? event.webkitCompassHeading ?? 0;
+      const alpha = event.alpha ?? 0;
       const corrected = (360 - alpha + 360) % 360;
 
       setOrientation(corrected);

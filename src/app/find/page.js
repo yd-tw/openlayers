@@ -1,0 +1,236 @@
+"use client";
+
+import { useEffect, useRef, useState } from "react";
+import "ol/ol.css";
+import Map from "ol/Map";
+import View from "ol/View";
+import TileLayer from "ol/layer/Tile";
+import VectorLayer from "ol/layer/Vector";
+import VectorSource from "ol/source/Vector";
+import OSM from "ol/source/OSM";
+import GeoJSON from "ol/format/GeoJSON";
+import { fromLonLat, toLonLat } from "ol/proj";
+import { Style, Stroke, Fill, Circle as CircleStyle } from "ol/style";
+import { LineString, Polygon } from "ol/geom";
+import { Point } from "ol/geom";
+import { Feature } from "ol";
+
+export default function MapComponent() {
+  const mapRef = useRef(null);
+  const mapInstanceRef = useRef(null);
+  const [isSelectingPath, setIsSelectingPath] = useState(false);
+  const [selectedPoints, setSelectedPoints] = useState([]);
+  const [statusMessage, setStatusMessage] = useState("");
+  const markersLayerRef = useRef(null);
+  const pathLayerRef = useRef(null);
+
+  useEffect(() => {
+    if (!mapRef.current) return;
+
+    const map = new Map({
+      target: mapRef.current,
+      layers: [new TileLayer({ source: new OSM() })],
+      view: new View({
+        center: fromLonLat([121.5, 25.05]),
+        zoom: 12,
+      }),
+    });
+
+    mapInstanceRef.current = map;
+
+    // 建立標記圖層（用於顯示起點和終點）
+    const markersSource = new VectorSource();
+    const markersLayer = new VectorLayer({
+      source: markersSource,
+      style: (feature) => {
+        const type = feature.get("type");
+        return new Style({
+          image: new CircleStyle({
+            radius: 8,
+            fill: new Fill({ color: type === "start" ? "#00ff00" : "#ff0000" }),
+            stroke: new Stroke({ color: "#ffffff", width: 2 }),
+          }),
+        });
+      },
+    });
+    map.addLayer(markersLayer);
+    markersLayerRef.current = markersLayer;
+
+    // 建立路徑圖層
+    const pathSource = new VectorSource();
+    const pathLayer = new VectorLayer({
+      source: pathSource,
+      style: new Style({
+        stroke: new Stroke({ color: "#0000ff", width: 4 }),
+      }),
+    });
+    map.addLayer(pathLayer);
+    pathLayerRef.current = pathLayer;
+
+    // 載入水域 GeoJSON
+    fetch("/water.geojson")
+      .then((res) => res.json())
+      .then((data) => {
+        const features = new GeoJSON().readFeatures(data, {
+          featureProjection: "EPSG:3857",
+        });
+
+        features.forEach((f) => {
+          const geom = f.getGeometry();
+          if (geom instanceof LineString) {
+            const coords = geom.getCoordinates();
+
+            const first = coords[0];
+            const last = coords[coords.length - 1];
+            const isClosed =
+              first.length === last.length &&
+              first.every((v, i) => v === last[i]);
+            if (!isClosed) {
+              coords.push(first);
+            }
+
+            f.setGeometry(new Polygon([coords]));
+          }
+        });
+
+        const vectorSource = new VectorSource({ features });
+
+        const vectorLayer = new VectorLayer({
+          source: vectorSource,
+          style: new Style({
+            stroke: new Stroke({ color: "#ff6600", width: 2 }),
+            fill: new Fill({ color: "rgba(255, 165, 0, 0.3)" }),
+            image: new CircleStyle({
+              radius: 6,
+              fill: new Fill({ color: "#ff6600" }),
+            }),
+          }),
+        });
+
+        map.addLayer(vectorLayer);
+      });
+
+    // 地圖點擊事件處理
+    const handleMapClick = (event) => {
+      if (!isSelectingPath) return;
+
+      const coordinate = event.coordinate;
+      const lonLat = toLonLat(coordinate);
+
+      setSelectedPoints((prev) => {
+        const newPoints = [...prev, { lng: lonLat[0], lat: lonLat[1] }];
+
+        // 在地圖上添加標記
+        const marker = new Feature({
+          geometry: new Point(coordinate),
+          type: prev.length === 0 ? "start" : "end",
+        });
+        markersSource.addFeature(marker);
+
+        if (newPoints.length === 2) {
+          // 已選擇兩個點，開始尋路
+          setStatusMessage("正在計算路徑...");
+          findPath(newPoints[0], newPoints[1]);
+          setIsSelectingPath(false);
+        } else {
+          setStatusMessage("請點擊地圖選擇終點");
+        }
+
+        return newPoints;
+      });
+    };
+
+    map.on("click", handleMapClick);
+
+    return () => {
+      map.un("click", handleMapClick);
+      map.setTarget(null);
+    };
+  }, [isSelectingPath]);
+
+  // 尋找路徑函數
+  const findPath = async (start, end) => {
+    try {
+      const response = await fetch("/api/pathfinding", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ start, end }),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        setStatusMessage(`錯誤: ${error.error || "無法計算路徑"}`);
+        return;
+      }
+
+      const geojson = await response.json();
+
+      // 在地圖上顯示路徑
+      if (pathLayerRef.current) {
+        const features = new GeoJSON().readFeatures(geojson, {
+          featureProjection: "EPSG:3857",
+        });
+
+        const pathSource = pathLayerRef.current.getSource();
+        pathSource.clear();
+        pathSource.addFeatures(features);
+
+        setStatusMessage("路徑規劃完成！");
+      }
+    } catch (error) {
+      console.error("路徑規劃錯誤:", error);
+      setStatusMessage(`錯誤: ${error.message}`);
+    }
+  };
+
+  // 開始路徑選擇
+  const startPathSelection = () => {
+    // 清除之前的標記和路徑
+    if (markersLayerRef.current) {
+      markersLayerRef.current.getSource().clear();
+    }
+    if (pathLayerRef.current) {
+      pathLayerRef.current.getSource().clear();
+    }
+
+    setSelectedPoints([]);
+    setIsSelectingPath(true);
+    setStatusMessage("請點擊地圖選擇起點");
+  };
+
+  return (
+    <div className="relative h-screen w-full">
+      <div ref={mapRef} className="h-full w-full"></div>
+
+      {/* 控制面板 */}
+      <div className="absolute top-4 left-4 bg-white rounded-lg shadow-lg p-4 z-10">
+        <button
+          onClick={startPathSelection}
+          disabled={isSelectingPath}
+          className={`px-4 py-2 rounded font-medium ${
+            isSelectingPath
+              ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+              : "bg-blue-500 text-white hover:bg-blue-600"
+          }`}
+        >
+          {isSelectingPath ? "選擇中..." : "路徑規劃"}
+        </button>
+
+        {statusMessage && (
+          <div className="mt-3 text-sm text-gray-700">{statusMessage}</div>
+        )}
+
+        {selectedPoints.length > 0 && (
+          <div className="mt-3 text-xs text-gray-600">
+            <div>起點: {selectedPoints[0] && `${selectedPoints[0].lat.toFixed(6)}, ${selectedPoints[0].lng.toFixed(6)}`}</div>
+            {selectedPoints[1] && (
+              <div>終點: {selectedPoints[1].lat.toFixed(6)}, {selectedPoints[1].lng.toFixed(6)}</div>
+            )}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}

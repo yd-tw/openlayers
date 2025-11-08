@@ -347,11 +347,9 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // 讀取 backend.json
-    const filePath = path.join(process.cwd(), "public", "backend.json");
-    const fileContent = fs.readFileSync(filePath, "utf-8");
-    const jsonData = JSON.parse(fileContent);
-    const segments: RoadSegment[] = jsonData.lines || [];
+    const res = await fetch("https://tmp114514.ricecall.com/lines");
+    const data = await res.json();
+    const segments: RoadSegment[] = data?.lines || [];
 
     // 建立圖形
     const graph = new Graph(segments);
