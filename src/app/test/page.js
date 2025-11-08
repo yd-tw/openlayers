@@ -16,7 +16,6 @@ import Polygon from "ol/geom/Polygon";
 import CircleGeom from "ol/geom/Circle";
 import { fromLonLat } from "ol/proj";
 import { Style, Stroke, Fill, Circle as CircleStyle, Text } from "ol/style";
-import { toLonLat } from "ol/proj";
 import LayerSwitcher from "../../components/LayerSwitcher";
 
 // === GeoJSON 圖層設定 ===
@@ -50,8 +49,6 @@ export default function MapComponent() {
   const mapInstanceRef = useRef(null);
   const [layers, setLayers] = useState({});
   const [layerVisibility, setLayerVisibility] = useState({});
-  const [copyNotification, setCopyNotification] = useState(null);
-  const clickMarkerRef = useRef(null);
 
   useEffect(() => {
     if (!mapRef.current) return;
@@ -88,7 +85,7 @@ export default function MapComponent() {
           color: "rgba(17, 81, 255, 0.4)",
           width: 1.5,
         }),
-      })
+      }),
     );
 
     positionFeature.setStyle(
@@ -98,7 +95,7 @@ export default function MapComponent() {
           fill: new Fill({ color: "#1151ff" }),
           stroke: new Stroke({ color: "#fff", width: 2 }),
         }),
-      })
+      }),
     );
 
     coneFeature.setStyle(
@@ -110,7 +107,7 @@ export default function MapComponent() {
           color: "#1151ff",
           width: 2,
         }),
-      })
+      }),
     );
 
     const vectorSource = new VectorSource({
@@ -178,12 +175,17 @@ export default function MapComponent() {
     };
 
     // iOS 權限要求
-    if (typeof DeviceOrientationEvent !== "undefined" && 
-        typeof DeviceOrientationEvent.requestPermission === "function") {
+    if (
+      typeof DeviceOrientationEvent !== "undefined" &&
+      typeof DeviceOrientationEvent.requestPermission === "function"
+    ) {
       DeviceOrientationEvent.requestPermission()
         .then((res) => {
           if (res === "granted") {
-            window.addEventListener("deviceorientationabsolute", handleOrientation);
+            window.addEventListener(
+              "deviceorientationabsolute",
+              handleOrientation,
+            );
           }
         })
         .catch(console.error);
@@ -195,74 +197,14 @@ export default function MapComponent() {
     // === 載入 GeoJSON 圖層 ===
     LAYER_CONFIGS.forEach((cfg) => loadGeoJSONLayer(map, cfg));
 
-    // === 點擊地圖複製經緯度 ===
-    const clickMarkerSource = new VectorSource();
-    const clickMarkerLayer = new VectorLayer({
-      source: clickMarkerSource,
-      zIndex: 2000,
-    });
-    map.addLayer(clickMarkerLayer);
-    clickMarkerRef.current = clickMarkerSource;
-
-    const handleMapClick = (evt) => {
-      console.log("地圖被點擊了！", evt.coordinate);
-
-      const coords = evt.coordinate;
-      const lonLat = toLonLat(coords);
-      const [lon, lat] = lonLat;
-
-      // 格式化經緯度
-      const coordText = `${lat.toFixed(6)}, ${lon.toFixed(6)}`;
-
-      console.log("經緯度:", coordText);
-
-      // 複製到剪貼簿
-      navigator.clipboard.writeText(coordText).then(() => {
-        console.log("複製成功:", coordText);
-        // 顯示通知
-        setCopyNotification(coordText);
-        setTimeout(() => setCopyNotification(null), 2000);
-      }).catch(err => {
-        console.error("複製失敗:", err);
-        // 即使複製失敗也顯示通知
-        setCopyNotification(coordText);
-        setTimeout(() => setCopyNotification(null), 2000);
-      });
-
-      // 清除舊標記
-      clickMarkerSource.clear();
-
-      // 添加新標記
-      const marker = new Feature({
-        geometry: new Point(coords),
-      });
-
-      marker.setStyle(
-        new Style({
-          image: new CircleStyle({
-            radius: 10,
-            fill: new Fill({ color: "rgba(255, 0, 0, 0.6)" }),
-            stroke: new Stroke({ color: "#fff", width: 3 }),
-          }),
-        })
-      );
-
-      clickMarkerSource.addFeature(marker);
-
-      // 3秒後移除標記
-      setTimeout(() => {
-        clickMarkerSource.clear();
-      }, 3000);
-    };
-
-    map.on("singleclick", handleMapClick);
-    console.log("地圖點擊事件已註冊");
-
     return () => {
       geolocation.setTracking(false);
       map.un("singleclick", handleMapClick);
       map.setTarget(null);
-      window.removeEventListener("deviceorientationabsolute", handleOrientation);
+      window.removeEventListener(
+        "deviceorientationabsolute",
+        handleOrientation,
+      );
       window.removeEventListener("deviceorientation", handleOrientation);
     };
   }, []);
@@ -307,73 +249,14 @@ export default function MapComponent() {
     }
   };
 
-  // 測試按鈕功能
-  const testNotification = () => {
-    console.log("測試按鈕被點擊");
-    setCopyNotification("25.050000, 121.500000 (測試)");
-    setTimeout(() => setCopyNotification(null), 2000);
-  };
-
   return (
     <div style={{ position: "relative", width: "100%", height: "100vh" }}>
       <div ref={mapRef} style={{ width: "100%", height: "100%" }} />
-
       <LayerSwitcher
         layers={layers}
         layerVisibility={layerVisibility}
         toggleLayer={toggleLayer}
       />
-
-      {/* 測試按鈕 */}
-      <button
-        onClick={testNotification}
-        style={{
-          position: "absolute",
-          bottom: "20px",
-          right: "20px",
-          zIndex: 1001,
-          backgroundColor: "#2563eb",
-          color: "white",
-          padding: "10px 20px",
-          borderRadius: "8px",
-          border: "none",
-          cursor: "pointer",
-          fontSize: "16px",
-          fontWeight: "bold",
-          boxShadow: "0 4px 6px rgba(0,0,0,0.3)"
-        }}
-      >
-        測試通知
-      </button>
-
-      {/* 複製通知 */}
-      {copyNotification && (
-        <div
-          style={{
-            position: "fixed",
-            top: "20px",
-            left: "50%",
-            transform: "translateX(-50%)",
-            backgroundColor: "#16a34a",
-            color: "white",
-            padding: "15px 25px",
-            borderRadius: "8px",
-            boxShadow: "0 4px 6px rgba(0,0,0,0.3)",
-            zIndex: 1002,
-            display: "flex",
-            alignItems: "center",
-            gap: "10px"
-          }}
-        >
-          <svg style={{ width: "20px", height: "20px" }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-          </svg>
-          <div>
-            <div style={{ fontWeight: "bold" }}>已複製經緯度</div>
-            <div style={{ fontSize: "14px", opacity: 0.9 }}>{copyNotification}</div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

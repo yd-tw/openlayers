@@ -239,7 +239,7 @@ export default function MapComponent() {
             fill: new Fill({ color: "rgba(255, 0, 0, 0.7)" }),
             stroke: new Stroke({ color: "#fff", width: 2 }),
           }),
-        })
+        }),
       );
 
       clickMarkerSource.addFeature(marker);
