@@ -24,11 +24,12 @@ export default function MapComponent() {
       layers: [new TileLayer({ source: new OSM() })],
       view: new View({
         center: fromLonLat([121.5, 25.05]),
+        rotation: Math.PI / 5,
         zoom: 12,
       }),
     });
 
-    fetch("/water.geojson")
+    fetch("/highway.geojson")
       .then((res) => res.json())
       .then((data) => {
         const features = new GeoJSON().readFeatures(data, {
