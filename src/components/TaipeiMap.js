@@ -7,13 +7,13 @@ import View from "ol/View";
 import TileLayer from "ol/layer/Tile";
 import VectorLayer from "ol/layer/Vector";
 import VectorSource from "ol/source/Vector";
-import OSM from "ol/source/OSM";
 import XYZ from "ol/source/XYZ";
 import Feature from "ol/Feature";
 import Point from "ol/geom/Point";
 import Polygon from "ol/geom/Polygon";
 import LineString from "ol/geom/LineString";
 import Heatmap from "ol/layer/Heatmap";
+import GeoJSON from "ol/format/GeoJSON";
 import { fromLonLat, toLonLat } from "ol/proj";
 import { Style, Stroke, Fill, Circle as CircleStyle } from "ol/style";
 import { defaults as defaultControls } from "ol/control";
@@ -24,6 +24,7 @@ import MapModeSelector from "./MapModeSelector";
 
 // Libraries
 import { getTownPassClient } from "@/lib/townpass/client";
+import { useTownPass } from "@/lib/townpass/hooks/useTownPass";
 
 // Configs
 import weightConfig from "@/configs/weightConfig.json";
@@ -33,14 +34,35 @@ export default function MapComponent() {
   const mapInstanceRef = useRef(null);
   const positionFeatureRef = useRef(null);
   const directionFeatureRef = useRef(null);
-  const copyNotificationTimeoutRef = useRef(null);
+  const markersLayerRef = useRef(null);
+  const pathLayerRef = useRef(null);
+  const isSelectingPathRef = useRef(false);
+  const currentModeRef = useRef("pedestrian");
+
   const [layers, setLayers] = useState({});
   const [layerVisibility, setLayerVisibility] = useState({});
-  const [copyNotification, setCopyNotification] = useState(null);
   const [map, setMap] = useState(null);
   const [view, setView] = useState(null);
   const [position, setPosition] = useState(null);
   const [orientation, setOrientation] = useState(null);
+
+  // 路徑規劃相關狀態
+  const [isSelectingPath, setIsSelectingPath] = useState(false);
+  const [selectedPoints, setSelectedPoints] = useState([]);
+  const [statusMessage, setStatusMessage] = useState("");
+  const [currentMode, setCurrentMode] = useState("pedestrian");
+
+  // 取得當前模式
+  const { state } = useTownPass();
+
+  // 監聽模式變化
+  useEffect(() => {
+    if (state?.mode) {
+      console.log("TaipeiMap: Mode changed to", state.mode);
+      setCurrentMode(state.mode);
+      currentModeRef.current = state.mode;
+    }
+  }, [state?.mode]);
 
   useEffect(() => {
     if (!mapRef.current) return;
@@ -105,50 +127,81 @@ export default function MapComponent() {
       });
     });
 
-    // === 點擊地圖複製經緯度功能 ===
-    const clickMarkerSource = new VectorSource();
-    const clickMarkerLayer = new VectorLayer({
-      source: clickMarkerSource,
-      zIndex: 9999,
+    // === 建立路徑規劃標記圖層（用於顯示起點和終點）===
+    const markersSource = new VectorSource();
+    const markersLayer = new VectorLayer({
+      source: markersSource,
+      zIndex: 10000,
+      style: (feature) => {
+        const type = feature.get("type");
+        return new Style({
+          image: new CircleStyle({
+            radius: 10,
+            fill: new Fill({ color: type === "start" ? "#00ff00" : "#ff0000" }),
+            stroke: new Stroke({ color: "#ffffff", width: 3 }),
+          }),
+        });
+      },
     });
+    mapObj.addLayer(markersLayer);
+    markersLayerRef.current = markersLayer;
 
-    mapObj.addLayer(clickMarkerLayer);
+    // === 建立路徑圖層 ===
+    const pathSource = new VectorSource();
+    const pathLayer = new VectorLayer({
+      source: pathSource,
+      zIndex: 9999,
+      style: (feature) => {
+        // 根據道路類型和當前模式設定不同顏色
+        const hasSidewalk = feature.get("hasSidewalk");
+        const isBikeLane = feature.get("isBikeLane");
+        let color = "#ff8c00"; // 預設橘色
 
+        if (hasSidewalk) {
+          color = "#2ecc71"; // 行人道: 綠色
+        } else if (isBikeLane) {
+          color = "#9b59b6"; // 自行車道: 紫色
+        }
+
+        return new Style({
+          stroke: new Stroke({ color: color, width: 5 }),
+        });
+      },
+    });
+    mapObj.addLayer(pathLayer);
+    pathLayerRef.current = pathLayer;
+
+    // === 地圖點擊事件處理 ===
     mapObj.on("singleclick", (evt) => {
       const coords = evt.coordinate;
-      const [lon, lat] = toLonLat(coords);
-      const coordText = `${lat.toFixed(6)}, ${lon.toFixed(6)}`;
+      const lonLat = toLonLat(coords);
+      const [lon, lat] = lonLat;
 
-      navigator.clipboard
-        .writeText(coordText)
-        .then(() => setCopyNotification(coordText))
-        .catch(() => setCopyNotification(coordText));
+      // 如果正在選擇路徑，處理路徑選擇邏輯
+      if (isSelectingPathRef.current) {
+        setSelectedPoints((prev) => {
+          const newPoints = [...prev, { lng: lon, lat: lat }];
 
-      clickMarkerSource.clear();
+          // 在地圖上添加標記（第一個點是終點，第二個點是起點）
+          const marker = new Feature({
+            geometry: new Point(coords),
+            type: prev.length === 0 ? "end" : "start",
+          });
+          markersSource.addFeature(marker);
 
-      const markerFeature = new Feature({
-        geometry: new Point(coords),
-      });
+          if (newPoints.length === 2) {
+            // 已選擇兩個點，開始尋路（newPoints[0]是終點，newPoints[1]是起點）
+            setStatusMessage("正在計算路徑...");
+            findPath(newPoints[1], newPoints[0]); // 反轉參數順序
+            setIsSelectingPath(false);
+            isSelectingPathRef.current = false;
+          } else {
+            setStatusMessage("請點擊地圖選擇起點");
+          }
 
-      markerFeature.setStyle(
-        new Style({
-          image: new CircleStyle({
-            radius: 8,
-            fill: new Fill({ color: "#f5ba4b" }),
-            stroke: new Stroke({ color: "#fff", width: 2 }),
-          }),
-        }),
-      );
-
-      clickMarkerSource.addFeature(markerFeature);
-
-      if (copyNotificationTimeoutRef.current) {
-        clearTimeout(copyNotificationTimeoutRef.current);
+          return newPoints;
+        });
       }
-      copyNotificationTimeoutRef.current = setTimeout(() => {
-        clickMarkerSource.clear();
-        setCopyNotification(null);
-      }, 2000);
     });
 
     // === 監聽 Flutter 位置更新 ===
@@ -176,6 +229,7 @@ export default function MapComponent() {
       unsubscribeLocation();
       mapObj.setTarget(null);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   /**
@@ -414,6 +468,67 @@ export default function MapComponent() {
     }
   };
 
+  /**
+   * 尋找路徑函數
+   */
+  const findPath = async (start, end) => {
+    try {
+      const mode = currentModeRef.current;
+      const pathType = mode === "bicycle" ? "bike" : "walk";
+      console.log("TaipeiMap: Finding path with mode", mode, "pathType", pathType);
+
+      const response = await fetch("/api/find", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ start, end, type: "bike" }),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        setStatusMessage(`錯誤: ${error.error || "無法計算路徑"}`);
+        return;
+      }
+
+      const geojson = await response.json();
+
+      // 在地圖上顯示路徑
+      if (pathLayerRef.current) {
+        const features = new GeoJSON().readFeatures(geojson, {
+          featureProjection: "EPSG:3857",
+        });
+
+        const pathSource = pathLayerRef.current.getSource();
+        pathSource.clear();
+        pathSource.addFeatures(features);
+
+        setStatusMessage("路徑規劃完成！");
+      }
+    } catch (error) {
+      console.error("路徑規劃錯誤:", error);
+      setStatusMessage(`錯誤: ${error.message}`);
+    }
+  };
+
+  /**
+   * 開始路徑選擇
+   */
+  const startPathSelection = () => {
+    // 清除之前的標記和路徑
+    if (markersLayerRef.current) {
+      markersLayerRef.current.getSource().clear();
+    }
+    if (pathLayerRef.current) {
+      pathLayerRef.current.getSource().clear();
+    }
+
+    setSelectedPoints([]);
+    setIsSelectingPath(true);
+    isSelectingPathRef.current = true;
+    setStatusMessage("請點擊地圖選擇終點");
+  };
+
   // 取得定位資訊
   useEffect(() => {
     if (!map) return;
@@ -528,45 +643,42 @@ export default function MapComponent() {
         <MapModeSelector />
       </div>
 
-      {/* 複製通知 */}
-      {copyNotification && (
-        <div
-          style={{
-            position: "fixed",
-            top: "20px",
-            left: "50%",
-            transform: "translateX(-50%)",
-            backgroundColor: "#76a732",
-            color: "white",
-            padding: "12px 24px",
-            borderRadius: "8px",
-            boxShadow: "0 4px 6px rgba(0,0,0,0.3)",
-            zIndex: 10000,
-            display: "flex",
-            alignItems: "center",
-            gap: "10px",
-            fontSize: "14px",
-          }}
-        >
-          <svg
-            style={{ width: "20px", height: "20px", flexShrink: 0 }}
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
+      {/* 路徑規劃控制面板 - 僅在行人或自行車模式下顯示 */}
+      {(currentMode === "pedestrian" || currentMode === "bicycle") && (
+        <div className="absolute bottom-8 left-1/2 z-[1000] -translate-x-1/2 rounded-lg bg-white p-4 shadow-lg">
+          <button
+            onClick={startPathSelection}
+            disabled={isSelectingPath}
+            className={`rounded px-4 py-2 font-medium ${
+              isSelectingPath
+                ? "cursor-not-allowed bg-gray-300 text-gray-500"
+                : "bg-blue-500 text-white hover:bg-blue-600"
+            }`}
           >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M5 13l4 4L19 7"
-            />
-          </svg>
-          <div>
-            <div style={{ fontWeight: "600" }}>已複製經緯度</div>
-            <div style={{ fontSize: "13px", opacity: 0.95 }}>
-              {copyNotification}
+            {isSelectingPath ? "選擇中..." : "路徑規劃"}
+          </button>
+
+          {statusMessage && (
+            <div className="mt-3 text-center text-sm text-gray-700">
+              {statusMessage}
             </div>
-          </div>
+          )}
+
+          {selectedPoints.length > 0 && (
+            <div className="mt-3 text-xs text-gray-600">
+              <div>
+                終點:{" "}
+                {selectedPoints[0] &&
+                  `${selectedPoints[0].lat.toFixed(6)}, ${selectedPoints[0].lng.toFixed(6)}`}
+              </div>
+              {selectedPoints[1] && (
+                <div>
+                  起點: {selectedPoints[1].lat.toFixed(6)},{" "}
+                  {selectedPoints[1].lng.toFixed(6)}
+                </div>
+              )}
+            </div>
+          )}
         </div>
       )}
     </div>
