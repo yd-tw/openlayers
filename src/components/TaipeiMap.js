@@ -85,6 +85,7 @@ function createLinesLayerFromAPI(data) {
   // 建立 Vector Layer 並設定動態樣式
   const vectorLayer = new VectorLayer({
     source: vectorSource,
+    visible: false, // 預設關閉
     style: (feature) => {
       const isBike = feature.get("bike") === 1;
       const hasSidewalk =
@@ -227,6 +228,7 @@ export default function MapComponent() {
       const vectorLayer = new VectorLayer({
         source: vectorSource,
         style: config.style,
+        visible: false, // 預設關閉
       });
       vectorLayer.set("displayName", config.displayName);
       map.addLayer(vectorLayer);
@@ -240,7 +242,7 @@ export default function MapComponent() {
   useEffect(() => {
     const visibility = {};
     Object.keys(layers).forEach((name) => {
-      visibility[name] = layers[name]?.getVisible() ?? true;
+      visibility[name] = layers[name]?.getVisible() ?? false;
     });
     setLayerVisibility(visibility);
   }, [layers]);
@@ -280,6 +282,7 @@ export default function MapComponent() {
       blur: 20,
       radius: 10,
       opacity: 0.8,
+      visible: false, // 預設關閉
     });
 
     // 設定熱力圖漸層色

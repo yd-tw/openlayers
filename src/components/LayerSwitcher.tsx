@@ -24,7 +24,7 @@ export default function LayerSwitcher({
             <input
               type="checkbox"
               id={`layer-${layerName}`}
-              checked={layers[layerName]?.getVisible() ?? true}
+              checked={layers[layerName]?.getVisible() ?? false}
               onChange={() => toggleLayer(layerName)}
               className="h-4 w-4 cursor-pointer accent-blue-600"
             />
