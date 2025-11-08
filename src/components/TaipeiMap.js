@@ -183,9 +183,14 @@ export default function MapComponent() {
     };
 
     // === DeviceOrientation API ===
+    let lastUpdate = 0;
     const handleOrientation = (event) => {
-      // alpha 是相對於北方的角度（度數）
-      let heading = event.alpha;
+      const now = Date.now();
+      if (now - lastUpdate < 100) return; // 限制更新頻率為 100ms
+      
+      lastUpdate = now;
+
+      let heading = event.webkitCompassHeading ?? event.alpha;
       if (heading != null) {
         const rad = (heading * Math.PI) / 180;
         currentHeadingRef.current = rad;
