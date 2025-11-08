@@ -67,7 +67,7 @@
 ```typescript
 // 前端呼叫
 const client = getTownPassClient();
-await client.setMode('bicycle');
+await client.setMode("bicycle");
 ```
 
 ```dart
@@ -101,7 +101,7 @@ await pushService.pushRequest(
 // 前端監聽事件
 const client = getTownPassClient();
 client.onRequest((data) => {
-  console.log('收到 Request:', data);
+  console.log("收到 Request:", data);
 });
 ```
 
@@ -109,24 +109,24 @@ client.onRequest((data) => {
 
 ### WebView 可以控制的 Flutter 功能
 
-| 功能 | 方法 | 說明 |
-|-----|------|-----|
-| 設定模式 | `setMode(mode)` | 切換行人/自行車/車輛模式 |
-| 調整間隔 | `setSyncInterval(ms)` | 設定同步間隔時間 |
-| 開始/停止同步 | `toggleSync(start)` | 控制同步開關 |
-| 取得狀態 | `getState()` | 取得當前完整狀態 |
-| 清除訊息 | `clearMessages()` | 清除所有訊息 |
-| Demo 模式 | `toggleDemo()` | 切換 Demo 模式 |
-| 通知開關 | `toggleNotifications()` | 切換通知功能 |
+| 功能          | 方法                    | 說明                     |
+| ------------- | ----------------------- | ------------------------ |
+| 設定模式      | `setMode(mode)`         | 切換行人/自行車/車輛模式 |
+| 調整間隔      | `setSyncInterval(ms)`   | 設定同步間隔時間         |
+| 開始/停止同步 | `toggleSync(start)`     | 控制同步開關             |
+| 取得狀態      | `getState()`            | 取得當前完整狀態         |
+| 清除訊息      | `clearMessages()`       | 清除所有訊息             |
+| Demo 模式     | `toggleDemo()`          | 切換 Demo 模式           |
+| 通知開關      | `toggleNotifications()` | 切換通知功能             |
 
 ### Flutter 推送到 WebView 的事件
 
-| 事件類型 | 事件名稱 | 資料格式 |
-|---------|---------|---------|
-| Request | `townpass_sync_request` | `{ url, method, body, timestamp }` |
-| Response | `townpass_sync_response` | `{ statusCode, body, timestamp }` |
-| Message | `townpass_sync_message` | `SyncMessage` 物件 |
-| State Update | `townpass_state_update` | `SyncState` 物件 |
+| 事件類型     | 事件名稱                 | 資料格式                           |
+| ------------ | ------------------------ | ---------------------------------- |
+| Request      | `townpass_sync_request`  | `{ url, method, body, timestamp }` |
+| Response     | `townpass_sync_response` | `{ statusCode, body, timestamp }`  |
+| Message      | `townpass_sync_message`  | `SyncMessage` 物件                 |
+| State Update | `townpass_state_update`  | `SyncState` 物件                   |
 
 ## 使用範例
 
@@ -175,6 +175,7 @@ export default function ControlPage() {
 已建立的完整控制台位於：`/app/sync-control/page.tsx`
 
 功能包含：
+
 - 模式選擇器（行人/自行車/汽車）
 - 同步控制面板（開始/停止、間隔設定）
 - 狀態面板（顯示當前狀態）
@@ -281,6 +282,7 @@ lib/
 ## 技術支援
 
 如有問題，請檢查：
+
 1. Flutter debug console 輸出
 2. WebView console 輸出（使用 Chrome DevTools）
 3. 確認 `flutterObject` 和 `window.townpassEventHandlers` 是否存在

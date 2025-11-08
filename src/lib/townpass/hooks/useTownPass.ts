@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { getTownPassClient } from '../client';
-import type { SyncState, UserMode } from '@/types/townpass';
+import { useEffect, useState } from "react";
+import { getTownPassClient } from "../client";
+import type { SyncState, UserMode } from "@/types/townpass";
 
 export function useTownPass() {
   const [client] = useState(() => getTownPassClient());
@@ -24,12 +24,13 @@ export function useTownPass() {
     try {
       setLoading(true);
       const currentState = await client.getState();
-      console.log('TownPass: Loaded state:', currentState);
+      console.log("TownPass: Loaded state:", currentState);
       setState(currentState);
       setError(null);
     } catch (e) {
-      console.error('TownPass: Failed to load state:', e);
-      const errorMessage = e instanceof Error ? e.message : 'Failed to load state';
+      console.error("TownPass: Failed to load state:", e);
+      const errorMessage =
+        e instanceof Error ? e.message : "Failed to load state";
       setError(errorMessage);
     } finally {
       setLoading(false);
@@ -43,7 +44,7 @@ export function useTownPass() {
       await loadState(); // 重新載入狀態
       setError(null);
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'Failed to set mode');
+      setError(e instanceof Error ? e.message : "Failed to set mode");
     } finally {
       setLoading(false);
     }
@@ -54,7 +55,7 @@ export function useTownPass() {
       await client.setSyncInterval(intervalMs);
       setError(null);
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'Failed to set interval');
+      setError(e instanceof Error ? e.message : "Failed to set interval");
     }
   };
 
@@ -64,7 +65,7 @@ export function useTownPass() {
       await loadState();
       setError(null);
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'Failed to toggle sync');
+      setError(e instanceof Error ? e.message : "Failed to toggle sync");
     }
   };
 
@@ -74,7 +75,7 @@ export function useTownPass() {
       await loadState();
       setError(null);
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'Failed to clear messages');
+      setError(e instanceof Error ? e.message : "Failed to clear messages");
     }
   };
 
@@ -84,7 +85,7 @@ export function useTownPass() {
       await loadState();
       setError(null);
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'Failed to toggle demo');
+      setError(e instanceof Error ? e.message : "Failed to toggle demo");
     }
   };
 
@@ -94,7 +95,9 @@ export function useTownPass() {
       await loadState();
       setError(null);
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'Failed to toggle notifications');
+      setError(
+        e instanceof Error ? e.message : "Failed to toggle notifications",
+      );
     }
   };
 

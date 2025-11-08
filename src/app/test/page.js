@@ -1,203 +1,126 @@
-"use client";
+// 'use client';
 
-import { useEffect, useState, useRef } from "react";
-import "ol/ol.css";
-import Map from "ol/Map";
-import View from "ol/View";
-import TileLayer from "ol/layer/Tile";
-import OSM from "ol/source/OSM";
-import { fromLonLat } from "ol/proj";
-import VectorLayer from "ol/layer/Vector";
-import VectorSource from "ol/source/Vector";
-import Feature from "ol/Feature";
-import Point from "ol/geom/Point";
-import { Style, Icon, Circle, Fill, Stroke } from "ol/style";
+// import { useEffect, useRef } from 'react';
+// import Map from 'ol/Map';
+// import View from 'ol/View';
+// import TileLayer from 'ol/layer/Tile';
+// import OSM from 'ol/source/OSM';
+// import { fromLonLat } from 'ol/proj';
+// import Geolocation from 'ol/Geolocation';
+// import Overlay from 'ol/Overlay';
+// import DeviceOrientation from 'ol/DeviceOrientation';
+// import 'ol/ol.css';
 
-export default function OrientationMapPage() {
-  const mapRef = useRef(null);
-  const mapInstanceRef = useRef(null);
-  const markerRef = useRef(null);
-  const vectorSourceRef = useRef(null);
+// export default function GeolocationMap() {
+//   const mapRef = useRef<HTMLDivElement>(null);
+//   const markerRef = useRef<HTMLDivElement>(null);
+//   const mapInstanceRef = useRef<Map | null>(null);
 
-  const [orientation, setOrientation] = useState({
-    alpha: 0,
-    beta: 0,
-    gamma: 0,
-  });
-  const [location, setLocation] = useState(null);
-  const [supported, setSupported] = useState(true);
-  const [locationError, setLocationError] = useState(null);
+//   useEffect(() => {
+//     if (!mapRef.current || !markerRef.current || mapInstanceRef.current) return;
 
-  // 取得使用者位置
-  useEffect(() => {
-    if ("geolocation" in navigator) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          setLocation({
-            lon: position.coords.longitude,
-            lat: position.coords.latitude,
-          });
-        },
-        (error) => {
-          console.error("Geolocation error:", error);
-          setLocationError("無法取得位置資訊");
-          // 預設位置：台北 101
-          setLocation({ lon: 121.5654, lat: 25.0330 });
-        }
-      );
-    } else {
-      setLocationError("此瀏覽器不支援地理位置");
-      setLocation({ lon: 121.5654, lat: 25.0330 });
-    }
-  }, []);
+//     // 創建圖層
+//     const layer = new TileLayer({
+//       source: new OSM()
+//     });
 
-  // 初始化地圖
-  useEffect(() => {
-    if (!mapRef.current || !location) return;
+//     // 設置倫敦座標
+//     const london = fromLonLat([-0.12755, 51.507222]);
 
-    const vectorSource = new VectorSource();
-    vectorSourceRef.current = vectorSource;
+//     // 創建視圖
+//     const view = new View({
+//       center: london,
+//       zoom: 6
+//     });
 
-    // 建立方向標記
-    const marker = new Feature({
-      geometry: new Point(fromLonLat([location.lon, location.lat])),
-    });
+//     // 創建地圖
+//     const map = new Map({
+//       target: mapRef.current,
+//       layers: [layer],
+//       view: view
+//     });
 
-    // 建立箭頭樣式
-    marker.setStyle(
-      new Style({
-        image: new Icon({
-          src: 'data:image/svg+xml;utf8,' + encodeURIComponent(`
-            <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40">
-              <g transform="translate(20,20)">
-                <path d="M 0,-15 L 5,10 L 0,5 L -5,10 Z" fill="%234F46E5" stroke="%23FFFFFF" stroke-width="2"/>
-                <circle cx="0" cy="0" r="3" fill="%23FFFFFF"/>
-              </g>
-            </svg>
-          `),
-          scale: 1,
-          rotation: 0,
-          anchor: [0.5, 0.5],
-        }),
-      })
-    );
+//     mapInstanceRef.current = map;
 
-    markerRef.current = marker;
-    vectorSource.addFeature(marker);
+//     // 設置地理定位追蹤
+//     const geolocation = new Geolocation({
+//       tracking: true,
+//       projection: view.getProjection()
+//     });
 
-    const vectorLayer = new VectorLayer({
-      source: vectorSource,
-    });
+//     // 監聽位置變化並更新視圖中心
+//     geolocation.on('change:position', function() {
+//       const position = geolocation.getPosition();
+//       if (position) {
+//         view.setCenter(position);
+//       }
+//     });
 
-    const map = new Map({
-      target: mapRef.current,
-      layers: [
-        new TileLayer({
-          source: new OSM(),
-        }),
-        vectorLayer,
-      ],
-      view: new View({
-        center: fromLonLat([location.lon, location.lat]),
-        zoom: 16,
-      }),
-    });
+//     // 創建位置標記
+//     const marker = new Overlay({
+//       element: markerRef.current,
+//       positioning: 'center-center'
+//     });
 
-    mapInstanceRef.current = map;
+//     map.addOverlay(marker);
 
-    return () => {
-      map.setTarget(null);
-    };
-  }, [location]);
+//     // 綁定標記到地理定位位置
+//     geolocation.on('change:position', function() {
+//       const position = geolocation.getPosition();
+//       if (position) {
+//         marker.setPosition(position);
+//       }
+//     });
 
-  // 監聽裝置方向
-  useEffect(() => {
-    if ("DeviceOrientationEvent" in window) {
-      const handleOrientation = (e) => {
-        // alpha 就是指南針方向（0-360度）
-        const alpha = e.alpha ?? 0;
-        
-        setOrientation({
-          alpha: alpha.toFixed(2),
-          beta: e.beta?.toFixed(2) ?? 0,
-          gamma: e.gamma?.toFixed(2) ?? 0,
-        });
+//     // 創建設備方向追蹤
+//     const deviceOrientation = new DeviceOrientation({
+//       tracking: true
+//     });
 
-        // 更新地圖標記方向（直接使用 alpha）
-        if (markerRef.current) {
-          const currentStyle = markerRef.current.getStyle();
-          const icon = currentStyle.getImage();
-          icon.setRotation((-alpha * Math.PI) / 180);
-          markerRef.current.changed();
-        }
-      };
+//     // 監聽方向變化並旋轉視圖
+//     deviceOrientation.on('change:heading', function(event) {
+//       const heading = event.target.getHeading();
+//       if (heading !== undefined) {
+//         view.setRotation(-heading);
+//       }
+//     });
 
-      window.addEventListener("deviceorientation", handleOrientation);
-      return () => window.removeEventListener("deviceorientation", handleOrientation);
-    } else {
-      setSupported(false);
-    }
-  }, []);
+//     // 處理地理定位錯誤
+//     geolocation.on('error', function(error) {
+//       console.error('Geolocation error:', error.message);
+//     });
 
-  return (
-    <div className="h-screen w-full flex flex-col">
-      {/* 地圖容器 */}
-      <div ref={mapRef} className="flex-1 w-full" />
+//     // 清理函數
+//     return () => {
+//       if (mapInstanceRef.current) {
+//         mapInstanceRef.current.setTarget(undefined);
+//         mapInstanceRef.current = null;
+//       }
+//     };
+//   }, []);
 
-      {/* 資訊面板 */}
-      <div className="absolute top-4 left-4 bg-white rounded-lg shadow-lg p-4 max-w-xs">
-        <h2 className="text-lg font-bold text-gray-800 mb-3">裝置資訊</h2>
-        
-        {supported ? (
-          <div className="space-y-2 text-sm text-gray-700">
-            <div className="flex justify-between">
-              <span className="font-medium">啟用 (absolute):</span>
-              <span className="text-indigo-600 font-mono">{orientation.absolute}°</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="font-medium">方向 (Alpha):</span>
-              <span className="text-indigo-600 font-mono">{orientation.alpha}°</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="font-medium">前後傾斜 (Beta):</span>
-              <span className="text-indigo-600 font-mono">{orientation.beta}°</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="font-medium">左右傾斜 (Gamma):</span>
-              <span className="text-indigo-600 font-mono">{orientation.gamma}°</span>
-            </div>
-          </div>
-        ) : (
-          <p className="text-red-500 text-sm">此裝置不支援方向感測</p>
-        )}
+//   return (
+//     <div className="relative w-full h-screen">
+//       <div ref={mapRef} className="w-full h-full" />
 
-        {locationError && (
-          <p className="text-amber-600 text-xs mt-2">{locationError}</p>
-        )}
-
-        {location && (
-          <div className="mt-3 pt-3 border-t border-gray-200 text-xs text-gray-600">
-            <p>經度: {location.lon.toFixed(4)}</p>
-            <p>緯度: {location.lat.toFixed(4)}</p>
-          </div>
-        )}
-      </div>
-
-      {/* 指南針視覺化 */}
-      <div className="absolute bottom-4 right-4 bg-white rounded-full shadow-lg p-2 w-24 h-24">
-        <div className="relative w-full h-full flex items-center justify-center">
-          <div 
-            className="absolute w-full h-full transition-transform duration-100"
-            style={{ transform: `rotate(${orientation.alpha}deg)` }}
-          >
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-1 h-8 bg-red-500 rounded-full" />
-          </div>
-          <div className="absolute text-xs font-bold text-gray-700">N</div>
-          <div className="absolute bottom-0 text-xs text-gray-400">S</div>
-          <div className="absolute right-0 text-xs text-gray-400">E</div>
-          <div className="absolute left-0 text-xs text-gray-400">W</div>
-        </div>
-      </div>
-    </div>
-  );
-}
+//       {/* 位置標記 */}
+//       <div
+//         ref={markerRef}
+//         className="w-10 h-10 bg-blue-500/80 border-4 border-white rounded-full flex items-center justify-center shadow-lg"
+//       >
+//         <svg
+//           className="w-5 h-5 text-white"
+//           fill="currentColor"
+//           viewBox="0 0 20 20"
+//         >
+//           <path
+//             fillRule="evenodd"
+//             d="M10 18a8 8 0 100-16 8 8 0 000 16zm.707-10.293a1 1 0 00-1.414-1.414l-3 3a1 1 0 000 1.414l3 3a1 1 0 001.414-1.414L9.414 11H13a1 1 0 100-2H9.414l1.293-1.293z"
+//             clipRule="evenodd"
+//             transform="rotate(90 10 10)"
+//           />
+//         </svg>
+//       </div>
+//     </div>
+//   );
+// }

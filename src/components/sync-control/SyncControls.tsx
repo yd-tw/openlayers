@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 interface SyncControlsProps {
   isSyncing?: boolean;
@@ -15,11 +15,11 @@ export function SyncControls({
   onSetInterval,
   onClearMessages,
   onToggleDemo,
-  disabled
+  disabled,
 }: SyncControlsProps) {
   return (
-    <div className="bg-white rounded-lg shadow p-6">
-      <h2 className="text-xl font-semibold mb-4">同步控制</h2>
+    <div className="rounded-lg bg-white p-6 shadow">
+      <h2 className="mb-4 text-xl font-semibold">同步控制</h2>
 
       {/* 同步開關 */}
       <div className="space-y-3">
@@ -27,14 +27,14 @@ export function SyncControls({
           <button
             onClick={() => onToggleSync(true)}
             disabled={disabled || isSyncing}
-            className="flex-1 px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex-1 rounded-lg bg-green-500 px-4 py-2 text-white hover:bg-green-600 disabled:cursor-not-allowed disabled:opacity-50"
           >
             ▶️ 開始同步
           </button>
           <button
             onClick={() => onToggleSync(false)}
             disabled={disabled || !isSyncing}
-            className="flex-1 px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex-1 rounded-lg bg-red-500 px-4 py-2 text-white hover:bg-red-600 disabled:cursor-not-allowed disabled:opacity-50"
           >
             ⏸️ 停止同步
           </button>
@@ -45,21 +45,21 @@ export function SyncControls({
           <button
             onClick={() => onSetInterval(2000)}
             disabled={disabled}
-            className="flex-1 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:opacity-50"
+            className="flex-1 rounded-lg bg-blue-500 px-4 py-2 text-white hover:bg-blue-600 disabled:opacity-50"
           >
             2秒間隔
           </button>
           <button
             onClick={() => onSetInterval(5000)}
             disabled={disabled}
-            className="flex-1 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:opacity-50"
+            className="flex-1 rounded-lg bg-blue-500 px-4 py-2 text-white hover:bg-blue-600 disabled:opacity-50"
           >
             5秒間隔
           </button>
           <button
             onClick={() => onSetInterval(10000)}
             disabled={disabled}
-            className="flex-1 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:opacity-50"
+            className="flex-1 rounded-lg bg-blue-500 px-4 py-2 text-white hover:bg-blue-600 disabled:opacity-50"
           >
             10秒間隔
           </button>
@@ -70,14 +70,14 @@ export function SyncControls({
           <button
             onClick={onClearMessages}
             disabled={disabled}
-            className="flex-1 px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 disabled:opacity-50"
+            className="flex-1 rounded-lg bg-gray-500 px-4 py-2 text-white hover:bg-gray-600 disabled:opacity-50"
           >
             🗑️ 清除訊息
           </button>
           <button
             onClick={onToggleDemo}
             disabled={disabled}
-            className="flex-1 px-4 py-2 bg-purple-500 text-white rounded-lg hover:bg-purple-600 disabled:opacity-50"
+            className="flex-1 rounded-lg bg-purple-500 px-4 py-2 text-white hover:bg-purple-600 disabled:opacity-50"
           >
             🎮 Demo 模式
           </button>

@@ -114,6 +114,7 @@ function createLinesLayerFromAPI(data) {
 export default function MapComponent() {
   const mapRef = useRef(null);
   const mapInstanceRef = useRef(null);
+  const heatmapLayerRef = useRef(null);
   const [layers, setLayers] = useState({});
   const [layerVisibility, setLayerVisibility] = useState({});
   const [a1AccidentDatas, setA1AccidentDatas] = useState([]);
@@ -291,7 +292,16 @@ export default function MapComponent() {
       "#8b008b", // darkmagenta
     ]);
 
+    // 移除舊的圖層
+    if (heatmapLayerRef.current) {
+      mapInstanceRef.current.removeLayer(heatmapLayerRef.current);
+    }
     mapInstanceRef.current.addLayer(heatLayer);
+    heatmapLayerRef.current = heatLayer; // 儲存新的圖層參考
+
+    // Add heatmap to layer switcher
+    heatLayer.set("displayName", "交通事故熱點");
+    setLayers((prev) => ({ ...prev, heatmap: heatLayer }));
   }, [a1AccidentDatas, a2AccidentDatas]);
 
   /**

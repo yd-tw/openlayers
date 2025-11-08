@@ -1,11 +1,11 @@
 // Flutter 使用者模式
-export type UserMode = 'pedestrian' | 'bicycle' | 'vehicle';
+export type UserMode = "pedestrian" | "bicycle" | "vehicle";
 
 // 訊息優先級
-export type MessagePriority = 'high' | 'medium' | 'low';
+export type MessagePriority = "high" | "medium" | "low";
 
 // 提醒方式
-export type AlertMethod = 'notification' | 'vibration' | 'both';
+export type AlertMethod = "notification" | "vibration" | "both";
 
 // 同步訊息
 export interface SyncMessage {
