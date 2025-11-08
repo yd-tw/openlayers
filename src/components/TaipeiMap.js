@@ -378,7 +378,7 @@ export default function MapComponent() {
         new Style({
           image: new CircleStyle({
             radius: 8,
-            fill: new Fill({ color: "#71c5d5" }),
+            fill: new Fill({ color: "#5ab4c5" }),
             stroke: new Stroke({ color: "#fff", width: 2 }),
           }),
         }),
