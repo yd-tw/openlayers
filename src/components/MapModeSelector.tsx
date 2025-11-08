@@ -122,7 +122,7 @@ export default function MapModeSelector({ className = "" }: ModeSelectorProps) {
   };
 
   return (
-    <div className={`bg-[#5ab4c5] p-2.5 pb-4 shadow-lg ${className}`}>
+    <div className={`bg-[#5ab4c5] p-2.5 shadow-lg ${className}`}>
       <div className="align-button flex justify-around">
         {modes.map((mode) => {
           const isActive = currentMode === mode.value;
@@ -131,9 +131,9 @@ export default function MapModeSelector({ className = "" }: ModeSelectorProps) {
           return (
             <div
               key={mode.value}
-              className={`flex items-center rounded-sm px-3 py-2 shadow-sm ${
+              className={`flex items-center px-3 py-2 ${
                 isDisabled ? "cursor-not-allowed opacity-50" : "cursor-pointer"
-              } ${isActive ? `bg-gray-50/80 shadow-inner shadow-xs` : "bg-gray-50"}`}
+              } ${isActive ? `border-b-3 border-white` : "border-b-3 border-transparent"}`}
             >
               <input
                 type="radio"
@@ -146,7 +146,7 @@ export default function MapModeSelector({ className = "" }: ModeSelectorProps) {
               />
               <label
                 htmlFor={`mode-${mode.value}`}
-                className={`flex items-center gap-1.5 text-sm select-none ${isDisabled ? "cursor-not-allowed" : ""}`}
+                className={`text-m flex items-center gap-1.5 font-bold text-white select-none ${isDisabled ? "cursor-not-allowed" : ""}`}
               >
                 <span>{mode.icon}</span>
                 <span>{mode.label}</span>
@@ -154,13 +154,6 @@ export default function MapModeSelector({ className = "" }: ModeSelectorProps) {
             </div>
           );
         })}
-
-        {/* {!isFlutter && (
-          <div className="mt-2 flex items-center gap-1 border-t border-gray-200 pt-2 text-xs text-yellow-700">
-            <span>⚠️</span>
-            <span>離線模式</span>
-          </div>
-        )} */}
       </div>
     </div>
   );

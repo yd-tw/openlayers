@@ -89,7 +89,7 @@ export default function MapComponent() {
     loadAccidentLayer().then((accidentLayer) => {
       mapObj.addLayer(accidentLayer);
       setLayers((prev) => ({ ...prev, accident: accidentLayer }));
-      accidentLayer.set("displayName", "交通事故熱點");
+      accidentLayer.set("displayName", "事故熱點");
 
       // 根據 zoom 調整熱力圖細節
       const view = mapObj.getView();
@@ -525,7 +525,7 @@ export default function MapComponent() {
 
       <div className="relative flex-1">
         {/* 地圖 */}
-        <div ref={mapRef} className="w-full h-full" />
+        <div ref={mapRef} className="h-full w-full" />
 
         {/* 圖層切換器 */}
         <LayerSwitcher

@@ -33,18 +33,17 @@ function LayerIcon() {
   );
 }
 
-function LineIcon() {
+function AccidentIcon() {
   return (
-    <svg
-      stroke="currentColor"
-      fill="currentColor"
-      strokeWidth="0"
-      viewBox="0 0 24 24"
-      height="16px"
-      width="16px"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <path d="M4.5 12.75a.75.75 0 0 1 .75-.75h13.5a.75.75 0 0 1 0 1.5H5.25a.75.75 0 0 1-.75-.75Z"></path>
+    <svg width="16px" height="16px">
+      <defs>
+        <radialGradient id="red-gradient" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stop-color="#e23b36" />
+          <stop offset="100%" stop-color="#ffe0da" />
+        </radialGradient>
+      </defs>
+
+      <circle cx="8" cy="8" r="8" fill="url(#red-gradient)" />
     </svg>
   );
 }
@@ -83,12 +82,12 @@ export default function LayerSwitcher({
                 className={`cursor-pointer rounded p-2 text-sm transition-shadow duration-150 select-none ${
                   layers[layerName]?.getVisible()
                     ? "bg-gray-100 shadow-inner"
-                    : "bg-gray-50"
+                    : ""
                 } flex-1`}
               >
-                <div className="flex justify-between">
+                <div className="flex items-center justify-between gap-2.5">
                   {layers[layerName]?.get("displayName") || layerName}
-                  {layers[layerName]?.get("displayName") != "交通事故熱點" ? (
+                  {layers[layerName]?.get("displayName") != "事故熱點" ? (
                     <span
                       style={{
                         textDecoration: `solid line-through ${
@@ -100,7 +99,9 @@ export default function LayerSwitcher({
                     >
                       　
                     </span>
-                  ) : null}
+                  ) : (
+                    <AccidentIcon />
+                  )}
                 </div>
               </label>
             </div>
