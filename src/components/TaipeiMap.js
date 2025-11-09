@@ -36,8 +36,8 @@ export default function MapComponent() {
   const positionFeatureRef = useRef(null);
   const directionFeatureRef = useRef(null);
   const markersLayerRef = useRef(null);
-  const pathLayerRef = useRef(null);
-  const currentModeRef = useRef("walk");
+  const isInitializedRef = useRef(false);
+
 
   const [layers, setLayers] = useState({});
   const [layerVisibility, setLayerVisibility] = useState({});
@@ -436,9 +436,10 @@ export default function MapComponent() {
             positionFeatureRef.current.setGeometry(new Point(coords));
           }
 
-          // if (view && (!searchParams.get("lon") || !searchParams.get("lat"))) {
-          //   view.setCenter(coords);
-          // }
+          if (!isInitializedRef && view && (!searchParams.get("lon") || !searchParams.get("lat"))) {
+            view.setCenter(coords);
+            isInitializedRef.current = true;
+          }
         },
         (err) => console.error(`取得定位資訊失敗: ${err}`),
         { enableHighAccuracy: true },
