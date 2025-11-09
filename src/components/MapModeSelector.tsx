@@ -7,6 +7,8 @@ import type { UserMode } from "@/types/townpass";
 
 interface ModeSelectorProps {
   className?: string;
+  currentMode: UserMode;
+  setCurrentMode: (mode: UserMode) => void;
 }
 
 function WalkIcon() {
@@ -71,9 +73,12 @@ function CarIcon() {
   );
 }
 
-export default function MapModeSelector({ className = "" }: ModeSelectorProps) {
+export default function MapModeSelector({
+  className = "",
+  currentMode,
+  setCurrentMode,
+}: ModeSelectorProps) {
   const { isFlutter, state, setMode, loading } = useTownPass();
-  const [currentMode, setCurrentMode] = useState<UserMode>("pedestrian");
 
   // 同步 Flutter 狀態
   useEffect(() => {
@@ -112,12 +117,6 @@ export default function MapModeSelector({ className = "" }: ModeSelectorProps) {
       // 非 Flutter 環境，僅更新本地狀態
       setCurrentMode(mode);
       return;
-    }
-
-    try {
-      await setMode(mode);
-    } catch (error) {
-      console.error("Failed to change mode:", error);
     }
   };
 
