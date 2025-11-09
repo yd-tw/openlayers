@@ -48,16 +48,16 @@ export default function MapComponent() {
   const [currentMode, setCurrentMode] = useState("bicycle");
   const [center, setCenter] = useState(null);
 
-  const { state } = useTownPass();
+  const { setMode } = useTownPass();
 
   // 監聽模式變化
-  useEffect(() => {
-    if (state?.mode) {
-      console.log("TaipeiMap: Mode changed to", state.mode);
-      setCurrentMode(state.mode);
-      currentModeRef.current = state.mode;
+  useEffect(async () => {
+    try {
+      await setMode(mode);
+    } catch (error) {
+      console.error("Failed to change mode:", error);
     }
-  }, [state?.mode]);
+  }, [currentMode]);
 
   useEffect(() => {
     if (!mapRef.current) return;
@@ -517,7 +517,10 @@ export default function MapComponent() {
     <div className="relative flex h-screen w-full flex-col">
       {/* 模式選擇器 - 置於地圖上方 */}
       <div className="">
-        <MapModeSelector />
+        <MapModeSelector
+          currentMode={currentMode}
+          setCurrentMode={setCurrentMode}
+        />
       </div>
 
       <div className="relative flex-1">
