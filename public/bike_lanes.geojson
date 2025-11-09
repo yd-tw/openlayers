@@ -1,0 +1,339 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "信義路自行車道",
+        "district": "信義區",
+        "type": "道路型",
+        "length": 3.2,
+        "surface": "柏油",
+        "lighting": true,
+        "bidirectional": true
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [121.5644, 25.033],
+          [121.568, 25.0335],
+          [121.572, 25.034],
+          [121.576, 25.0345]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "敦化南路自行車道",
+        "district": "大安區",
+        "type": "道路型",
+        "length": 4.5,
+        "surface": "柏油",
+        "lighting": true,
+        "bidirectional": true
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [121.549, 25.041],
+          [121.5492, 25.038],
+          [121.5494, 25.035],
+          [121.5496, 25.032],
+          [121.5498, 25.029]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "仁愛路自行車道",
+        "district": "大安區",
+        "type": "人行道型",
+        "length": 2.8,
+        "surface": "紅磚",
+        "lighting": true,
+        "bidirectional": false
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [121.53, 25.0385],
+          [121.534, 25.0387],
+          [121.538, 25.0389],
+          [121.542, 25.0391]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "基隆路自行車道",
+        "district": "信義區",
+        "type": "道路型",
+        "length": 3.6,
+        "surface": "柏油",
+        "lighting": true,
+        "bidirectional": true
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [121.56, 25.045],
+          [121.561, 25.042],
+          [121.562, 25.039],
+          [121.563, 25.036],
+          [121.564, 25.033]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "新生南路自行車道",
+        "district": "大安區",
+        "type": "人行道型",
+        "length": 5.2,
+        "surface": "彩色地磚",
+        "lighting": true,
+        "bidirectional": false
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [121.5333, 25.05],
+          [121.5335, 25.047],
+          [121.5337, 25.044],
+          [121.5339, 25.041],
+          [121.5341, 25.038],
+          [121.5343, 25.035]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "復興南路自行車道",
+        "district": "大安區",
+        "type": "道路型",
+        "length": 4.1,
+        "surface": "柏油",
+        "lighting": true,
+        "bidirectional": true
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [121.544, 25.048],
+          [121.5442, 25.045],
+          [121.5444, 25.042],
+          [121.5446, 25.039],
+          [121.5448, 25.036]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "建國南路自行車道",
+        "district": "大安區",
+        "type": "道路型",
+        "length": 6.3,
+        "surface": "柏油",
+        "lighting": true,
+        "bidirectional": true
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [121.5366, 25.06],
+          [121.5368, 25.056],
+          [121.537, 25.052],
+          [121.5372, 25.048],
+          [121.5374, 25.044],
+          [121.5376, 25.04],
+          [121.5378, 25.036]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "羅斯福路自行車道",
+        "district": "中正區",
+        "type": "人行道型",
+        "length": 3.9,
+        "surface": "紅磚",
+        "lighting": true,
+        "bidirectional": false
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [121.528, 25.033],
+          [121.529, 25.03],
+          [121.53, 25.027],
+          [121.531, 25.024],
+          [121.532, 25.021]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "松江路自行車道",
+        "district": "中山區",
+        "type": "道路型",
+        "length": 4.7,
+        "surface": "柏油",
+        "lighting": true,
+        "bidirectional": true
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [121.5333, 25.065],
+          [121.5335, 25.062],
+          [121.5337, 25.059],
+          [121.5339, 25.056],
+          [121.5341, 25.053]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "民權東路自行車道",
+        "district": "松山區",
+        "type": "人行道型",
+        "length": 3.4,
+        "surface": "彩色地磚",
+        "lighting": true,
+        "bidirectional": false
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [121.545, 25.062],
+          [121.549, 25.0622],
+          [121.553, 25.0624],
+          [121.557, 25.0626]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "八德路自行車道",
+        "district": "松山區",
+        "type": "道路型",
+        "length": 5.1,
+        "surface": "柏油",
+        "lighting": true,
+        "bidirectional": true
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [121.54, 25.048],
+          [121.544, 25.0482],
+          [121.548, 25.0484],
+          [121.552, 25.0486],
+          [121.556, 25.0488],
+          [121.56, 25.049]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "南京東路自行車道",
+        "district": "松山區",
+        "type": "道路型",
+        "length": 4.8,
+        "surface": "柏油",
+        "lighting": true,
+        "bidirectional": true
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [121.535, 25.052],
+          [121.539, 25.0522],
+          [121.543, 25.0524],
+          [121.547, 25.0526],
+          [121.551, 25.0528]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "河濱自行車道(淡水河段)",
+        "district": "萬華區",
+        "type": "人行道型",
+        "length": 8.5,
+        "surface": "水泥",
+        "lighting": false,
+        "bidirectional": true
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [121.498, 25.04],
+          [121.499, 25.045],
+          [121.5, 25.05],
+          [121.501, 25.055],
+          [121.502, 25.06],
+          [121.503, 25.065],
+          [121.504, 25.07],
+          [121.505, 25.075]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "河濱自行車道(基隆河段)",
+        "district": "內湖區",
+        "type": "人行道型",
+        "length": 7.2,
+        "surface": "柏油",
+        "lighting": false,
+        "bidirectional": true
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [121.57, 25.07],
+          [121.575, 25.072],
+          [121.58, 25.074],
+          [121.585, 25.076],
+          [121.59, 25.078],
+          [121.595, 25.08]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "承德路自行車道",
+        "district": "大同區",
+        "type": "道路型",
+        "length": 3.3,
+        "surface": "柏油",
+        "lighting": true,
+        "bidirectional": true
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [121.517, 25.065],
+          [121.5172, 25.062],
+          [121.5174, 25.059],
+          [121.5176, 25.056]
+        ]
+      }
+    }
+  ]
+}

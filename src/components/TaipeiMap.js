@@ -53,6 +53,7 @@ export default function MapComponent() {
   const [currentMode, setCurrentMode] = useState("pedestrian");
   const [copyNotification, setCopyNotification] = useState(null);
   const copyNotificationTimeoutRef = useRef(null);
+  const [pathStats, setPathStats] = useState(null); // 路徑統計資訊
 
   // 取得當前模式
   const { state } = useTownPass();
@@ -524,14 +525,19 @@ export default function MapComponent() {
     try {
       const mode = currentModeRef.current;
       const pathType = mode === "bicycle" ? "bike" : "walk";
-      console.log("TaipeiMap: Finding path with mode", mode, "pathType", pathType);
+      console.log(
+        "TaipeiMap: Finding path with mode",
+        mode,
+        "pathType",
+        pathType,
+      );
 
       const response = await fetch("/api/find", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ start, end, type: "bike" }),
+        body: JSON.stringify({ start, end, type: pathType }),
       });
 
       if (!response.ok) {
@@ -541,6 +547,14 @@ export default function MapComponent() {
       }
 
       const geojson = await response.json();
+
+      // 儲存路徑統計資訊
+      if (geojson.properties) {
+        setPathStats({
+          ...geojson.properties,
+          pathType: pathType,
+        });
+      }
 
       // 在地圖上顯示路徑
       if (pathLayerRef.current) {
@@ -777,6 +791,91 @@ export default function MapComponent() {
               {selectedPoints[1].lng.toFixed(6)}
             </div>
           )}
+        </div>
+      )}
+
+      {pathStats && (
+        <div
+          style={{
+            position: "fixed",
+            top: "80px",
+            right: "20px",
+            backgroundColor: "#ffffff",
+            color: "#333",
+            padding: "16px 20px",
+            borderRadius: "12px",
+            boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
+            zIndex: 10000,
+            fontSize: "14px",
+            minWidth: "200px",
+          }}
+        >
+          <div
+            style={{
+              fontWeight: "bold",
+              marginBottom: "12px",
+              fontSize: "16px",
+              borderBottom: "2px solid #76a732",
+              paddingBottom: "8px",
+            }}
+          >
+            路徑資訊
+          </div>
+          <div style={{ marginBottom: "8px" }}>
+            <span style={{ color: "#666" }}>總距離：</span>
+            <span style={{ fontWeight: "bold", color: "#333" }}>
+              {pathStats.totalDistanceKm} 公里
+            </span>
+          </div>
+          {pathStats.pathType === "bike" &&
+            pathStats.bikeLaneDistanceKm !== undefined && (
+              <>
+                <div style={{ marginBottom: "8px" }}>
+                  <span style={{ color: "#666" }}>自行車道：</span>
+                  <span style={{ fontWeight: "bold", color: "#9b59b6" }}>
+                    {pathStats.bikeLaneDistanceKm} 公里
+                  </span>
+                </div>
+                <div style={{ marginBottom: "4px" }}>
+                  <span style={{ color: "#666" }}>佔比：</span>
+                  <span style={{ fontWeight: "bold", color: "#9b59b6" }}>
+                    {pathStats.bikeLanePercentage}%
+                  </span>
+                </div>
+              </>
+            )}
+          {pathStats.pathType === "walk" &&
+            pathStats.sidewalkDistanceKm !== undefined && (
+              <>
+                <div style={{ marginBottom: "8px" }}>
+                  <span style={{ color: "#666" }}>人行道：</span>
+                  <span style={{ fontWeight: "bold", color: "#2ecc71" }}>
+                    {pathStats.sidewalkDistanceKm} 公里
+                  </span>
+                </div>
+                <div style={{ marginBottom: "4px" }}>
+                  <span style={{ color: "#666" }}>佔比：</span>
+                  <span style={{ fontWeight: "bold", color: "#2ecc71" }}>
+                    {pathStats.sidewalkPercentage}%
+                  </span>
+                </div>
+              </>
+            )}
+          <button
+            onClick={() => setPathStats(null)}
+            style={{
+              marginTop: "12px",
+              padding: "6px 12px",
+              backgroundColor: "#f0f0f0",
+              border: "none",
+              borderRadius: "6px",
+              cursor: "pointer",
+              fontSize: "12px",
+              width: "100%",
+            }}
+          >
+            關閉
+          </button>
         </div>
       )}
     </div>
