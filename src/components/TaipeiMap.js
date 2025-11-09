@@ -36,8 +36,8 @@ export default function MapComponent() {
   const directionFeatureRef = useRef(null);
   const markersLayerRef = useRef(null);
   const pathLayerRef = useRef(null);
-  const isSelectingPathRef = useRef(false);
-  const currentModeRef = useRef("pedestrian");
+  // const isSelectingPathRef = useRef(false);
+  const currentModeRef = useRef("walk");
 
   const [layers, setLayers] = useState({});
   const [layerVisibility, setLayerVisibility] = useState({});
@@ -47,24 +47,12 @@ export default function MapComponent() {
   const [orientation, setOrientation] = useState(null);
 
   // 路徑規劃相關狀態
-  const [isSelectingPath, setIsSelectingPath] = useState(false);
-  const [selectedPoints, setSelectedPoints] = useState([]);
+  // const [isSelectingPath, setIsSelectingPath] = useState(false);
+  // const [selectedPoints, setSelectedPoints] = useState([]);
   const [statusMessage, setStatusMessage] = useState("");
   const [currentMode, setCurrentMode] = useState("pedestrian");
   const [copyNotification, setCopyNotification] = useState(null);
-  const copyNotificationTimeoutRef = useRef(null);
-
-  // 取得當前模式
-  const { state } = useTownPass();
-
-  // 監聽模式變化
-  useEffect(() => {
-    if (state?.mode) {
-      console.log("TaipeiMap: Mode changed to", state.mode);
-      setCurrentMode(state.mode);
-      currentModeRef.current = state.mode;
-    }
-  }, [state?.mode]);
+  // const copyNotificationTimeoutRef = useRef(null);
 
   useEffect(() => {
     if (!mapRef.current) return;
@@ -174,37 +162,37 @@ export default function MapComponent() {
     pathLayerRef.current = pathLayer;
 
     // === 地圖點擊事件處理 ===
-    mapObj.on("singleclick", (evt) => {
-      const coords = evt.coordinate;
-      const lonLat = toLonLat(coords);
-      const [lon, lat] = lonLat;
+    // mapObj.on("singleclick", (evt) => {
+    //   const coords = evt.coordinate;
+    //   const lonLat = toLonLat(coords);
+    //   const [lon, lat] = lonLat;
 
-      // 如果正在選擇路徑，處理路徑選擇邏輯
-      if (isSelectingPathRef.current) {
-        setSelectedPoints((prev) => {
-          const newPoints = [...prev, { lng: lon, lat: lat }];
+    //   // 如果正在選擇路徑，處理路徑選擇邏輯
+    //   if (isSelectingPathRef.current) {
+    //     setSelectedPoints((prev) => {
+    //       const newPoints = [...prev, { lng: lon, lat: lat }];
 
-          // 在地圖上添加標記（第一個點是終點，第二個點是起點）
-          const marker = new Feature({
-            geometry: new Point(coords),
-            type: prev.length === 0 ? "end" : "start",
-          });
-          markersSource.addFeature(marker);
+    //       // 在地圖上添加標記（第一個點是終點，第二個點是起點）
+    //       const marker = new Feature({
+    //         geometry: new Point(coords),
+    //         type: prev.length === 0 ? "end" : "start",
+    //       });
+    //       markersSource.addFeature(marker);
 
-          if (newPoints.length === 2) {
-            // 已選擇兩個點，開始尋路（newPoints[0]是終點，newPoints[1]是起點）
-            setStatusMessage("正在計算路徑...");
-            findPath(newPoints[1], newPoints[0]); // 反轉參數順序
-            setIsSelectingPath(false);
-            isSelectingPathRef.current = false;
-          } else {
-            setStatusMessage("請點擊地圖選擇起點");
-          }
+    //       if (newPoints.length === 2) {
+    //         // 已選擇兩個點，開始尋路（newPoints[0]是終點，newPoints[1]是起點）
+    //         setStatusMessage("正在計算路徑...");
+    //         findPath(newPoints[1], newPoints[0]); // 反轉參數順序
+    //         setIsSelectingPath(false);
+    //         isSelectingPathRef.current = false;
+    //       } else {
+    //         setStatusMessage("請點擊地圖選擇起點");
+    //       }
 
-          return newPoints;
-        });
-      }
-    });
+    //       return newPoints;
+    //     });
+    //   }
+    // });
 
     // === 監聽 Flutter 位置更新 ===
     const townpassClient = getTownPassClient();
@@ -454,56 +442,56 @@ export default function MapComponent() {
     }
   };
 
-  const loadClickMarkerLayer = async () => {
-    try {
-      // 建立 Vector Source
-      const clickMarkerSource = new VectorSource();
+  // const loadClickMarkerLayer = async () => {
+  //   try {
+  //     // 建立 Vector Source
+  //     const clickMarkerSource = new VectorSource();
 
-      // 建立 Vector Layer
-      const clickMarkerLayer = new VectorLayer({ source: clickMarkerSource });
+  //     // 建立 Vector Layer
+  //     const clickMarkerLayer = new VectorLayer({ source: clickMarkerSource });
 
-      mapInstanceRef.current?.on("singleclick", (evt) => {
-        const coords = evt.coordinate;
-        const [lon, lat] = toLonLat(coords);
-        const coordText = `${lat.toFixed(6)}, ${lon.toFixed(6)}`;
+  //     mapInstanceRef.current?.on("singleclick", (evt) => {
+  //       const coords = evt.coordinate;
+  //       const [lon, lat] = toLonLat(coords);
+  //       const coordText = `${lat.toFixed(6)}, ${lon.toFixed(6)}`;
 
-        navigator.clipboard
-          .writeText(coordText)
-          .then(() => setCopyNotification(coordText))
-          .catch(() => setCopyNotification(coordText));
+  //       navigator.clipboard
+  //         .writeText(coordText)
+  //         .then(() => setCopyNotification(coordText))
+  //         .catch(() => setCopyNotification(coordText));
 
-        clickMarkerSource.clear();
+  //       clickMarkerSource.clear();
 
-        const markerFeature = new Feature({
-          geometry: new Point(coords),
-        });
+  //       const markerFeature = new Feature({
+  //         geometry: new Point(coords),
+  //       });
 
-        markerFeature.setStyle(
-          new Style({
-            image: new CircleStyle({
-              radius: 8,
-              fill: new Fill({ color: "#f5ba4b" }),
-              stroke: new Stroke({ color: "#fff", width: 2 }),
-            }),
-          }),
-        );
+  //       markerFeature.setStyle(
+  //         new Style({
+  //           image: new CircleStyle({
+  //             radius: 8,
+  //             fill: new Fill({ color: "#f5ba4b" }),
+  //             stroke: new Stroke({ color: "#fff", width: 2 }),
+  //           }),
+  //         }),
+  //       );
 
-        clickMarkerSource.addFeature(markerFeature);
+  //       clickMarkerSource.addFeature(markerFeature);
 
-        if (copyNotificationTimeoutRef.current) {
-          clearTimeout(copyNotificationTimeoutRef.current);
-        }
-        copyNotificationTimeoutRef.current = setTimeout(() => {
-          clickMarkerSource.clear();
-          setCopyNotification(null);
-        }, 2000);
-      });
+  //       if (copyNotificationTimeoutRef.current) {
+  //         clearTimeout(copyNotificationTimeoutRef.current);
+  //       }
+  //       copyNotificationTimeoutRef.current = setTimeout(() => {
+  //         clickMarkerSource.clear();
+  //         setCopyNotification(null);
+  //       }, 2000);
+  //     });
 
-      return clickMarkerLayer;
-    } catch (error) {
-      console.error("載入點擊標記圖層失敗: ", error);
-    }
-  };
+  //     return clickMarkerLayer;
+  //   } catch (error) {
+  //     console.error("載入點擊標記圖層失敗: ", error);
+  //   }
+  // };
 
   /**
    * 切換圖層顯示/隱藏
@@ -524,7 +512,12 @@ export default function MapComponent() {
     try {
       const mode = currentModeRef.current;
       const pathType = mode === "bicycle" ? "bike" : "walk";
-      console.log("TaipeiMap: Finding path with mode", mode, "pathType", pathType);
+      console.log(
+        "TaipeiMap: Finding path with mode",
+        mode,
+        "pathType",
+        pathType,
+      );
 
       const response = await fetch("/api/find", {
         method: "POST",
@@ -558,24 +551,6 @@ export default function MapComponent() {
       console.error("路徑規劃錯誤:", error);
       setStatusMessage(`錯誤: ${error.message}`);
     }
-  };
-
-  /**
-   * 開始路徑選擇
-   */
-  const startPathSelection = () => {
-    // 清除之前的標記和路徑
-    if (markersLayerRef.current) {
-      markersLayerRef.current.getSource().clear();
-    }
-    if (pathLayerRef.current) {
-      pathLayerRef.current.getSource().clear();
-    }
-
-    setSelectedPoints([]);
-    setIsSelectingPath(true);
-    isSelectingPathRef.current = true;
-    setStatusMessage("請點擊地圖選擇終點");
   };
 
   // 取得定位資訊
@@ -692,6 +667,17 @@ export default function MapComponent() {
           layerVisibility={layerVisibility}
           toggleLayer={toggleLayer}
         />
+
+        {/* 路徑規劃按鈕 */}
+        {currentMode != "vehicle" && (
+          <div className="absolute bottom-20 left-1/2 z-[1000] w-fit -translate-x-1/2 rounded-md bg-[#5ab4c5] p-2.5 px-10 font-bold text-white shadow-lg">
+            <a
+              href={`/${currentMode === "pedestrian" ? "walk" : currentMode === "bicycle" ? "bike" : ""}?lon=${position?.[0]}&lat=${position?.[1]}&zoom=${view?.getZoom()}`}
+            >
+              路徑規劃
+            </a>
+          </div>
+        )}
       </div>
 
       {copyNotification && (
@@ -750,7 +736,7 @@ export default function MapComponent() {
         </div>
       )}
 
-      {selectedPoints.length > 0 && (
+      {/* {selectedPoints.length > 0 && (
         <div
           style={{
             position: "fixed",
@@ -778,7 +764,7 @@ export default function MapComponent() {
             </div>
           )}
         </div>
-      )}
+      )} */}
     </div>
   );
 }
