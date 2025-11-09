@@ -20,6 +20,7 @@ export default function MapComponent() {
   const searchParams = useSearchParams();
   const mapRef = useRef(null);
   const mapInstanceRef = useRef(null);
+  const isSelectingPathRef = useRef(false);
   const [isSelectingPath, setIsSelectingPath] = useState(false);
   const [selectedPoints, setSelectedPoints] = useState([]);
   const [statusMessage, setStatusMessage] = useState("");
@@ -109,7 +110,7 @@ export default function MapComponent() {
 
     // 地圖點擊事件處理
     const handleMapClick = (event) => {
-      if (!isSelectingPath) return;
+      if (!isSelectingPathRef.current) return;
 
       const coordinate = event.coordinate;
       const lonLat = toLonLat(coordinate);
@@ -128,7 +129,6 @@ export default function MapComponent() {
           // 已選擇兩個點，開始尋路（注意：newPoints[0]是終點，newPoints[1]是起點）
           setStatusMessage("正在計算路徑...");
           findPath(newPoints[1], newPoints[0]); // 反轉參數順序
-          setIsSelectingPath(false);
         } else {
           setStatusMessage("請點擊地圖選擇起點");
         }
@@ -143,7 +143,7 @@ export default function MapComponent() {
       map.un("click", handleMapClick);
       map.setTarget(null);
     };
-  }, [isSelectingPath]);
+  }, []);
 
   // 尋找路徑函數
   const findPath = async (start, end) => {
@@ -155,6 +155,9 @@ export default function MapComponent() {
         },
         body: JSON.stringify({ start, end, type: "walk" }),
       });
+
+      setIsSelectingPath(false);
+      isSelectingPathRef.current = false;
 
       if (!response.ok) {
         const error = await response.json();
@@ -182,7 +185,7 @@ export default function MapComponent() {
         pathSource.clear();
         pathSource.addFeatures(features);
 
-        setStatusMessage("路徑規劃完成！");
+        setStatusMessage("");
       }
     } catch (error) {
       console.error("路徑規劃錯誤:", error);
@@ -202,8 +205,9 @@ export default function MapComponent() {
 
     setSelectedPoints([]);
     setPathStats(null);
-    setIsSelectingPath(true);
     setStatusMessage("請點擊地圖選擇終點");
+    setIsSelectingPath(true);
+    isSelectingPathRef.current = true;
   };
 
   return (
@@ -246,11 +250,11 @@ export default function MapComponent() {
         {/* 控制面板 - 置中下方 */}
         {(isSelectingPath || pathStats) && (
           <div className="absolute bottom-30 left-1/2 z-10 -translate-x-1/2 rounded-lg bg-white p-4 shadow-lg">
-            {/* {statusMessage && (
-              <div className="text-center text-sm text-gray-700">
+            {statusMessage && (
+              <div className="mb-2 text-center text-sm text-gray-700">
                 {statusMessage}
               </div>
-            )} */}
+            )}
 
             {pathStats && (
               <div>
