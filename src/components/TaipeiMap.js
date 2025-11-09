@@ -446,7 +446,7 @@ export default function MapComponent() {
 
       return () => navigator.geolocation.clearWatch(watchId);
     }
-  }, [map, view]);
+  }, [map]);
 
   // 取得方向資訊
   useEffect(() => {

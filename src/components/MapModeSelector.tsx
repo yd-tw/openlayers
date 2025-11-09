@@ -113,11 +113,17 @@ export default function MapModeSelector({
   ];
 
   const handleModeChange = async (mode: UserMode) => {
-    if (!isFlutter) {
-      // 非 Flutter 環境，僅更新本地狀態
-      setCurrentMode(mode);
-      return;
-    }
+    setCurrentMode(mode);
+
+    if (!isFlutter) return;
+
+    setMode(mode)
+      .then(() => {
+        console.log("MapModeSelector: Mode changed to", mode);
+      })
+      .catch((error) => {
+        console.error("Failed to change mode:", error);
+      });
   };
 
   return (
