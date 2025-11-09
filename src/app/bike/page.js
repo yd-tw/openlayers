@@ -24,8 +24,11 @@ export default function MapComponent() {
   const [selectedPoints, setSelectedPoints] = useState([]);
   const [statusMessage, setStatusMessage] = useState("");
   const [pathStats, setPathStats] = useState(null); // 路徑統計資訊
+  const [map, setMap] = useState(null);
+  const [view, setView] = useState(null);
   const markersLayerRef = useRef(null);
   const pathLayerRef = useRef(null);
+  const [center, setCenter] = useState(null);
 
   useEffect(() => {
     if (!mapRef.current) return;
@@ -38,7 +41,12 @@ export default function MapComponent() {
     // 設定預設值（若參數不存在或格式錯誤）
     const lat = latParam ? parseFloat(latParam) : 23.5;
     const lon = lonParam ? parseFloat(lonParam) : 121.0;
-    const zoom = zoomParam ? parseFloat(zoomParam) : 8;
+    const zoom = zoomParam ? parseFloat(zoomParam) : 18;
+
+    const initialView = new View({
+      center: fromLonLat([lon, lat]),
+      zoom,
+    });
 
     const baseLayer = new TileLayer({
       source: new XYZ({
@@ -50,13 +58,17 @@ export default function MapComponent() {
     const map = new Map({
       target: mapRef.current,
       layers: [baseLayer],
-      view: new View({
-        center: fromLonLat([lon, lat]),
-        zoom,
-      }),
+      view: initialView,
+    });
+
+    map.on("moveend", () => {
+      const center = toLonLat(map.getView().getCenter());
+      setCenter(center);
     });
 
     mapInstanceRef.current = map;
+    setMap(map);
+    setView(initialView);
 
     // 建立標記圖層（用於顯示起點和終點）
     const markersSource = new VectorSource();
@@ -199,61 +211,65 @@ export default function MapComponent() {
     <div className="relative flex h-screen w-full flex-col">
       <div className="bg-[#5ab4c5] p-2.5 shadow-lg">
         <div className="align-button flex justify-around">
-          <div
-            className={`flex items-center border-b-3 border-transparent px-3 py-2`}
-          >
-            <a
-              href="/"
-              className={`text-m flex items-center gap-1.5 font-bold text-white select-none`}
+          {center && view && (
+            <div
+              className={`flex items-center border-b-3 border-transparent px-3 py-2`}
             >
-              <span>
-                <ArrowLeftIcon className="h-4 w-4" />
-              </span>
-              <span>返回</span>
-            </a>
-          </div>
+              <a
+                href={`/?lon=${center[0]}&lat=${center[1]}&zoom=${view?.getZoom()}`}
+                className={`text-m flex items-center gap-1.5 font-bold text-white select-none`}
+              >
+                <span>
+                  <ArrowLeftIcon className="h-4 w-4" />
+                </span>
+                <span>返回</span>
+              </a>
+            </div>
+          )}
         </div>
       </div>
 
       <div className="relative flex-1">
         <div ref={mapRef} className="h-full w-full"></div>
 
+        {!isSelectingPath && (
+          <div className="absolute bottom-20 left-1/2 z-[1000] w-fit -translate-x-1/2 rounded-md bg-[#5ab4c5] p-2.5 px-10 font-bold text-white shadow-lg">
+            <button onClick={startPathSelection}>開始路徑規劃</button>
+          </div>
+        )}
+
+        {isSelectingPath && (
+          <div className="absolute bottom-20 left-1/2 z-[1000] w-fit -translate-x-1/2 rounded-md bg-[#5ab4c5] p-2.5 px-10 font-bold text-white shadow-lg">
+            選擇中...
+          </div>
+        )}
+
         {/* 控制面板 - 置中下方 */}
-        <div className="absolute bottom-8 left-1/2 z-10 -translate-x-1/2 rounded-lg bg-white p-4 shadow-lg">
-          <button
-            onClick={startPathSelection}
-            disabled={isSelectingPath}
-            className={`rounded px-4 py-2 font-medium ${
-              isSelectingPath
-                ? "cursor-not-allowed bg-gray-300 text-gray-500"
-                : "bg-blue-500 text-white hover:bg-blue-600"
-            }`}
-          >
-            {isSelectingPath ? "選擇中..." : "路徑規劃"}
-          </button>
-
-          {statusMessage && (
-            <div className="mt-3 text-center text-sm text-gray-700">
-              {statusMessage}
-            </div>
-          )}
-
-          {selectedPoints.length > 0 && (
-            <div className="mt-3 text-xs text-gray-600">
-              <div>
-                終點:{" "}
-                {selectedPoints[0] &&
-                  `${selectedPoints[0].lat.toFixed(6)}, ${selectedPoints[0].lng.toFixed(6)}`}
+        {isSelectingPath && (
+          <div className="absolute bottom-35 left-1/2 z-10 -translate-x-1/2 rounded-lg bg-white p-4 shadow-lg">
+            {statusMessage && (
+              <div className="text-center text-sm text-gray-700">
+                {statusMessage}
               </div>
-              {selectedPoints[1] && (
+            )}
+
+            {selectedPoints.length > 0 && (
+              <div className="mt-3 text-xs text-gray-600">
                 <div>
-                  起點: {selectedPoints[1].lat.toFixed(6)},{" "}
-                  {selectedPoints[1].lng.toFixed(6)}
+                  終點:{" "}
+                  {selectedPoints[0] &&
+                    `${selectedPoints[0].lat.toFixed(6)}, ${selectedPoints[0].lng.toFixed(6)}`}
                 </div>
-              )}
-            </div>
-          )}
-        </div>
+                {selectedPoints[1] && (
+                  <div>
+                    起點: {selectedPoints[1].lat.toFixed(6)},{" "}
+                    {selectedPoints[1].lng.toFixed(6)}
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );

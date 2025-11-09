@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import "ol/ol.css";
 import Map from "ol/Map";
 import View from "ol/View";
@@ -29,6 +30,7 @@ import { useTownPass } from "@/lib/townpass/hooks/useTownPass";
 import weightConfig from "@/configs/weightConfig.json";
 
 export default function MapComponent() {
+  const searchParams = useSearchParams();
   const mapRef = useRef(null);
   const mapInstanceRef = useRef(null);
   const positionFeatureRef = useRef(null);
@@ -44,6 +46,7 @@ export default function MapComponent() {
   const [position, setPosition] = useState(null);
   const [orientation, setOrientation] = useState(null);
   const [currentMode, setCurrentMode] = useState("pedestrian");
+  const [center, setCenter] = useState(null);
 
   const { state } = useTownPass();
 
@@ -59,9 +62,19 @@ export default function MapComponent() {
   useEffect(() => {
     if (!mapRef.current) return;
 
+    // 讀取 URL 參數
+    const latParam = searchParams.get("lat");
+    const lonParam = searchParams.get("lon");
+    const zoomParam = searchParams.get("zoom");
+
+    // 設定預設值（若參數不存在或格式錯誤）
+    const lat = latParam ? parseFloat(latParam) : 23.5;
+    const lon = lonParam ? parseFloat(lonParam) : 121.0;
+    const zoom = zoomParam ? parseFloat(zoomParam) : 18;
+
     const initialView = new View({
-      center: fromLonLat([121.534, 25.021]),
-      zoom: 18,
+      center: fromLonLat([lon, lat]),
+      zoom,
     });
 
     const baseLayer = new TileLayer({
@@ -76,6 +89,11 @@ export default function MapComponent() {
       layers: [baseLayer],
       view: initialView,
       controls: defaultControls({ zoom: false }),
+    });
+
+    mapObj.on("moveend", () => {
+      const center = toLonLat(mapObj.getView().getCenter());
+      setCenter(center);
     });
 
     mapInstanceRef.current = mapObj;
@@ -416,7 +434,7 @@ export default function MapComponent() {
             positionFeatureRef.current.setGeometry(new Point(coords));
           }
 
-          if (view) {
+          if (view && (!searchParams.get("lon") || !searchParams.get("lat"))) {
             view.setCenter(coords);
           }
         },
@@ -514,10 +532,10 @@ export default function MapComponent() {
         />
 
         {/* 路徑規劃按鈕 */}
-        {currentMode != "vehicle" && view && (
+        {currentMode != "vehicle" && center && view && (
           <div className="absolute bottom-20 left-1/2 z-[1000] w-fit -translate-x-1/2 rounded-md bg-[#5ab4c5] p-2.5 px-10 font-bold text-white shadow-lg">
             <a
-              href={`/${currentMode === "pedestrian" ? "walk" : currentMode === "bicycle" ? "bike" : ""}?lon=${toLonLat(view?.getCenter())[0]}&lat=${toLonLat(view?.getCenter())[1]}&zoom=${view?.getZoom()}`}
+              href={`/${currentMode === "pedestrian" ? "walk" : currentMode === "bicycle" ? "bike" : ""}?lon=${center[0]}&lat=${center[1]}&zoom=${view?.getZoom()}`}
             >
               路徑規劃
             </a>
