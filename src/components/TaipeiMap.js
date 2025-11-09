@@ -102,6 +102,23 @@ export default function MapComponent() {
     setMap(mapObj);
     setView(initialView);
 
+    navigator.geolocation.getCurrentPosition((pos) => {
+      const coords = fromLonLat([
+        pos.coords.longitude,
+        pos.coords.latitude,
+      ]);
+
+      setPosition(coords);
+
+      if (positionFeatureRef.current) {
+        positionFeatureRef.current.setGeometry(new Point(coords));
+      }
+
+      if (!searchParams.get("lon") || !searchParams.get("lat")) {
+        initialView.setCenter(coords);
+      }
+    })
+
     // === 載入位置圖層 ===
     loadPositionLayer().then((positionLayer) => {
       mapObj.addLayer(positionLayer);
