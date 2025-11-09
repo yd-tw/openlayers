@@ -268,7 +268,7 @@ export default function MapComponent() {
                     <div className="mb-2">
                       <span className="text-gray-600">自行車道：</span>
                       <span className="font-bold text-green-600">
-                        {pathStats.sidewalkDistanceKm} 公里
+                        {pathStats.bikeLaneDistanceKm} 公里
                       </span>
                     </div>
                     <div className="mb-1">
