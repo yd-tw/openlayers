@@ -274,7 +274,7 @@ export default function MapComponent() {
                     <div className="mb-1">
                       <span className="text-gray-600">佔比：</span>
                       <span className="font-bold text-green-600">
-                        {pathStats.sidewalkPercentage}%
+                        {pathStats.bikeLanePercentage}%
                       </span>
                     </div>
                   </>
