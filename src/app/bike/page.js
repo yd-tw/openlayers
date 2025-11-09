@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useMemo } from "react";
+import { useSearchParams } from "next/navigation";
 import "ol/ol.css";
 import Map from "ol/Map";
 import View from "ol/View";
@@ -15,6 +16,7 @@ import { Point } from "ol/geom";
 import { Feature } from "ol";
 
 export default function MapComponent() {
+  const searchParams = useSearchParams();
   const mapRef = useRef(null);
   const mapInstanceRef = useRef(null);
   const [isSelectingPath, setIsSelectingPath] = useState(false);
@@ -27,12 +29,22 @@ export default function MapComponent() {
   useEffect(() => {
     if (!mapRef.current) return;
 
+    // 讀取 URL 參數
+    const latParam = searchParams.get("lat");
+    const lonParam = searchParams.get("lon");
+    const zoomParam = searchParams.get("zoom");
+
+    // 設定預設值（若參數不存在或格式錯誤）
+    const lat = latParam ? parseFloat(latParam) : 23.5;
+    const lon = lonParam ? parseFloat(lonParam) : 121.0;
+    const zoom = zoomParam ? parseFloat(zoomParam) : 8;
+
     const map = new Map({
       target: mapRef.current,
       layers: [new TileLayer({ source: new OSM() })],
       view: new View({
-        center: fromLonLat([121.5, 25.05]),
-        zoom: 12,
+        center: fromLonLat([lon, lat]),
+        zoom,
       }),
     });
 
