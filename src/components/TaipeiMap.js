@@ -51,12 +51,14 @@ export default function MapComponent() {
   const { setMode } = useTownPass();
 
   // 監聽模式變化
-  useEffect(async () => {
-    try {
-      await setMode(mode);
-    } catch (error) {
-      console.error("Failed to change mode:", error);
-    }
+  useEffect(() => {
+    setMode(currentMode)
+      .then(() => {
+        console.log("TaipeiMap: Mode changed to", currentMode);
+      })
+      .catch((error) => {
+        console.error("Failed to change mode:", error);
+      });
   }, [currentMode]);
 
   useEffect(() => {
