@@ -52,7 +52,20 @@ export default function MapComponent() {
   const [statusMessage, setStatusMessage] = useState("");
   const [currentMode, setCurrentMode] = useState("pedestrian");
   const [copyNotification, setCopyNotification] = useState(null);
-  // const copyNotificationTimeoutRef = useRef(null);
+  const copyNotificationTimeoutRef = useRef(null);
+  const [pathStats, setPathStats] = useState(null); // 路徑統計資訊
+
+  // 取得當前模式
+  const { state } = useTownPass();
+
+  // 監聽模式變化
+  useEffect(() => {
+    if (state?.mode) {
+      console.log("TaipeiMap: Mode changed to", state.mode);
+      setCurrentMode(state.mode);
+      currentModeRef.current = state.mode;
+    }
+  }, [state?.mode]);
 
   useEffect(() => {
     if (!mapRef.current) return;
@@ -524,7 +537,7 @@ export default function MapComponent() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ start, end, type: "bike" }),
+        body: JSON.stringify({ start, end, type: pathType }),
       });
 
       if (!response.ok) {
@@ -534,6 +547,14 @@ export default function MapComponent() {
       }
 
       const geojson = await response.json();
+
+      // 儲存路徑統計資訊
+      if (geojson.properties) {
+        setPathStats({
+          ...geojson.properties,
+          pathType: pathType,
+        });
+      }
 
       // 在地圖上顯示路徑
       if (pathLayerRef.current) {

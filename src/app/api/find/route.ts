@@ -392,19 +392,36 @@ export async function POST(request: NextRequest) {
 
     // 建立 GeoJSON 格式的路徑，將每個路段分開以便標記不同顏色
     const features = [];
+    let totalDistance = 0; // 總距離（公尺）
+    let priorityDistance = 0; // 優先路徑距離（自行車道或人行道）
 
     for (let i = 0; i < routePath.length - 1; i++) {
       const segmentId = routePath[i + 1].segmentId;
       const properties: Record<string, boolean> = {};
 
+      // 計算此路段的距離
+      const segmentDistance = calculateDistance(
+        { lat: routePath[i].lat, lng: routePath[i].lng },
+        { lat: routePath[i + 1].lat, lng: routePath[i + 1].lng },
+      );
+      totalDistance += segmentDistance;
+
       if (segmentId) {
         const segment = segments.find((s) => s.id === segmentId);
         if (segment) {
           if (type === "bike") {
-            properties.isBikeLane = segment.bike === 1;
+            const isBikeLane = segment.bike === 1;
+            properties.isBikeLane = isBikeLane;
+            if (isBikeLane) {
+              priorityDistance += segmentDistance;
+            }
           } else if (type === "walk") {
-            properties.hasSidewalk =
+            const hasSidewalk =
               segment.sidewalk !== null && segment.sidewalk !== "";
+            properties.hasSidewalk = hasSidewalk;
+            if (hasSidewalk) {
+              priorityDistance += segmentDistance;
+            }
           }
         }
       }
@@ -425,6 +442,24 @@ export async function POST(request: NextRequest) {
     const geojson = {
       type: "FeatureCollection",
       features: features,
+      properties: {
+        totalDistanceKm: parseFloat((totalDistance / 1000).toFixed(2)), // 總距離（公里）
+        totalDistanceM: parseFloat(totalDistance.toFixed(2)), // 總距離（公尺）
+        ...(type === "bike" && {
+          bikeLaneDistanceKm: parseFloat((priorityDistance / 1000).toFixed(2)), // 自行車道距離（公里）
+          bikeLaneDistanceM: parseFloat(priorityDistance.toFixed(2)), // 自行車道距離（公尺）
+          bikeLanePercentage: parseFloat(
+            ((priorityDistance / totalDistance) * 100).toFixed(2),
+          ), // 自行車道佔比（%）
+        }),
+        ...(type === "walk" && {
+          sidewalkDistanceKm: parseFloat((priorityDistance / 1000).toFixed(2)), // 人行道距離（公里）
+          sidewalkDistanceM: parseFloat(priorityDistance.toFixed(2)), // 人行道距離（公尺）
+          sidewalkPercentage: parseFloat(
+            ((priorityDistance / totalDistance) * 100).toFixed(2),
+          ), // 人行道佔比（%）
+        }),
+      },
     };
 
     return NextResponse.json(geojson);

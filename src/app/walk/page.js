@@ -21,6 +21,7 @@ export default function MapComponent() {
   const [isSelectingPath, setIsSelectingPath] = useState(false);
   const [selectedPoints, setSelectedPoints] = useState([]);
   const [statusMessage, setStatusMessage] = useState("");
+  const [pathStats, setPathStats] = useState(null); // 路徑統計資訊
   const markersLayerRef = useRef(null);
   const pathLayerRef = useRef(null);
 
@@ -138,6 +139,14 @@ export default function MapComponent() {
 
       const geojson = await response.json();
 
+      // 儲存路徑統計資訊
+      if (geojson.properties) {
+        setPathStats({
+          ...geojson.properties,
+          pathType: "walk",
+        });
+      }
+
       // 在地圖上顯示路徑
       if (pathLayerRef.current) {
         const features = new GeoJSON().readFeatures(geojson, {
@@ -167,6 +176,7 @@ export default function MapComponent() {
     }
 
     setSelectedPoints([]);
+    setPathStats(null);
     setIsSelectingPath(true);
     setStatusMessage("請點擊地圖選擇終點");
   };
@@ -231,6 +241,43 @@ export default function MapComponent() {
           )}
         </div>
       </div>
+
+      {/* 路徑統計資訊 */}
+      {pathStats && (
+        <div className="absolute top-20 right-5 z-10 min-w-[200px] rounded-xl bg-white p-4 shadow-lg">
+          <div className="mb-3 border-b-2 border-green-600 pb-2 text-base font-bold">
+            路徑資訊
+          </div>
+          <div className="mb-2">
+            <span className="text-gray-600">總距離：</span>
+            <span className="font-bold text-gray-800">
+              {pathStats.totalDistanceKm} 公里
+            </span>
+          </div>
+          {pathStats.sidewalkDistanceKm !== undefined && (
+            <>
+              <div className="mb-2">
+                <span className="text-gray-600">人行道：</span>
+                <span className="font-bold text-green-600">
+                  {pathStats.sidewalkDistanceKm} 公里
+                </span>
+              </div>
+              <div className="mb-1">
+                <span className="text-gray-600">佔比：</span>
+                <span className="font-bold text-green-600">
+                  {pathStats.sidewalkPercentage}%
+                </span>
+              </div>
+            </>
+          )}
+          <button
+            onClick={() => setPathStats(null)}
+            className="mt-3 w-full rounded-md bg-gray-100 px-3 py-1.5 text-xs hover:bg-gray-200"
+          >
+            關閉
+          </button>
+        </div>
+      )}
     </div>
   );
 }
