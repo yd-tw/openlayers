@@ -39,7 +39,7 @@ export default function MapComponent() {
     const lon = lonParam ? parseFloat(lonParam) : 121.0;
     const zoom = zoomParam ? parseFloat(zoomParam) : 8;
 
- const baseLayer = new TileLayer({
+    const baseLayer = new TileLayer({
       source: new XYZ({
         url: "https://basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png",
         attributions: "© OpenStreetMap © CARTO",
@@ -54,8 +54,6 @@ export default function MapComponent() {
         zoom,
       }),
     });
-
-   
 
     mapInstanceRef.current = map;
 
@@ -82,11 +80,15 @@ export default function MapComponent() {
     const pathLayer = new VectorLayer({
       source: pathSource,
       style: (feature) => {
-        // 根據道路類型設定不同顏色
         const isBikeLane = feature.get("isBikeLane");
-        const color = isBikeLane ? "#9b59b6" : "#ff8c00"; // 自行車道: 紫色, 其餘: 橘色
+        const color = isBikeLane ? "#fd853a" : "#5ab4c5";
+        const zoom = mapInstanceRef.current?.getView()?.getZoom() ?? 18;
+        const width = Math.max(1, (zoom - 10) * 0.8);
         return new Style({
-          stroke: new Stroke({ color: color, width: 4 }),
+          stroke: new Stroke({
+            color: color,
+            width,
+          }),
         });
       },
     });
@@ -251,7 +253,7 @@ export default function MapComponent() {
             </div>
           )}
         </div>
-        </div>
+      </div>
     </div>
   );
 }

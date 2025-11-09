@@ -13,7 +13,6 @@ import Point from "ol/geom/Point";
 import Polygon from "ol/geom/Polygon";
 import LineString from "ol/geom/LineString";
 import Heatmap from "ol/layer/Heatmap";
-import GeoJSON from "ol/format/GeoJSON";
 import { fromLonLat, toLonLat } from "ol/proj";
 import { Style, Stroke, Fill, Circle as CircleStyle } from "ol/style";
 import { defaults as defaultControls } from "ol/control";
@@ -138,31 +137,6 @@ export default function MapComponent() {
     });
     mapObj.addLayer(markersLayer);
     markersLayerRef.current = markersLayer;
-
-    // === 建立路徑圖層 ===
-    const pathSource = new VectorSource();
-    const pathLayer = new VectorLayer({
-      source: pathSource,
-      zIndex: 9999,
-      style: (feature) => {
-        // 根據道路類型和當前模式設定不同顏色
-        const hasSidewalk = feature.get("hasSidewalk");
-        const isBikeLane = feature.get("isBikeLane");
-        let color = "#ff8c00"; // 預設橘色
-
-        if (hasSidewalk) {
-          color = "#2ecc71"; // 行人道: 綠色
-        } else if (isBikeLane) {
-          color = "#9b59b6"; // 自行車道: 紫色
-        }
-
-        return new Style({
-          stroke: new Stroke({ color: color, width: 5 }),
-        });
-      },
-    });
-    mapObj.addLayer(pathLayer);
-    pathLayerRef.current = pathLayer;
 
     // === 監聽 Flutter 位置更新 ===
     const townpassClient = getTownPassClient();
@@ -540,10 +514,10 @@ export default function MapComponent() {
         />
 
         {/* 路徑規劃按鈕 */}
-        {currentMode != "vehicle" && (
+        {currentMode != "vehicle" && view && (
           <div className="absolute bottom-20 left-1/2 z-[1000] w-fit -translate-x-1/2 rounded-md bg-[#5ab4c5] p-2.5 px-10 font-bold text-white shadow-lg">
             <a
-              href={`/${currentMode === "pedestrian" ? "walk" : currentMode === "bicycle" ? "bike" : ""}?lon=${position?.[0]}&lat=${position?.[1]}&zoom=${view?.getZoom()}`}
+              href={`/${currentMode === "pedestrian" ? "walk" : currentMode === "bicycle" ? "bike" : ""}?lon=${toLonLat(view?.getCenter())[0]}&lat=${toLonLat(view?.getCenter())[1]}&zoom=${view?.getZoom()}`}
             >
               路徑規劃
             </a>
