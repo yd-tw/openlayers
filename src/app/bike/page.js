@@ -8,7 +8,7 @@ import View from "ol/View";
 import TileLayer from "ol/layer/Tile";
 import VectorLayer from "ol/layer/Vector";
 import VectorSource from "ol/source/Vector";
-import OSM from "ol/source/OSM";
+import XYZ from "ol/source/XYZ";
 import GeoJSON from "ol/format/GeoJSON";
 import { fromLonLat, toLonLat } from "ol/proj";
 import { Style, Stroke, Fill, Circle as CircleStyle } from "ol/style";
@@ -39,14 +39,23 @@ export default function MapComponent() {
     const lon = lonParam ? parseFloat(lonParam) : 121.0;
     const zoom = zoomParam ? parseFloat(zoomParam) : 8;
 
+ const baseLayer = new TileLayer({
+      source: new XYZ({
+        url: "https://basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png",
+        attributions: "© OpenStreetMap © CARTO",
+      }),
+    });
+
     const map = new Map({
       target: mapRef.current,
-      layers: [new TileLayer({ source: new OSM() })],
+      layers: [baseLayer],
       view: new View({
         center: fromLonLat([lon, lat]),
         zoom,
       }),
     });
+
+   
 
     mapInstanceRef.current = map;
 
@@ -184,82 +193,65 @@ export default function MapComponent() {
   };
 
   return (
-    <div className="relative h-screen w-full">
-      <div ref={mapRef} className="h-full w-full"></div>
-
-      {/* 控制面板 - 置中下方 */}
-      <div className="absolute bottom-8 left-1/2 z-10 -translate-x-1/2 rounded-lg bg-white p-4 shadow-lg">
-        <button
-          onClick={startPathSelection}
-          disabled={isSelectingPath}
-          className={`rounded px-4 py-2 font-medium ${
-            isSelectingPath
-              ? "cursor-not-allowed bg-gray-300 text-gray-500"
-              : "bg-blue-500 text-white hover:bg-blue-600"
-          }`}
-        >
-          {isSelectingPath ? "選擇中..." : "路徑規劃"}
-        </button>
-
-        {statusMessage && (
-          <div className="mt-3 text-center text-sm text-gray-700">
-            {statusMessage}
+    <div className="relative flex h-screen w-full flex-col">
+      <div className="bg-[#5ab4c5] p-2.5 shadow-lg">
+        <div className="align-button flex justify-around">
+          <div
+            className={`flex items-center border-b-3 border-transparent px-3 py-2`}
+          >
+            <a
+              href="/"
+              className={`text-m flex items-center gap-1.5 font-bold text-white select-none`}
+            >
+              <span>
+                <ArrowLeftIcon className="h-4 w-4" />
+              </span>
+              <span>返回</span>
+            </a>
           </div>
-        )}
-
-        {selectedPoints.length > 0 && (
-          <div className="mt-3 text-xs text-gray-600">
-            <div>
-              終點:{" "}
-              {selectedPoints[0] &&
-                `${selectedPoints[0].lat.toFixed(6)}, ${selectedPoints[0].lng.toFixed(6)}`}
-            </div>
-            {selectedPoints[1] && (
-              <div>
-                起點: {selectedPoints[1].lat.toFixed(6)},{" "}
-                {selectedPoints[1].lng.toFixed(6)}
-              </div>
-            )}
-          </div>
-        )}
+        </div>
       </div>
 
-      {/* 路徑統計資訊 */}
-      {pathStats && (
-        <div className="absolute top-20 right-5 z-10 min-w-[200px] rounded-xl bg-white p-4 shadow-lg">
-          <div className="mb-3 border-b-2 border-green-600 pb-2 text-base font-bold">
-            路徑資訊
-          </div>
-          <div className="mb-2">
-            <span className="text-gray-600">總距離：</span>
-            <span className="font-bold text-gray-800">
-              {pathStats.totalDistanceKm} 公里
-            </span>
-          </div>
-          {pathStats.bikeLaneDistanceKm !== undefined && (
-            <>
-              <div className="mb-2">
-                <span className="text-gray-600">自行車道：</span>
-                <span className="font-bold text-purple-600">
-                  {pathStats.bikeLaneDistanceKm} 公里
-                </span>
-              </div>
-              <div className="mb-1">
-                <span className="text-gray-600">佔比：</span>
-                <span className="font-bold text-purple-600">
-                  {pathStats.bikeLanePercentage}%
-                </span>
-              </div>
-            </>
-          )}
+      <div className="relative flex-1">
+        <div ref={mapRef} className="h-full w-full"></div>
+
+        {/* 控制面板 - 置中下方 */}
+        <div className="absolute bottom-8 left-1/2 z-10 -translate-x-1/2 rounded-lg bg-white p-4 shadow-lg">
           <button
-            onClick={() => setPathStats(null)}
-            className="mt-3 w-full rounded-md bg-gray-100 px-3 py-1.5 text-xs hover:bg-gray-200"
+            onClick={startPathSelection}
+            disabled={isSelectingPath}
+            className={`rounded px-4 py-2 font-medium ${
+              isSelectingPath
+                ? "cursor-not-allowed bg-gray-300 text-gray-500"
+                : "bg-blue-500 text-white hover:bg-blue-600"
+            }`}
           >
-            關閉
+            {isSelectingPath ? "選擇中..." : "路徑規劃"}
           </button>
+
+          {statusMessage && (
+            <div className="mt-3 text-center text-sm text-gray-700">
+              {statusMessage}
+            </div>
+          )}
+
+          {selectedPoints.length > 0 && (
+            <div className="mt-3 text-xs text-gray-600">
+              <div>
+                終點:{" "}
+                {selectedPoints[0] &&
+                  `${selectedPoints[0].lat.toFixed(6)}, ${selectedPoints[0].lng.toFixed(6)}`}
+              </div>
+              {selectedPoints[1] && (
+                <div>
+                  起點: {selectedPoints[1].lat.toFixed(6)},{" "}
+                  {selectedPoints[1].lng.toFixed(6)}
+                </div>
+              )}
+            </div>
+          )}
         </div>
-      )}
+        </div>
     </div>
   );
 }
