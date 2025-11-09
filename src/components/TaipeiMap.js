@@ -436,9 +436,9 @@ export default function MapComponent() {
             positionFeatureRef.current.setGeometry(new Point(coords));
           }
 
-          if (view && (!searchParams.get("lon") || !searchParams.get("lat"))) {
-            view.setCenter(coords);
-          }
+          // if (view && (!searchParams.get("lon") || !searchParams.get("lat"))) {
+          //   view.setCenter(coords);
+          // }
         },
         (err) => console.error(`取得定位資訊失敗: ${err}`),
         { enableHighAccuracy: true },
