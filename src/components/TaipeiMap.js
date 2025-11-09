@@ -165,12 +165,12 @@ export default function MapComponent() {
         positionFeatureRef.current.setGeometry(new Point(coords));
       }
 
-      if (mapInstanceRef.current) {
-        mapInstanceRef.current.getView().animate({
-          center: coords,
-          duration: 800,
-        });
-      }
+      // if (mapInstanceRef.current) {
+      //   mapInstanceRef.current.getView().animate({
+      //     center: coords,
+      //     duration: 800,
+      //   });
+      // }
     });
 
     return () => {
