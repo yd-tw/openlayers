@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, useMemo } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import "ol/ol.css";
 import Map from "ol/Map";
@@ -14,6 +14,7 @@ import { fromLonLat, toLonLat } from "ol/proj";
 import { Style, Stroke, Fill, Circle as CircleStyle } from "ol/style";
 import { Point } from "ol/geom";
 import { Feature } from "ol";
+import { ArrowLeftIcon } from "lucide-react";
 
 export default function MapComponent() {
   const searchParams = useSearchParams();
