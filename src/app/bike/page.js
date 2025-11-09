@@ -74,12 +74,11 @@ export default function MapComponent() {
     const markersSource = new VectorSource();
     const markersLayer = new VectorLayer({
       source: markersSource,
-      style: (feature) => {
-        const type = feature.get("type");
+      style: () => {
         return new Style({
           image: new CircleStyle({
             radius: 8,
-            fill: new Fill({ color: type === "start" ? "#00ff00" : "#ff0000" }),
+            fill: new Fill({ color: "#fd853a" }),
             stroke: new Stroke({ color: "#ffffff", width: 2 }),
           }),
         });
@@ -233,23 +232,53 @@ export default function MapComponent() {
         <div ref={mapRef} className="h-full w-full"></div>
 
         {!isSelectingPath && (
-          <div className="absolute bottom-20 left-1/2 z-[1000] w-fit -translate-x-1/2 rounded-md bg-[#5ab4c5] p-2.5 px-10 font-bold text-white shadow-lg">
+          <div className="absolute bottom-15 left-1/2 z-[1000] w-fit -translate-x-1/2 rounded-md bg-[#5ab4c5] p-2.5 px-10 font-bold text-white shadow-lg">
             <button onClick={startPathSelection}>開始路徑規劃</button>
           </div>
         )}
 
         {isSelectingPath && (
-          <div className="absolute bottom-20 left-1/2 z-[1000] w-fit -translate-x-1/2 rounded-md bg-[#5ab4c5] p-2.5 px-10 font-bold text-white shadow-lg">
+          <div className="absolute bottom-15 left-1/2 z-[1000] w-fit -translate-x-1/2 rounded-md bg-[#5ab4c5] p-2.5 px-10 font-bold text-white shadow-lg">
             選擇中...
           </div>
         )}
 
         {/* 控制面板 - 置中下方 */}
-        {isSelectingPath && (
-          <div className="absolute bottom-35 left-1/2 z-10 -translate-x-1/2 rounded-lg bg-white p-4 shadow-lg">
-            {statusMessage && (
+        {(isSelectingPath || pathStats) && (
+          <div className="absolute bottom-30 left-1/2 z-10 -translate-x-1/2 rounded-lg bg-white p-4 shadow-lg">
+            {/* {statusMessage && (
               <div className="text-center text-sm text-gray-700">
                 {statusMessage}
+              </div>
+            )} */}
+
+            {pathStats && (
+              <div>
+                <div className="mb-3 border-b-2 border-green-600 pb-2 text-base font-bold">
+                  路徑資訊
+                </div>
+                <div className="mb-2">
+                  <span className="text-gray-600">總距離：</span>
+                  <span className="font-bold text-gray-800">
+                    {pathStats.totalDistanceKm} 公里
+                  </span>
+                </div>
+                {pathStats.bikeLaneDistanceKm !== undefined && (
+                  <>
+                    <div className="mb-2">
+                      <span className="text-gray-600">自行車道：</span>
+                      <span className="font-bold text-green-600">
+                        {pathStats.sidewalkDistanceKm} 公里
+                      </span>
+                    </div>
+                    <div className="mb-1">
+                      <span className="text-gray-600">佔比：</span>
+                      <span className="font-bold text-green-600">
+                        {pathStats.sidewalkPercentage}%
+                      </span>
+                    </div>
+                  </>
+                )}
               </div>
             )}
 

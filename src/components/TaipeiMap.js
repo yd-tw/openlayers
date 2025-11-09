@@ -533,7 +533,7 @@ export default function MapComponent() {
 
         {/* 路徑規劃按鈕 */}
         {currentMode != "vehicle" && center && view && (
-          <div className="absolute bottom-20 left-1/2 z-[1000] w-fit -translate-x-1/2 rounded-md bg-[#5ab4c5] p-2.5 px-10 font-bold text-white shadow-lg">
+          <div className="absolute bottom-15 left-1/2 z-[1000] w-fit -translate-x-1/2 rounded-md bg-[#5ab4c5] p-2.5 px-10 font-bold text-white shadow-lg">
             <a
               href={`/${currentMode === "pedestrian" ? "walk" : currentMode === "bicycle" ? "bike" : ""}?lon=${center[0]}&lat=${center[1]}&zoom=${view?.getZoom()}`}
             >
