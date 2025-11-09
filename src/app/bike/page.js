@@ -39,7 +39,7 @@ export default function MapComponent() {
     const lon = lonParam ? parseFloat(lonParam) : 121.0;
     const zoom = zoomParam ? parseFloat(zoomParam) : 8;
 
- const baseLayer = new TileLayer({
+    const baseLayer = new TileLayer({
       source: new XYZ({
         url: "https://basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png",
         attributions: "© OpenStreetMap © CARTO",
@@ -54,8 +54,6 @@ export default function MapComponent() {
         zoom,
       }),
     });
-
-   
 
     mapInstanceRef.current = map;
 
@@ -251,7 +249,7 @@ export default function MapComponent() {
             </div>
           )}
         </div>
-        </div>
+      </div>
     </div>
   );
 }

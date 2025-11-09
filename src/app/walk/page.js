@@ -53,8 +53,9 @@ export default function MapComponent() {
       view: new View({
         center: fromLonLat([lon, lat]),
         zoom,
-      }),})
-    
+      }),
+    });
+
     mapInstanceRef.current = map;
 
     // 建立標記圖層（用於顯示起點和終點）
@@ -251,41 +252,41 @@ export default function MapComponent() {
         </div>
       </div>
 
-        {pathStats && (
-          <div>
-            <div className="mb-3 border-b-2 border-green-600 pb-2 text-base font-bold">
-              路徑資訊
-            </div>
-            <div className="mb-2">
-              <span className="text-gray-600">總距離：</span>
-              <span className="font-bold text-gray-800">
-                {pathStats.totalDistanceKm} 公里
-              </span>
-            </div>
-            {pathStats.sidewalkDistanceKm !== undefined && (
-              <>
-                <div className="mb-2">
-                  <span className="text-gray-600">人行道：</span>
-                  <span className="font-bold text-green-600">
-                    {pathStats.sidewalkDistanceKm} 公里
-                  </span>
-                </div>
-                <div className="mb-1">
-                  <span className="text-gray-600">佔比：</span>
-                  <span className="font-bold text-green-600">
-                    {pathStats.sidewalkPercentage}%
-                  </span>
-                </div>
-              </>
-            )}
-            <button
-              onClick={() => setPathStats(null)}
-              className="mt-3 w-full rounded-md bg-gray-100 px-3 py-1.5 text-xs hover:bg-gray-200"
-            >
-              關閉
-            </button>
+      {pathStats && (
+        <div>
+          <div className="mb-3 border-b-2 border-green-600 pb-2 text-base font-bold">
+            路徑資訊
           </div>
-        )}
-      </div>
+          <div className="mb-2">
+            <span className="text-gray-600">總距離：</span>
+            <span className="font-bold text-gray-800">
+              {pathStats.totalDistanceKm} 公里
+            </span>
+          </div>
+          {pathStats.sidewalkDistanceKm !== undefined && (
+            <>
+              <div className="mb-2">
+                <span className="text-gray-600">人行道：</span>
+                <span className="font-bold text-green-600">
+                  {pathStats.sidewalkDistanceKm} 公里
+                </span>
+              </div>
+              <div className="mb-1">
+                <span className="text-gray-600">佔比：</span>
+                <span className="font-bold text-green-600">
+                  {pathStats.sidewalkPercentage}%
+                </span>
+              </div>
+            </>
+          )}
+          <button
+            onClick={() => setPathStats(null)}
+            className="mt-3 w-full rounded-md bg-gray-100 px-3 py-1.5 text-xs hover:bg-gray-200"
+          >
+            關閉
+          </button>
+        </div>
+      )}
+    </div>
   );
 }
