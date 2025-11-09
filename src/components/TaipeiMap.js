@@ -45,7 +45,7 @@ export default function MapComponent() {
   const [view, setView] = useState(null);
   const [position, setPosition] = useState(null);
   const [orientation, setOrientation] = useState(null);
-  const [currentMode, setCurrentMode] = useState("pedestrian");
+  const [currentMode, setCurrentMode] = useState("bicycle");
   const [center, setCenter] = useState(null);
 
   const { state } = useTownPass();
