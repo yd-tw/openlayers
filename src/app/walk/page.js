@@ -81,11 +81,15 @@ export default function MapComponent() {
     const pathLayer = new VectorLayer({
       source: pathSource,
       style: (feature) => {
-        // 根據道路類型設定不同顏色
         const hasSidewalk = feature.get("hasSidewalk");
-        const color = hasSidewalk ? "#2ecc71" : "#ff8c00"; // 行人道: 綠色, 其餘: 橘色
+        const color = hasSidewalk ? "#76a732" : "#5ab4c5";
+        const zoom = mapInstanceRef.current?.getView()?.getZoom() ?? 18;
+        const width = Math.max(1, (zoom - 10) * 0.8);
         return new Style({
-          stroke: new Stroke({ color: color, width: 4 }),
+          stroke: new Stroke({
+            color: color,
+            width,
+          }),
         });
       },
     });
@@ -214,22 +218,22 @@ export default function MapComponent() {
       <div className="relative flex-1">
         <div ref={mapRef} className="h-full w-full"></div>
 
-        {/* 控制面板 - 置中下方 */}
-        <div className="absolute bottom-8 left-1/2 z-10 -translate-x-1/2 rounded-lg bg-white p-4 shadow-lg">
-          <button
-            onClick={startPathSelection}
-            disabled={isSelectingPath}
-            className={`rounded px-4 py-2 font-medium ${
-              isSelectingPath
-                ? "cursor-not-allowed bg-gray-300 text-gray-500"
-                : "bg-blue-500 text-white hover:bg-blue-600"
-            }`}
-          >
-            {isSelectingPath ? "選擇中..." : "路徑規劃"}
-          </button>
+        {!isSelectingPath && (
+          <div className="absolute bottom-20 left-1/2 z-[1000] w-fit -translate-x-1/2 rounded-md bg-[#5ab4c5] p-2.5 px-10 font-bold text-white shadow-lg">
+            <button onClick={startPathSelection}>開始路徑規劃</button>
+          </div>
+        )}
 
+        {isSelectingPath && (
+          <div className="absolute bottom-20 left-1/2 z-[1000] w-fit -translate-x-1/2 rounded-md bg-[#5ab4c5] p-2.5 px-10 font-bold text-white shadow-lg">
+            選擇中...
+          </div>
+        )}
+
+        {/* 控制面板 - 置中下方 */}
+        <div className="absolute bottom-35 left-1/2 z-10 -translate-x-1/2 rounded-lg bg-white p-4 shadow-lg">
           {statusMessage && (
-            <div className="mt-3 text-center text-sm text-gray-700">
+            <div className="text-center text-sm text-gray-700">
               {statusMessage}
             </div>
           )}
